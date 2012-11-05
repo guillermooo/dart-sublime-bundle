@@ -5,7 +5,7 @@
 	<key>name</key>
 	<string>Comments</string>
 	<key>scope</key>
-	<string>dart.source</string>
+	<string>source.dart</string>
 	<key>settings</key>
 	<dict>
 		<key>shellVariables</key>
