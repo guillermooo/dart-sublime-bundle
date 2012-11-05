@@ -3,16 +3,16 @@
 <plist version="1.0">
 <dict>
 	<key>content</key>
-	<string>${1:void} ${2:method}(${3:args}) =&gt; $0;
-
-</string>
+	<string>for ($1 in $2) {
+	$0
+}</string>
 	<key>name</key>
-	<string>function</string>
+	<string>for in</string>
 	<key>scope</key>
 	<string>source.dart</string>
 	<key>tabTrigger</key>
-	<string>f</string>
+	<string>foi</string>
 	<key>uuid</key>
-	<string>7A072969-3FCB-407E-ADC6-C19A4E5701E3</string>
+	<string>4D86F219-5B91-4D89-AD95-BBA782E4AAD5</string>
 </dict>
 </plist>

@@ -6,8 +6,14 @@
 	<dict>
 		<key>items</key>
 		<array>
+			<string>F9C5E6C9-4974-458F-856D-AEB0EB58BB77</string>
+			<string>816F22FE-B646-4EE0-A486-28F16AC80227</string>
+			<string>------------------------------------</string>
+			<string>A5D36344-0A78-4FAC-B8FD-7BCE022E74A7</string>
+			<string>------------------------------------</string>
 			<string>21CD8C95-7FD5-4636-9A1E-8737AE4EA48A</string>
 			<string>2167AA71-D282-4F00-AE4E-158B7B78969D</string>
+			<string>4572F2D9-C5E0-4FBB-B9E8-80CEABE2C2C1</string>
 		</array>
 		<key>submenus</key>
 		<dict>
@@ -15,6 +21,8 @@
 			<dict>
 				<key>items</key>
 				<array>
+					<string>A91A8F21-0F1A-4DDF-A35F-EA34ACDFFCD7</string>
+					<string>F255A353-C6E0-48D9-AA14-1BC401369A06</string>
 					<string>7A072969-3FCB-407E-ADC6-C19A4E5701E3</string>
 					<string>1539794D-1C60-4DB5-91A8-EA35AC041029</string>
 					<string>A9EC57EC-76C0-4324-B50A-76FABE30CA2E</string>
@@ -26,6 +34,8 @@
 			<dict>
 				<key>items</key>
 				<array>
+					<string>4D86F219-5B91-4D89-AD95-BBA782E4AAD5</string>
+					<string>2BB6A3CD-FA2D-4109-B1F0-CFBBCAE91F4C</string>
 					<string>391CE8FF-D903-4930-8B2C-1FD7D81EF623</string>
 					<string>4C07C9CB-4306-417B-B152-653E93C987B5</string>
 					<string>9AE3A1CC-9268-4A10-948A-642EC29D0D08</string>
@@ -39,13 +49,20 @@
 	<string>Dart</string>
 	<key>ordering</key>
 	<array>
+		<string>F9C5E6C9-4974-458F-856D-AEB0EB58BB77</string>
+		<string>816F22FE-B646-4EE0-A486-28F16AC80227</string>
 		<string>958518BC-799F-477A-99F9-5B28EBF230F6</string>
 		<string>391CE8FF-D903-4930-8B2C-1FD7D81EF623</string>
 		<string>4C07C9CB-4306-417B-B152-653E93C987B5</string>
 		<string>9AE3A1CC-9268-4A10-948A-642EC29D0D08</string>
 		<string>1539794D-1C60-4DB5-91A8-EA35AC041029</string>
 		<string>7A072969-3FCB-407E-ADC6-C19A4E5701E3</string>
+		<string>F255A353-C6E0-48D9-AA14-1BC401369A06</string>
+		<string>A91A8F21-0F1A-4DDF-A35F-EA34ACDFFCD7</string>
 		<string>A9EC57EC-76C0-4324-B50A-76FABE30CA2E</string>
+		<string>4572F2D9-C5E0-4FBB-B9E8-80CEABE2C2C1</string>
+		<string>2BB6A3CD-FA2D-4109-B1F0-CFBBCAE91F4C</string>
+		<string>4D86F219-5B91-4D89-AD95-BBA782E4AAD5</string>
 		<string>A5D36344-0A78-4FAC-B8FD-7BCE022E74A7</string>
 		<string>A6CB02E3-15E3-4CDB-B63D-FCC95A26370C</string>
 	</array>
