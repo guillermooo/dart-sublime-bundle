@@ -24,8 +24,8 @@ For use with Sublime Text:
 Copy Dart.tmbundle to the sublime packages directory (on OSX: 
 ~/Library/Application Support/Sublime Text 2/Packages).
 
-For the best Sublime experience, make sure the dart-sdk/bin directory is on
-your path. Also, add the "dartsdk_path" variable to your user settings:
+For the best Sublime experience, make sure the `dart-sdk/bin` directory is on
+your path. Also, add the `dartsdk_path` variable to your user settings:
 
     {
       "dartsdk_path" : "/Users/foo/dart-sdk"  
