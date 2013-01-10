@@ -1,0 +1,12 @@
+{
+    "cmd": ["dart2js", "-o$file.js", "$file"],
+	// xyz/test.dart:5:1: Warning: cannot resolve type foo
+    "file_regex": "(\\S*):(\\d*):(\\d*): (.*)",
+    "selector": "source.dart",
+    "working_dir": "${project_path:${folder}}",
+
+    "windows":  
+    {  
+	    "cmd": ["dart2js.bat", "-o$file.js", "$file"]
+    }
+}
