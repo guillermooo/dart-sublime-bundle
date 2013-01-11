@@ -22,7 +22,7 @@
 		</dict>
 		<dict>
 			<key>begin</key>
-			<string>#\b(library|import|source|resource)\b</string>
+			<string>\b(library|import|part of|part)\b</string>
 			<key>beginCaptures</key>
 			<dict>
 				<key>0</key>
@@ -309,7 +309,7 @@
 			<array>
 				<dict>
 					<key>begin</key>
-					<string>(?&lt;!@)"""</string>
+					<string>(?&lt;!r)"""</string>
 					<key>end</key>
 					<string>"""(?!")</string>
 					<key>name</key>
@@ -324,7 +324,7 @@
 				</dict>
 				<dict>
 					<key>begin</key>
-					<string>@"""</string>
+					<string>r"""</string>
 					<key>end</key>
 					<string>"""(?!")</string>
 					<key>name</key>
@@ -332,7 +332,7 @@
 				</dict>
 				<dict>
 					<key>begin</key>
-					<string>(?&lt;!\\|@)"</string>
+					<string>(?&lt;!\\|r)"</string>
 					<key>end</key>
 					<string>"</string>
 					<key>name</key>
@@ -353,7 +353,7 @@
 				</dict>
 				<dict>
 					<key>begin</key>
-					<string>@"</string>
+					<string>r"</string>
 					<key>end</key>
 					<string>"</string>
 					<key>name</key>
@@ -370,7 +370,7 @@
 				</dict>
 				<dict>
 					<key>begin</key>
-					<string>(?&lt;!\|@)'</string>
+					<string>(?&lt;!\|r)'</string>
 					<key>end</key>
 					<string>'</string>
 					<key>name</key>
@@ -391,7 +391,7 @@
 				</dict>
 				<dict>
 					<key>begin</key>
-					<string>@'</string>
+					<string>r'</string>
 					<key>end</key>
 					<string>'</string>
 					<key>name</key>

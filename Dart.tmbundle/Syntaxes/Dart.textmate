@@ -7,7 +7,7 @@
 			match = '^(#!.*)$';
 		},
 		{	name = 'meta.declaration.dart';
-			begin = '#\b(library|import|source|resource)\b';
+			begin = '\b(library|import|part of|part|show|hide)\b';
 			end = ';';
 			beginCaptures = { 0 = { name = 'keyword.other.import.dart'; }; };
 			endCaptures = { 0 = { name = 'punctuation.terminator.dart'; }; };
@@ -132,16 +132,16 @@
 		strings = {
 			patterns = (
 				{	name = 'string.interpolated.triple.dart';
-					begin = '(?<!@)"""';
+					begin = '(?<!r)"""';
 					end = '"""(?!")';
 					patterns = ( { include = '#string-interp'; } );
 				},
 				{	name = 'string.quoted.triple.dart';
-					begin = '@"""';
+					begin = 'r"""';
 					end = '"""(?!")';
 				},
 				{	name = 'string.interpolated.double.dart';
-					begin = '(?<!\\|@)"';
+					begin = '(?<!\\|r)"';
 					end = '"';
 					patterns = (
 						{	name = 'invalid.string.newline';
@@ -151,7 +151,7 @@
 					);
 				},
 				{	name = 'string.quoted.double.dart';
-					begin = '@"';
+					begin = 'r"';
 					end = '"';
 					patterns = (
 						{	name = 'invalid.string.newline';
@@ -160,7 +160,7 @@
 					);
 				},
 				{	name = 'string.interpolated.single.dart';
-					begin = "(?<!\|@)'";
+					begin = "(?<!\|r)'";
 					end = "'";
 					patterns = (
 						{	name = 'invalid.string.newline';
@@ -170,7 +170,7 @@
 					);
 				},
 				{	name = 'string.quoted.single.dart';
-					begin = "@'";
+					begin = "r'";
 					end = "'";
 					patterns = (
 						{	name = 'invalid.string.newline';
