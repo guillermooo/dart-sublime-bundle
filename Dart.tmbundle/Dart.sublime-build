@@ -8,5 +8,9 @@
     "windows":  
     {  
 	    "cmd": ["dart2js.bat", "-o$file.js", "$file"]
+    },
+    "osx":
+    {
+    	"cmd": ["/bin/bash", "--login", "-c", "dart2js -o$file.js $file"]
     }
 }
