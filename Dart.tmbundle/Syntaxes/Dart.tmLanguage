@@ -22,7 +22,7 @@
 		</dict>
 		<dict>
 			<key>begin</key>
-			<string>#\b(library|import|source|resource)\b</string>
+			<string>\b(library|import|part of|part)\b</string>
 			<key>beginCaptures</key>
 			<dict>
 				<key>0</key>
@@ -50,16 +50,10 @@
 					<string>#strings</string>
 				</dict>
 				<dict>
-					<key>captures</key>
-					<dict>
-						<key>1</key>
-						<dict>
-							<key>name</key>
-							<string>keyword.other.import.dart</string>
-						</dict>
-					</dict>
 					<key>match</key>
-					<string>\b(prefix)\s*:</string>
+					<string>\b(as|show|hide)\b</string>
+					<key>name</key>
+					<string>keyword.other.import.dart</string>
 				</dict>
 			</array>
 		</dict>
@@ -309,7 +303,7 @@
 			<array>
 				<dict>
 					<key>begin</key>
-					<string>(?&lt;!@)"""</string>
+					<string>(?&lt;!r)"""</string>
 					<key>end</key>
 					<string>"""(?!")</string>
 					<key>name</key>
@@ -324,7 +318,7 @@
 				</dict>
 				<dict>
 					<key>begin</key>
-					<string>@"""</string>
+					<string>r"""</string>
 					<key>end</key>
 					<string>"""(?!")</string>
 					<key>name</key>
@@ -332,7 +326,7 @@
 				</dict>
 				<dict>
 					<key>begin</key>
-					<string>(?&lt;!\\|@)"</string>
+					<string>(?&lt;!\\|r)"</string>
 					<key>end</key>
 					<string>"</string>
 					<key>name</key>
@@ -353,7 +347,7 @@
 				</dict>
 				<dict>
 					<key>begin</key>
-					<string>@"</string>
+					<string>r"</string>
 					<key>end</key>
 					<string>"</string>
 					<key>name</key>
@@ -370,7 +364,7 @@
 				</dict>
 				<dict>
 					<key>begin</key>
-					<string>(?&lt;!\|@)'</string>
+					<string>(?&lt;!\|r)'</string>
 					<key>end</key>
 					<string>'</string>
 					<key>name</key>
@@ -391,7 +385,7 @@
 				</dict>
 				<dict>
 					<key>begin</key>
-					<string>@'</string>
+					<string>r'</string>
 					<key>end</key>
 					<string>'</string>
 					<key>name</key>
