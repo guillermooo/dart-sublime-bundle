@@ -7,14 +7,14 @@
 			match = '^(#!.*)$';
 		},
 		{	name = 'meta.declaration.dart';
-			begin = '\b(library|import|part of|part|show|hide)\b';
+			begin = '\b(library|import|part of|part)\b';
 			end = ';';
 			beginCaptures = { 0 = { name = 'keyword.other.import.dart'; }; };
 			endCaptures = { 0 = { name = 'punctuation.terminator.dart'; }; };
 			patterns = (
 				{	include = '#strings'; },
-				{	match = '\b(prefix)\s*:';
-					captures = { 1 = { name = 'keyword.other.import.dart'; }; };
+				{	name = 'keyword.other.import.dart';
+					match = '\b(as|show|hide)\b';
 				},
 			);
 		},

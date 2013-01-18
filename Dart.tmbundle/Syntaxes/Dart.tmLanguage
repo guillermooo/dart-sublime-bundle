@@ -50,16 +50,10 @@
 					<string>#strings</string>
 				</dict>
 				<dict>
-					<key>captures</key>
-					<dict>
-						<key>1</key>
-						<dict>
-							<key>name</key>
-							<string>keyword.other.import.dart</string>
-						</dict>
-					</dict>
 					<key>match</key>
-					<string>\b(prefix)\s*:</string>
+					<string>\b(as|show|hide)\b</string>
+					<key>name</key>
+					<string>keyword.other.import.dart</string>
 				</dict>
 			</array>
 		</dict>
