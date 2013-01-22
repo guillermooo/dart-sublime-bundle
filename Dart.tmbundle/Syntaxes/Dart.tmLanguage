@@ -307,7 +307,22 @@
 					<key>end</key>
 					<string>"""(?!")</string>
 					<key>name</key>
-					<string>string.interpolated.triple.dart</string>
+					<string>string.interpolated.triple.double.dart</string>
+					<key>patterns</key>
+					<array>
+						<dict>
+							<key>include</key>
+							<string>#string-interp</string>
+						</dict>
+					</array>
+				</dict>
+				<dict>
+					<key>begin</key>
+					<string>(?&lt;!r)'''</string>
+					<key>end</key>
+					<string>'''(?!')</string>
+					<key>name</key>
+					<string>string.interpolated.triple.single.dart</string>
 					<key>patterns</key>
 					<array>
 						<dict>
@@ -322,7 +337,15 @@
 					<key>end</key>
 					<string>"""(?!")</string>
 					<key>name</key>
-					<string>string.quoted.triple.dart</string>
+					<string>string.quoted.triple.double.dart</string>
+				</dict>
+				<dict>
+					<key>begin</key>
+					<string>r'''</string>
+					<key>end</key>
+					<string>'''(?!')</string>
+					<key>name</key>
+					<string>string.quoted.triple.single.dart</string>
 				</dict>
 				<dict>
 					<key>begin</key>

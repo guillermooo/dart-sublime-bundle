@@ -131,14 +131,23 @@
 		};
 		strings = {
 			patterns = (
-				{	name = 'string.interpolated.triple.dart';
+				{	name = 'string.interpolated.triple.double.dart';
 					begin = '(?<!r)"""';
 					end = '"""(?!")';
 					patterns = ( { include = '#string-interp'; } );
 				},
-				{	name = 'string.quoted.triple.dart';
+				{	name = 'string.interpolated.triple.single.dart';
+					begin = "(?<!r)'''";
+					end = "'''(?!')";
+					patterns = ( { include = '#string-interp'; } );
+				},
+				{	name = 'string.quoted.triple.double.dart';
 					begin = 'r"""';
 					end = '"""(?!")';
+				},
+				{	name = 'string.quoted.triple.single.dart';
+					begin = "r'''";
+					end = "'''(?!')";
 				},
 				{	name = 'string.interpolated.double.dart';
 					begin = '(?<!\\|r)"';
