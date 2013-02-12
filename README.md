@@ -1,31 +1,26 @@
-# Dart bundle for TextMate / Sublime
+# Dart bundle for Sublime
 
-This bundle provides rules to TextMate that describe minimal rules for display of the
-Dart source code. At this point the dart bundle provides:
+This bundle provides basic Dart support for Sublime Text. At this point the
+bundle provides:
 
-* syntax highlighting of keywords
-* syntax highlighting of strings
-* Preferences for comments so that you can use CMD-/ to (de)comment source lines.
+* Syntax highlighting.
+* Preferences for comments so that you can use CMD-/ to (de)comment source
+  lines.
+* Some snippets for inserting common Dart code.
+* dart2js support through Sublime's build system.
+* Support for installing Pub packages.
 
 The bundle identifies dart source by the file extension (.dart).
 
 INSTALLATION
 ============
 
-From the command line. From the root of the dart repo, type:
-open tools/utils/Dart.tmbundle
-
--OR-
-From TextMate:
-Open (File->Open...) the Dart.tmbundle file
-
--OR-
-For use with Sublime Text:
-Copy Dart.tmbundle to the sublime packages directory (on OSX: 
+Copy the the contents of this repository to a new directory in the Sublime
+packages directory (on OSX:
 ~/Library/Application Support/Sublime Text 2/Packages).
 
-For the best Sublime experience, make sure the `dart-sdk/bin` directory is on
-your path. Also, add the `dartsdk_path` variable to your user settings:
+For the best experience, make sure the `dart-sdk/bin` directory is on your path.
+Also, add the `dartsdk_path` variable to your user settings:
 
     {
       "dartsdk_path" : "/Users/foo/dart-sdk"  
@@ -34,7 +29,14 @@ your path. Also, add the `dartsdk_path` variable to your user settings:
 Looking for an IDE experience? Try [Dart Editor][1],
 [Dart plugin for Eclipse][2], or [Dart plugin for IntelliJ/WebStorm][3].
 
-License:
+DEVELOPMENT
+===========
+
+Please ensure that all .tmPreferences, .tmLanguage, .tmSnippets, etc. files stay
+in sync with the related [Dart TextMate repository][4].
+
+LICENSE
+=======
 
     Copyright 2012, the Dart project authors. All rights reserved.
     Redistribution and use in source and binary forms, with or without
@@ -64,3 +66,4 @@ License:
 [1]: http://www.dartlang.org/editor
 [2]: http://news.dartlang.org/2012/08/dart-plugin-for-eclipse-is-ready-for.html
 [3]: http://plugins.intellij.net/plugin/?id=6351
+[4]: http://github.com/dart-lang/dart-textmate-bundle
