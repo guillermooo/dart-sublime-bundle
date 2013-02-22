@@ -15,8 +15,14 @@ The bundle identifies dart source by the file extension (.dart).
 INSTALLATION
 ============
 
-Copy the the contents of this repository to a new directory in the Sublime
-packages directory (on OSX:
+If you are using the [Package Control][1] plugin, installation is very easy.
+Open the command palette (CTRL-SHIFT-P or CMD-SHIFT-P), type 'Install' and
+select 'Package Control: Install Package' from the list. Next, type 'Dart' and
+select the Dart package from the list. You may need to close and reopen any Dart
+files you currently have open for the syntax highlighting to activate.
+
+To install this package manually, copy the the contents of this repository to a
+new directory in the Sublime packages directory (on OSX:
 ~/Library/Application Support/Sublime Text 2/Packages).
 
 For the best experience, make sure the `dart-sdk/bin` directory is on your path.
@@ -26,14 +32,14 @@ Also, add the `dartsdk_path` variable to your user settings:
       "dartsdk_path" : "/Users/foo/dart-sdk"  
     }
 
-Looking for an IDE experience? Try [Dart Editor][1],
-[Dart plugin for Eclipse][2], or [Dart plugin for IntelliJ/WebStorm][3].
+Looking for an IDE experience? Try [Dart Editor][2],
+[Dart plugin for Eclipse][3], or [Dart plugin for IntelliJ/WebStorm][4].
 
 DEVELOPMENT
 ===========
 
 Please ensure that all .tmPreferences, .tmLanguage, .tmSnippets, etc. files stay
-in sync with the related [Dart TextMate repository][4].
+in sync with the related [Dart TextMate repository][5].
 
 LICENSE
 =======
@@ -63,7 +69,8 @@ LICENSE
     (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
     OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-[1]: http://www.dartlang.org/editor
-[2]: http://news.dartlang.org/2012/08/dart-plugin-for-eclipse-is-ready-for.html
-[3]: http://plugins.intellij.net/plugin/?id=6351
-[4]: http://github.com/dart-lang/dart-textmate-bundle
+[1]: http://wbond.net/sublime_packages/package_control
+[2]: http://www.dartlang.org/editor
+[3]: http://news.dartlang.org/2012/08/dart-plugin-for-eclipse-is-ready-for.html
+[4]: http://plugins.intellij.net/plugin/?id=6351
+[5]: http://github.com/dart-lang/dart-textmate-bundle
