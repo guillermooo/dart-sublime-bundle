@@ -40,7 +40,7 @@ class PubThread(threading.Thread):
 
         print 'pub install %s' % self.fileName
         proc = subprocess.Popen([pub_path, 'install'], cwd=working_directory,
-            shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+            stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
         out, _ = proc.communicate()
         
         if proc.returncode != 0:
