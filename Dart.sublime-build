@@ -1,4 +1,5 @@
 {
+    // Default: dart2js
     "cmd": ["dart2js", "-o$file.js", "$file"],
     // xyz/test.dart:5:1: Warning: cannot resolve type foo
     "file_regex": "(\\S*):(\\d*):(\\d*): (.*)",
@@ -7,10 +8,80 @@
 
     "windows":  
     {  
-	    "cmd": ["dart2js.bat", "-o$file.js", "$file"]
+        "cmd": ["dart2js.bat", "-o$file.js", "$file"]
     },
     "osx":
     {
-    	"cmd": ["/bin/bash", "--login", "-c", "dart2js -o$file.js $file"]
+        "cmd": ["/bin/bash", "--login", "-c", "dart2js -o$file.js $file"]
     }
+
+    "variants": [
+        {
+            "cmd": ["dart2js", "-o$file.js", "$file"],
+            "name": "Dart dart2js",
+
+            "windows":  
+            {  
+                "cmd": ["dart2js.bat", "-o$file.js", "$file"]
+            },
+            "osx":
+            {
+                "cmd": ["/bin/bash", "--login", "-c", "dart2js -o$file.js $file"]
+            }
+        },
+        {
+            "cmd": ["dart_analyzer", "$file"],
+            "name": "Dart Analyzer",
+
+            "windows":  
+            {  
+                "cmd": ["dart_analyzer.bat", "$file"]
+            },
+            "osx":
+            {
+                "cmd": ["/bin/bash", "--login", "-c", "dart_analyzer $file"]
+            }
+        },
+
+        {
+            "cmd": ["pub", "install"],
+            "name": "Dart Pub Install",
+            "shell" : true,
+
+            "windows":  
+            {  
+                "cmd": ["pub.bat", "install"]
+            },
+            "osx":
+            {
+                "cmd": ["/bin/bash", "--login", "-c", "pub install"]
+            }
+        },
+        {
+            "cmd": ["pub", "update"],
+            "name": "Dart Pub Update",
+
+            "windows":  
+            {  
+                "cmd": ["pub.bat", "update"]
+            },
+            "osx":
+            {
+                "cmd": ["/bin/bash", "--login", "-c", "pub update"]
+            }
+        },
+        {
+            "cmd": ["dart", "$file"],
+            "name": "Dart Run",
+
+            "windows":  
+            {  
+                "cmd": ["dart.exe", "$file"]
+            },
+            "osx":
+            {
+                "cmd": ["/bin/bash", "--login", "-c", "dart $file"]
+            }
+        }
+    ]
 }

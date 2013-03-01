@@ -35,6 +35,13 @@ Also, add the `dartsdk_path` variable to your user settings:
 Looking for an IDE experience? Try [Dart Editor][2],
 [Dart plugin for Eclipse][3], or [Dart plugin for IntelliJ/WebStorm][4].
 
+BUILD SYSTEM USAGE
+==================
+
+  - CTRL+B or CMD+B will run the Dart Analyzer on the current open file
+  - Open the command pallete (CTRL-SHIFT-P or CMD-SHIFT-P), type 'Dart' to see
+    other Dart commands: `Run`, `dart2js`, `pub install`, `pub update`
+
 DEVELOPMENT
 ===========
 
