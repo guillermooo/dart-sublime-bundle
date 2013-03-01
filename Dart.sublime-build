@@ -13,7 +13,7 @@
     "osx":
     {
         "cmd": ["/bin/bash", "--login", "-c", "dart2js -o$file.js $file"]
-    }
+    },
 
     "variants": [
         {
