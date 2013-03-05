@@ -22,7 +22,7 @@ def RunPub(view, fileName):
 
     if dartsdk_path:
         PubThread(view.window(), dartsdk_path, fileName).start()
-         
+
 
 class PubThread(threading.Thread):
     def __init__(self, window, dartsdk_path, fileName):
@@ -32,17 +32,26 @@ class PubThread(threading.Thread):
         self.dartsdk_path = dartsdk_path
         self.fileName = fileName
 
+    def get_startupinfo(self):
+        if IsWindows():
+            startupinfo = subprocess.STARTUPINFO()
+            startupinfo.dwFlags |= subprocess.STARTF_USESHOWWINDOW
+            startupinfo.wShowWindow = subprocess.SW_HIDE
+            return startupinfo
+        return None
+
     def run(self):
         working_directory = os.path.dirname(self.fileName)
-        pub_path = join(self.dartsdk_path, 'bin', 'pub')        
+        pub_path = join(self.dartsdk_path, 'bin', 'pub')
         if IsWindows():
             pub_path += '.bat'
 
         print 'pub install %s' % self.fileName
         proc = subprocess.Popen([pub_path, 'install'], cwd=working_directory,
-            stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+            stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
+            startupinfo=self.get_startupinfo())
         out, _ = proc.communicate()
-        
+
         if proc.returncode != 0:
             self.output = 'error running pub: %s\n%s' % (self.fileName, out)
             sublime.set_timeout(self.callback, 0)
@@ -57,4 +66,3 @@ class PubThread(threading.Thread):
 
 def IsWindows():
     return sublime.platform() == 'windows'
-
