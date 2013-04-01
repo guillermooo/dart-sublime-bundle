@@ -12,7 +12,8 @@
     },
     "osx":
     {
-        "cmd": ["/bin/bash", "--login", "-c", "dart2js -o$file.js $file"]
+        // TODO: Not just Mac should print out the file name.
+        "cmd": ["/bin/bash", "--login", "-c", "dart2js -o$file.js $file && echo \"Generated JavaScript file: $file.js\""]
     },
 
     "variants": [
@@ -30,16 +31,23 @@
             }
         },
         {
-            "cmd": ["dart_analyzer", "$file"],
+            "cmd": ["dart_analyzer", "--enable_type_checks",
+                    "--fatal-type-errors", "--extended-exit-code",
+                    "--type-checks-for-inferred-types", "--incremental",
+                    "$file"],
             "name": "Dart Analyzer",
 
             "windows":  
             {  
-                "cmd": ["dart_analyzer.bat", "$file"]
+                "cmd": ["dart_analyzer.bat", "--enable_type_checks",
+                        "--fatal-type-errors", "--extended-exit-code",
+                        "--type-checks-for-inferred-types", "--incremental",
+                        "$file"]
             },
             "osx":
             {
-                "cmd": ["/bin/bash", "--login", "-c", "dart_analyzer $file"]
+                "cmd": ["/bin/bash", "--login", "-c",
+                        "dart_analyzer --enable_type_checks --fatal-type-errors --extended-exit-code --type-checks-for-inferred-types --incremental $file"]
             }
         },
 
