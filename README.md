@@ -12,6 +12,9 @@ bundle provides:
 
 The bundle identifies dart source by the file extension (.dart).
 
+For an overview of installing and working with this plugin, check out our
+[introductory video][6].
+
 INSTALLATION
 ============
 
@@ -81,3 +84,4 @@ LICENSE
 [3]: http://news.dartlang.org/2012/08/dart-plugin-for-eclipse-is-ready-for.html
 [4]: http://plugins.intellij.net/plugin/?id=6351
 [5]: http://github.com/dart-lang/dart-textmate-bundle
+[6]: http://news.dartlang.org/2013/02/using-dart-with-sublime-text.html
