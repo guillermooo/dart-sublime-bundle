@@ -41,9 +41,9 @@ Looking for an IDE experience? Try [Dart Editor][2],
 BUILD SYSTEM USAGE
 ==================
 
-  - CTRL+B or CMD+B will run the Dart Analyzer on the current open file
+  - CTRL+B or CMD+B will run the dart2js compiler on the current open file.
   - Open the command pallete (CTRL-SHIFT-P or CMD-SHIFT-P), type 'Dart' to see
-    other Dart commands: `Run`, `dart2js`, `pub install`, `pub update`
+    other Dart commands: `Run`, `Analyzer`, `pub install`, `pub update`.
 
 DEVELOPMENT
 ===========
