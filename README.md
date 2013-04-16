@@ -15,6 +15,14 @@ The bundle identifies dart source by the file extension (.dart).
 For an overview of installing and working with this plugin, check out our
 [introductory video][6].
 
+PRE-REQ
+=======
+
+You will need the Dart SDK before you use the full features of this bundle.
+
+1. [Download and install the Dart SDK][sdk]
+2. Ensure the SDK's `bin` directory is on your path.
+
 INSTALLATION
 ============
 
@@ -85,3 +93,4 @@ LICENSE
 [4]: http://plugins.intellij.net/plugin/?id=6351
 [5]: http://github.com/dart-lang/dart-textmate-bundle
 [6]: http://news.dartlang.org/2013/02/using-dart-with-sublime-text.html
+[sdk]: http://www.dartlang.org/tools/sdk/
