@@ -1,7 +1,8 @@
 # Dart bundle for Sublime
 
-This bundle provides basic Dart support for Sublime Text. At this point the
-bundle provides:
+This bundle provides basic Dart support for Sublime Text. This bundle supports
+both Sublime Text 2 and the Sublime Text 3 Beta. The following features are
+currently provided:
 
 * Syntax highlighting.
 * Preferences for comments so that you can use CMD-/ to (de)comment source
