@@ -30,7 +30,6 @@
 					match = '/\*\*/';
 					captures = { 0 = { name = 'punctuation.definition.comment.dart'; }; };
 				},
-				{	include = 'text.html.javadoc'; },
 				{	include = '#comments-inline'; },
 			);
 		};
