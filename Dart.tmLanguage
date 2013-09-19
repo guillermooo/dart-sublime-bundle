@@ -96,10 +96,6 @@
 				</dict>
 				<dict>
 					<key>include</key>
-					<string>text.html.javadoc</string>
-				</dict>
-				<dict>
-					<key>include</key>
 					<string>#comments-inline</string>
 				</dict>
 			</array>
