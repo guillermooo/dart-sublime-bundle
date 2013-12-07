@@ -2,7 +2,7 @@
     // Default: dart2js
     "cmd": ["dart2js", "--minify", "-o$file.js", "$file"],
     // xyz/test.dart:5:1: Warning: cannot resolve type foo
-    "file_regex": "(\\S*):(\\d*):(\\d*): (.*)",
+    "file_regex": "file:/(\\S*):(\\d*):(\\d*): (.*)",
     "selector": "source.dart",
     "working_dir": "${project_path:${folder}}",
 
