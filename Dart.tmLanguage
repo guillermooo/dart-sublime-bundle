@@ -186,7 +186,7 @@
 				</dict>
 				<dict>
 					<key>match</key>
-					<string>\b(abstract|class|extends|external|factory|implements|interface|get|native|operator|set|typedef)\b</string>
+					<string>\b(abstract|class|extends|external|factory|implements|with|interface|get|native|operator|set|typedef)\b</string>
 					<key>name</key>
 					<string>keyword.declaration.dart</string>
 				</dict>
