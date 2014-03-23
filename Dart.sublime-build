@@ -31,7 +31,7 @@
             }
         },
         {
-            "cmd": ["dart_analyzer", "--enable_type_checks",
+            "cmd": ["dartanalyzer", "--enable_type_checks",
                     "--fatal-type-errors", "--extended-exit-code",
                     "--type-checks-for-inferred-types", "--incremental",
                     "$file"],
@@ -39,7 +39,7 @@
 
             "windows":  
             {  
-                "cmd": ["dart_analyzer.bat", "--enable_type_checks",
+                "cmd": ["dartanalyzer.bat", "--enable_type_checks",
                         "--fatal-type-errors", "--extended-exit-code",
                         "--type-checks-for-inferred-types", "--incremental",
                         "$file"]
@@ -47,7 +47,7 @@
             "osx":
             {
                 "cmd": ["/bin/bash", "--login", "-c",
-                        "dart_analyzer --enable_type_checks --fatal-type-errors --extended-exit-code --type-checks-for-inferred-types --incremental $file"]
+                        "dartanalyzer --enable_type_checks --fatal-type-errors --extended-exit-code --type-checks-for-inferred-types --incremental $file"]
             }
         },
 
