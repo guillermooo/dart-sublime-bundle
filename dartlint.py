@@ -5,6 +5,7 @@ import subprocess
 import threading
 import re
 import pprint
+import dart_common
 
 
 class DartLint(sublime_plugin.EventListener):
@@ -112,15 +113,23 @@ class DartLintThread(threading.Thread):
         else:
             self.output = lint_data
             pp = pprint.PrettyPrinter(indent=4)
+            # Print to the console
             pp.pprint(self.output)
             print('\n' + lines_out)
-            # annoying (but usable for testing):
-            # sublime.message_dialog(self.output)
+            # Output to a popup
+            PopupErrors(self.output)
+            # Mark the gutter
+            # Underline Errors / Warnings
 
-        
-        # Output to a popup
-        # Mark the gutter
-        # Underline Errors / Warnings
+
+def PopupErrors(view, ErrorData):
+    # Process data into a list of errors
+    # DisplayInQuickPanel(view, dd_list, select_fn, highlight_fn)
+    pass
+
+
+def GotoError(view, ErrorData):
+    pass
 
 
 def IsWindows():
