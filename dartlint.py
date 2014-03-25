@@ -4,6 +4,7 @@ import os
 import subprocess
 import threading
 import re
+import pprint
 
 
 class DartLint(sublime_plugin.EventListener):
@@ -106,14 +107,17 @@ class DartLintThread(threading.Thread):
                 lint_data.append(line_data)
 
         if lines_out is '':
-            self.output = 'No errors.'
+            self.output = None
+            print('No errors.')
         else:
-            self.output = lines_out
+            self.output = lint_data
+            pp = pprint.PrettyPrinter(indent=4)
+            pp.pprint(self.output)
+            print('\n' + lines_out)
+            # annoying (but usable for testing):
+            # sublime.message_dialog(self.output)
 
-        print(lint_data)
-
-        print('\n' + self.output)
-        # annoying: sublime.message_dialog(self.output)
+        
         # Output to a popup
         # Mark the gutter
         # Underline Errors / Warnings
