@@ -24,9 +24,8 @@ class DartLint(sublime_plugin.EventListener):
 
 
 def RunDartanalyzer(view, fileName):
-    #settings = view.settings()
-    dartsdk_path = '/Applications/Programming/dart/dart-sdk'
-    # settings.get('dartsdk_path')
+    settings = view.settings()
+    dartsdk_path = settings.get('dartsdk_path')
 
     if dartsdk_path:
         DartLintThread(view.window(), dartsdk_path, fileName).start()
@@ -46,7 +45,7 @@ class DartLintThread(threading.Thread):
             startupinfo.dwFlags |= subprocess.STARTF_USESHOWWINDOW
             startupinfo.wShowWindow = subprocess.SW_HIDE
             return startupinfo
-        return None
+        return subprocess.STARTUPINFO()
 
     def run(self):
         # working_directory = os.path.dirname(self.fileName)
@@ -58,7 +57,7 @@ class DartLintThread(threading.Thread):
         proc = subprocess.Popen([analyzer_path, self.fileName],
                                 stdout=subprocess.PIPE)
         while not proc.poll():
-            # dartanalyzer currently only outputs to stdout
+            # Wait for it...
             pass
 
         pattern = re.compile(r'^(?:((?P<error>(\[error\]))|(?P<warning>(\[warning\]))))\s(?P<message>.*)\s\((?P<file>.*)\,\sline\s(?P<line>\d*)\, col\s(?P<col>\d*)')
@@ -71,6 +70,7 @@ class DartLintThread(threading.Thread):
 
             if line_groups is not None:
                 if line_groups.group('file') != self.fileName:
+                    # output is for a different file
                     continue
                 if line_groups.group('error'):
                     lines_out += 'Error '
@@ -80,7 +80,10 @@ class DartLintThread(threading.Thread):
 
         self.output = lines_out
         print(self.output)
-        sublime.message_dialog(self.output)
+        # annoying: sublime.message_dialog(self.output)
+        # Output to a popup
+        # Mark the gutter
+        # Underline Errors / Warnings
 
 
 def IsWindows():
