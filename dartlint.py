@@ -17,7 +17,7 @@ class DartLint(sublime_plugin.EventListener):
 
         if isDart == -1:
             return
-        # now we are pretty sure that this a .dart file
+
         print("Dart lint: Running dartanalyzer on ", fileName)
         # run dartanalyzer in its own thread
         RunDartanalyzer(view, fileName)
