@@ -5,7 +5,6 @@ import subprocess
 import threading
 import re
 import pprint
-import dart_common
 
 
 class DartLint(sublime_plugin.EventListener):
@@ -30,14 +29,15 @@ def RunDartanalyzer(view, fileName):
     dartsdk_path = settings.get('dartsdk_path')
 
     if dartsdk_path:
-        DartLintThread(view.window(), dartsdk_path, fileName).start()
+        DartLintThread(view, dartsdk_path, fileName).start()
 
 
 class DartLintThread(threading.Thread):
-    def __init__(self, window, dartsdk_path, fileName):
+    def __init__(self, view, dartsdk_path, fileName):
         super(DartLintThread, self).__init__()
         self.daemon = True
-        self.window = window
+        # self.view = view
+        self.window = view.window()
         self.dartsdk_path = dartsdk_path
         self.fileName = fileName
 
@@ -117,19 +117,41 @@ class DartLintThread(threading.Thread):
             pp.pprint(self.output)
             print('\n' + lines_out)
             # Output to a popup
-            PopupErrors(self.output)
+            PopupErrors(self.window, self.output)
             # Mark the gutter
             # Underline Errors / Warnings
 
 
-def PopupErrors(view, ErrorData):
+def PopupErrors(window, ErrorData):
     # Process data into a list of errors
-    # DisplayInQuickPanel(view, dd_list, select_fn, highlight_fn)
+    dd_list = []
+    for entry in ErrorData:
+        dd_list.append(entry['lint_out'])
+    DisplayInQuickPanel(window, dd_list, GotoError, GotoError)
+
+
+def GotoError(index):
     pass
 
 
-def GotoError(view, ErrorData):
+def MarkGutter(view, line_num):
     pass
+
+
+def SelectText(view, line_num, target):
+    # Should return a range obj I think
+    pass
+
+
+def Underline(view, line_num, u_type, target):
+    pass
+
+
+def DisplayInQuickPanel(window, dd_list, select_fn, highlight_fn):
+    window.show_quick_panel(
+        dd_list,
+        on_select=select_fn,
+        on_highlight=highlight_fn)
 
 
 def IsWindows():
