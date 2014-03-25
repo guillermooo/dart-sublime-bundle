@@ -60,26 +60,59 @@ class DartLintThread(threading.Thread):
             # Wait for it...
             pass
 
-        pattern = re.compile(r'^(?:((?P<error>(\[error\]))|(?P<warning>(\[warning\]))))\s(?P<message>.*)\s\((?P<file>.*)\,\sline\s(?P<line>\d*)\, col\s(?P<col>\d*)')
+        msg_pattern = re.compile(
+            r'^(?:((?P<error>(\[error\]))|(?P<warning>(\[warning\]))))\s(?P<message>.*)\s\((?P<file>.*)\,\sline\s(?P<line>\d*)\, col\s(?P<col>\d*)')
+        culprit_pattern = re.compile(
+            r'^.+\'(?:(?P<culprit>(.+)))\'')
 
+        # TODO: use proper locale instead of "utf-8"
         lines = proc.stdout.read().decode("utf-8").split('\n')
 
+        # Collect data needed to generate error messages
+        lint_data = []
         lines_out = ''
         for line in lines:
-            line_groups = pattern.match(line)
+            line_out = ''
+            line_data = {}
+            line_groups = msg_pattern.match(line)
 
             if line_groups is not None:
                 if line_groups.group('file') != self.fileName:
                     # output is for a different file
                     continue
                 if line_groups.group('error'):
-                    lines_out += 'Error '
+                    line_out += 'Error '
+                    line_data['type'] = 'error'
                 elif line_groups.group('warning'):
-                    lines_out += 'Warning '
-                lines_out += 'on line %s, col %s: %s\n' % (line_groups.group('line'), line_groups.group('col'), line_groups.group('message'))
+                    line_out += 'Warning '
+                    line_data['type'] = 'warning'
+                line_out += 'on line %s, col %s: %s\n' % \
+                    (line_groups.group('line'),
+                     line_groups.group('col'),
+                     line_groups.group('message'))
 
-        self.output = lines_out
-        print(self.output)
+                line_data['col'] = line_groups.group('col')
+                line_data['line'] = line_groups.group('line')
+                line_data['msg'] = line_groups.group('message')
+                line_data['lint_out'] = line_out
+                line_data['culprit'] = ''
+
+                # Get the culprit:
+                culp_group = culprit_pattern.match(line_groups.group('message'))
+                if culp_group is not None:
+                    line_data['culprit'] = culp_group.group('culprit')
+
+                lines_out += line_out
+                lint_data.append(line_data)
+
+        if lines_out is '':
+            self.output = 'No errors.'
+        else:
+            self.output = lines_out
+
+        print(lint_data)
+
+        print('\n' + self.output)
         # annoying: sublime.message_dialog(self.output)
         # Output to a popup
         # Mark the gutter
