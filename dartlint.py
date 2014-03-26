@@ -4,7 +4,6 @@ import os
 import subprocess
 import threading
 import re
-import pprint
 
 
 class DartLint(sublime_plugin.EventListener):
@@ -103,7 +102,7 @@ class DartLintThread(threading.Thread):
                 culp_group = culprit_pattern.match(line_groups.group('message'))
                 if culp_group is not None:
                     line_data['culprit'] = culp_group.group('culprit')
-                    line_pt = self.view.text_point(int(line_data['line']) - 1, 0)
+                    line_data['line_pt'] = self.view.text_point(int(line_data['line']) - 1, 0)
                     next_line = self.view.text_point(int(line_data['line']), 0)
                     line_data['culp_range'] = self.view.find(line_data['culprit'], line_pt)
                     if line_data['culp_range'].begin() >= next_line:
@@ -121,9 +120,6 @@ class DartLintThread(threading.Thread):
             print('No errors.')
         else:
             self.output = lint_data
-            pp = pprint.PrettyPrinter(indent=4)
-            # Print to the console
-            pp.pprint(self.output)
             print('\n' + lines_out)
             # Output to a popup
             self.popup_errors(self.window, self.output)
@@ -145,15 +141,6 @@ class DartLintThread(threading.Thread):
         self.view.sel().clear()
         self.view.sel().add(this_error['culp_range'])
         self.view.show_at_center(this_error['point'])
-
-    def mark_gutter(self, line_num, marker):
-        pass
-
-    def underline(self, view, line_num, u_type, target):
-        """
-        target must be a sublime.range object
-        """
-        pass
 
 
 def IsWindows():
