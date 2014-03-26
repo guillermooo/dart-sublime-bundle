@@ -4,6 +4,7 @@ import os
 import subprocess
 import threading
 import re
+import locale
 
 
 class DartLint(sublime_plugin.EventListener):
@@ -66,8 +67,8 @@ class DartLintThread(threading.Thread):
         culprit_pattern = re.compile(
             r'^.+\'(?:(?P<culprit>(.+)))\'')
 
-        # TODO: use proper locale instead of "utf-8"
-        lines = proc.stdout.read().decode("utf-8").split('\n')
+        lines = proc.stdout.read().decode(
+            locale.getpreferredencoding()).split('\n')
 
         # Collect data needed to generate error messages
         lint_data = []
@@ -99,17 +100,20 @@ class DartLintThread(threading.Thread):
                 line_data['culprit'] = ''
 
                 # Get the culprit:
-                culp_group = culprit_pattern.match(line_groups.group('message'))
+                culp_group = culprit_pattern.match(
+                    line_groups.group('message'))
                 if culp_group is not None:
                     line_data['culprit'] = culp_group.group('culprit')
-                    line_data['line_pt'] = self.view.text_point(int(line_data['line']) - 1, 0)
+                    line_data['line_pt'] = self.view.text_point(
+                        int(line_data['line']) - 1, 0)
                     next_line = self.view.text_point(int(line_data['line']), 0)
-                    line_data['culp_range'] = self.view.find(line_data['culprit'], line_pt)
+                    line_data['culp_range'] = self.view.find(
+                        line_data['culprit'], line_data['line_pt'])
                     if line_data['culp_range'].begin() >= next_line:
-                        line_data['culp_range'] = next_line - 1 
+                        line_data['culp_range'] = next_line - 1
                     # add highlight here
-                    # self.view.sel().add(culp_range)
-                line_data['point'] = self.view.text_point((int(line_data['line']) - 1),
+                line_data['point'] = self.view.text_point((
+                    int(line_data['line']) - 1),
                     (int(line_data['col'])))
                 lines_out += line_out
                 lint_data.append(line_data)
@@ -137,7 +141,6 @@ class DartLintThread(threading.Thread):
 
     def goto_error(self, index):
         this_error = self.output[index]
-        print('Looking at ', this_error)
         self.view.sel().clear()
         self.view.sel().add(this_error['culp_range'])
         self.view.show_at_center(this_error['point'])
