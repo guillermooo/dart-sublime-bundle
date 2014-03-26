@@ -103,13 +103,18 @@ class DartLintThread(threading.Thread):
                 culp_group = culprit_pattern.match(line_groups.group('message'))
                 if culp_group is not None:
                     line_data['culprit'] = culp_group.group('culprit')
-                    line_pt = self.view.text_point(int(line_data['line']), 0)
-                    culp_range = self.view.find(line_data['culprit'], line_pt)
-                    self.view.sel().add(culp_range)
-                line_data['point'] = self.view.text_point((int(line_data['line'])),
+                    line_pt = self.view.text_point(int(line_data['line']) - 1, 0)
+                    next_line = self.view.text_point(int(line_data['line']), 0)
+                    line_data['culp_range'] = self.view.find(line_data['culprit'], line_pt)
+                    if line_data['culp_range'].begin() >= next_line:
+                        line_data['culp_range'] = next_line - 1 
+                    # add highlight here
+                    # self.view.sel().add(culp_range)
+                line_data['point'] = self.view.text_point((int(line_data['line']) - 1),
                     (int(line_data['col'])))
                 lines_out += line_out
                 lint_data.append(line_data)
+                # mark the gutter
 
         if lines_out is '':
             self.output = None
@@ -120,8 +125,6 @@ class DartLintThread(threading.Thread):
             # Print to the console
             pp.pprint(self.output)
             print('\n' + lines_out)
-            # Mark the gutter
-            # Underline Errors / Warnings
             # Output to a popup
             self.popup_errors(self.window, self.output)
 
@@ -137,16 +140,11 @@ class DartLintThread(threading.Thread):
             on_highlight=self.goto_error)
 
     def goto_error(self, index):
-        # get the row, col, and file name from self.output
         this_error = self.output[index]
-        print(this_error)
-        point = this_error['point']
-        #file_name = self.fileName
-        # verify that this is the right view
-        #if self.window.active_view().file_name() != file_name:
-            # self.window.focus_view(self.find_view)
-        # goto row, col
-        # self.window.active_view().show(point)
+        print('Looking at ', this_error)
+        self.view.sel().clear()
+        self.view.sel().add(this_error['culp_range'])
+        self.view.show_at_center(this_error['point'])
 
     def mark_gutter(self, line_num, marker):
         pass
