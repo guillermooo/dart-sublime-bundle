@@ -36,7 +36,7 @@ class DartLintThread(threading.Thread):
     def __init__(self, view, dartsdk_path, fileName):
         super(DartLintThread, self).__init__()
         self.daemon = True
-        # self.view = view
+        self.view = view
         self.window = view.window()
         self.dartsdk_path = dartsdk_path
         self.fileName = fileName
@@ -103,7 +103,11 @@ class DartLintThread(threading.Thread):
                 culp_group = culprit_pattern.match(line_groups.group('message'))
                 if culp_group is not None:
                     line_data['culprit'] = culp_group.group('culprit')
-
+                    line_pt = self.view.text_point(int(line_data['line']), 0)
+                    culp_range = self.view.find(line_data['culprit'], line_pt)
+                    self.view.sel().add(culp_range)
+                line_data['point'] = self.view.text_point((int(line_data['line'])),
+                    (int(line_data['col'])))
                 lines_out += line_out
                 lint_data.append(line_data)
 
@@ -116,46 +120,42 @@ class DartLintThread(threading.Thread):
             # Print to the console
             pp.pprint(self.output)
             print('\n' + lines_out)
-            # Output to a popup
-            self.PopupErrors(self.window, self.output)
             # Mark the gutter
             # Underline Errors / Warnings
+            # Output to a popup
+            self.popup_errors(self.window, self.output)
 
-    def PopupErrors(self, window, ErrorData):
+    def popup_errors(self, window, ErrorData):
         # Process data into a list of errors
         dd_list = []
         for entry in ErrorData:
             dd_list.append(entry['lint_out'])
-        self.DisplayInQuickPanel(window, dd_list, self.GotoError, self.GotoError)
 
-    def GotoError(self, index):
+        window.show_quick_panel(
+            dd_list,
+            on_select=self.goto_error,
+            on_highlight=self.goto_error)
+
+    def goto_error(self, index):
         # get the row, col, and file name from self.output
-        row = self.output[index]['row']
-        col = self.output[index]['col']
-        file_name = self.fileName
+        this_error = self.output[index]
+        print(this_error)
+        point = this_error['point']
+        #file_name = self.fileName
         # verify that this is the right view
-        if self.window.active_view().file_name() != file_name:
-            self.window.focus_view(self.view)
+        #if self.window.active_view().file_name() != file_name:
+            # self.window.focus_view(self.find_view)
         # goto row, col
+        # self.window.active_view().show(point)
 
-    def MarkGutter(self, view, line_num):
+    def mark_gutter(self, line_num, marker):
         pass
 
-    def SelectText(self, view, line_num, target):
-        # Should return a sublime.range object I think
-        pass
-
-    def Underline(self, view, line_num, u_type, target):
+    def underline(self, view, line_num, u_type, target):
         """
         target must be a sublime.range object
         """
         pass
-
-    def DisplayInQuickPanel(window, dd_list, select_fn, highlight_fn):
-        window.show_quick_panel(
-            dd_list,
-            on_select=select_fn,
-            on_highlight=highlight_fn)
 
 
 def IsWindows():
