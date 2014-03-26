@@ -117,42 +117,46 @@ class DartLintThread(threading.Thread):
             pp.pprint(self.output)
             print('\n' + lines_out)
             # Output to a popup
-            PopupErrors(self.window, self.output)
+            self.PopupErrors(self.window, self.output)
             # Mark the gutter
             # Underline Errors / Warnings
 
+    def PopupErrors(self, window, ErrorData):
+        # Process data into a list of errors
+        dd_list = []
+        for entry in ErrorData:
+            dd_list.append(entry['lint_out'])
+        self.DisplayInQuickPanel(window, dd_list, self.GotoError, self.GotoError)
 
-def PopupErrors(window, ErrorData):
-    # Process data into a list of errors
-    dd_list = []
-    for entry in ErrorData:
-        dd_list.append(entry['lint_out'])
-    DisplayInQuickPanel(window, dd_list, GotoError, GotoError)
+    def GotoError(self, index):
+        # get the row, col, and file name from self.output
+        row = self.output[index]['row']
+        col = self.output[index]['col']
+        file_name = self.fileName
+        # verify that this is the right view
+        if self.window.active_view().file_name() != file_name:
+            self.window.focus_view(self.view)
+        # goto row, col
 
+    def MarkGutter(self, view, line_num):
+        pass
 
-def GotoError(index):
-    pass
+    def SelectText(self, view, line_num, target):
+        # Should return a sublime.range object I think
+        pass
 
+    def Underline(self, view, line_num, u_type, target):
+        """
+        target must be a sublime.range object
+        """
+        pass
 
-def MarkGutter(view, line_num):
-    pass
-
-
-def SelectText(view, line_num, target):
-    # Should return a range obj I think
-    pass
-
-
-def Underline(view, line_num, u_type, target):
-    pass
-
-
-def DisplayInQuickPanel(window, dd_list, select_fn, highlight_fn):
-    window.show_quick_panel(
-        dd_list,
-        on_select=select_fn,
-        on_highlight=highlight_fn)
+    def DisplayInQuickPanel(window, dd_list, select_fn, highlight_fn):
+        window.show_quick_panel(
+            dd_list,
+            on_select=select_fn,
+            on_highlight=highlight_fn)
 
 
 def IsWindows():
-    return sublime.platform() == 'windows'
+        return sublime.platform() == 'windows'
