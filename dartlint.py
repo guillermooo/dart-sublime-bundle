@@ -5,11 +5,78 @@ import subprocess
 import threading
 import re
 import locale
+from xml.etree import ElementTree
 
 GUTTER_Icon = {
-    'dartlint_ERROR': 'Packages/Dart/gutter/dartlint-color-error.png',
-    'dartlint_WARNING': 'Packages/Dart/gutter/dartlint-color-warning.png',
-    'dartlint_INFO': 'Packages/Dart/gutter/dartlint-color-info.png'}
+    'dartlint_ERROR': 'Packages/Dart/gutter/dartlint-color-error2.png',
+    'dartlint_WARNING': 'Packages/Dart/gutter/dartlint-color-warning2.png',
+    'dartlint_INFO': 'Packages/Dart/gutter/dartlint-color-info2.png'}
+
+SCOPES_Dartlint = {
+    'mark.error':{
+        'flags':
+            sublime.DRAW_EMPTY |
+            sublime.DRAW_NO_OUTLINE |
+            sublime.DRAW_NO_FILL |
+            sublime.DRAW_SQUIGGLY_UNDERLINE |
+            sublime.DRAW_EMPTY_AS_OVERWRITE,
+        'style': '''
+            <dict>
+                <key>name</key>
+                <string>Dartlint Error</string>
+                <key>scope</key>
+                <string>dartlint.mark.error</string>
+                <key>settings</key>
+                <dict>
+                    <key>foreground</key>
+                    <string>#C7321C</string>
+                </dict>
+            </dict>
+        '''
+    },
+    'mark.warning':{
+        'flags':
+            sublime.DRAW_EMPTY |
+            sublime.DRAW_NO_OUTLINE |
+            sublime.DRAW_NO_FILL |
+            sublime.DRAW_SQUIGGLY_UNDERLINE |
+            sublime.DRAW_EMPTY_AS_OVERWRITE,
+        'style': '''
+            <dict>
+                <key>name</key>
+                <string>Dartlint Warning</string>
+                <key>scope</key>
+                <string>dartlint.mark.warning</string>
+                <key>settings</key>
+                <dict>
+                    <key>foreground</key>
+                    <string>#F18512</string>
+                </dict>
+            </dict>
+        '''
+    },
+    'mark.info':{
+        'flags':
+            sublime.DRAW_EMPTY |
+            sublime.DRAW_NO_OUTLINE |
+            sublime.DRAW_NO_FILL |
+            sublime.DRAW_SQUIGGLY_UNDERLINE |
+            sublime.DRAW_EMPTY_AS_OVERWRITE,
+        'style': '''
+            <dict>
+                <key>name</key>
+                <string>Dartlint Info</string>
+                <key>scope</key>
+                <string>dartlint.mark.info</string>
+                <key>settings</key>
+                <dict>
+                    <key>foreground</key>
+                    <string>#0000FC</string>
+                </dict>
+            </dict>
+        '''
+    }
+}
 
 
 class DartLint(sublime_plugin.EventListener):
@@ -18,12 +85,27 @@ class DartLint(sublime_plugin.EventListener):
         print("Dart lint active.")
 
     def on_post_save(self, view):
+        self.check_theme()
         fileName = view.file_name()
         if view.file_name().endswith('.dart') is False:
             return
         print("Dart lint: Running dartanalyzer on ", fileName)
         # run dartanalyzer in its own thread
         RunDartanalyzer(view, fileName)
+
+    def check_theme(self):
+        # Get the current theme
+        system_prefs = sublime.load_settings('Preferences.sublime-settings')
+        theme = system_prefs.get('color_scheme')
+        theme_xml = sublime.load_resource(theme)
+        # Check for required scopes
+        plist = ElementTree.XML(theme_xml)
+        styles = plist.find('./dict/array')
+        # Add missing elements
+        # styles.append()
+        # write back to 'Packages/User/<theme>.tmTheme'
+        pass
+
 
 def RunDartanalyzer(view, fileName):
     settings = view.settings()
@@ -114,17 +196,22 @@ class DartLintThread(threading.Thread):
                     culp_regions['dartlint_%s' % line_data['severity']] = []
                 culp_regions['dartlint_%s' % line_data['severity']].append(
                     line_data['culp_region'])
-                self.view.set_status()
                 lines_out += line_out
                 lint_data.append(line_data)
                 err_count += 1
         self.clear_all()
         for reg_id, reg_list in culp_regions.items():
-            print(reg_id)
+            # set the scope name
+            this_scope = 'mark.warning'
+            if reg_id.endswith('ERROR') is True:
+                this_scope = 'mark.error'
+            if reg_id.endswith('INFO') is True:
+                this_scope = 'mark.info'
+            print('Region: %s\nScope: %s' % (reg_id, this_scope))
             self.view.add_regions(
                 reg_id,
                 reg_list,
-                reg_id,
+                this_scope,
                 GUTTER_Icon[reg_id],
                 sublime.DRAW_EMPTY |
                 sublime.DRAW_NO_OUTLINE |
