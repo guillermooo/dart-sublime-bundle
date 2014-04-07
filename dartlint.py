@@ -111,17 +111,11 @@ class DartLint(sublime_plugin.EventListener):
         append_scopes = []
         # Check for required scopes
         for scopes in SCOPES_Dartlint:
-            if theme_xml.find(scopes) is not -1:
-                # Good to go
-                print('%s found! (%i) in theme' %
-                      (scopes, theme_xml.find(scopes)))
-            else:
+            if theme_xml.find(scopes) is -1:
                 # append to xml
                 append_xml = True
                 append_scopes.append(scopes)
-                print('%s not found (%i) in theme' %
-                      (scopes, theme_xml.find(scopes)))
-        print('Scopes to add ', append_scopes)
+                print('%s not found in theme' % scopes)
         plist = ElementTree.XML(theme_xml)
         styles = plist.find('./dict/array')
         # Add missing elements
@@ -147,6 +141,7 @@ class DartLint(sublime_plugin.EventListener):
         if prep_path is not False:
             system_prefs.set('color_scheme', prep_path)
             sublime.save_settings('Preferences.sublime-settings')
+            print('Created: %s' % prep_path)
 
 
 def FormRelativePath(path):
@@ -154,19 +149,19 @@ def FormRelativePath(path):
     # Dir exists?
     if os.path.isabs(path) and \
             os.path.exists(os.path.dirname(path)) is False:
-        print('% s Does not exist' % path)
+        print('%s Does not exist' % path)
         return False
     elif os.path.exists(os.path.join(sublime.packages_path(),
                         os.path.dirname(path))) is False:
-        print('% s Does not exist' % os.path.join(sublime.packages_path(),
+        print('%s Does not exist' % os.path.join(sublime.packages_path(),
               os.path.dirname(path)))
         return False
     if os.path.isabs(path):
         new_path = os.path.relpath(path, sublime.packages_path())
     else:
         new_path = path
+    # Preferences requires 'Packages' in the path
     new_path = os.path.join('Packages', new_path)
-    print(new_path)
     return new_path
 
 
@@ -188,13 +183,12 @@ class DartLintThread(threading.Thread):
         self.fileName = fileName
 
     def run(self):
-        self.running = True
-        # working_directory = os.path.dirname(self.fileName)
         analyzer_path = os.path.join(self.dartsdk_path, 'bin', 'dartanalyzer')
+        # Clear all regions
+        self.clear_all()
         if IsWindows():
             analyzer_path += '.bat'
         options = '--machine'
-        print('\ndartanalyzer %s %s\n' % (options, self.fileName))
         proc = subprocess.Popen([analyzer_path, options, self.fileName],
                                 stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         while not proc.poll():
@@ -261,7 +255,6 @@ class DartLintThread(threading.Thread):
                 lines_out += line_out
                 lint_data.append(line_data)
                 err_count += 1
-        self.clear_all()
         for reg_id, reg_list in culp_regions.items():
             # set the scope name
             this_scope = 'dartlint.mark.warning'
@@ -269,7 +262,6 @@ class DartLintThread(threading.Thread):
                 this_scope = 'dartlint.mark.error'
             if reg_id.endswith('INFO') is True:
                 this_scope = 'dartlint.mark.info'
-            # print('Region: %s\nScope: %s' % (reg_id, this_scope))
             self.view.add_regions(
                 reg_id,
                 reg_list,
@@ -313,6 +305,7 @@ class DartLintThread(threading.Thread):
     def clear_all(self):
         for region_name in \
                 ('dartlint_INFO', 'dartlint_WARNING', 'dartlint_ERROR'):
+            print('Clearing region: %s' % region_name)
             self.view.erase_regions('%s' % region_name)
 
 
