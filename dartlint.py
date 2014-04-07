@@ -7,76 +7,85 @@ import re
 import locale
 from xml.etree import ElementTree
 
+locale.setlocale(locale.LC_ALL, '')
+
 GUTTER_Icon = {
-    'dartlint_ERROR': 'Packages/Dart/gutter/dartlint-color-error2.png',
-    'dartlint_WARNING': 'Packages/Dart/gutter/dartlint-color-warning2.png',
-    'dartlint_INFO': 'Packages/Dart/gutter/dartlint-color-info2.png'}
+    'dartlint_ERROR': 'Packages/Dart/gutter/dartlint-color-error3.png',
+    'dartlint_WARNING': 'Packages/Dart/gutter/dartlint-color-warning3.png',
+    'dartlint_INFO': 'Packages/Dart/gutter/dartlint-color-info3.png'}
 
 SCOPES_Dartlint = {
-    'mark.error':{
+    'dartlint.mark.error': {
         'flags':
-            sublime.DRAW_EMPTY |
-            sublime.DRAW_NO_OUTLINE |
-            sublime.DRAW_NO_FILL |
-            sublime.DRAW_SQUIGGLY_UNDERLINE |
-            sublime.DRAW_EMPTY_AS_OVERWRITE,
+        sublime.DRAW_EMPTY |
+        sublime.DRAW_NO_OUTLINE |
+        sublime.DRAW_NO_FILL |
+        sublime.DRAW_SQUIGGLY_UNDERLINE |
+        sublime.DRAW_EMPTY_AS_OVERWRITE,
         'style': '''
+        <dict>
+            <key>name</key>
+            <string>Dartlint Error</string>
+            <key>scope</key>
+            <string>dartlint.mark.error</string>
+            <key>settings</key>
             <dict>
-                <key>name</key>
-                <string>Dartlint Error</string>
-                <key>scope</key>
-                <string>dartlint.mark.error</string>
-                <key>settings</key>
-                <dict>
-                    <key>foreground</key>
-                    <string>#C7321C</string>
-                </dict>
+                <key>foreground</key>
+                <string>#C7321C</string>
             </dict>
-        '''
+        </dict>
+
+    '''
     },
-    'mark.warning':{
+    'dartlint.mark.warning': {
         'flags':
-            sublime.DRAW_EMPTY |
-            sublime.DRAW_NO_OUTLINE |
-            sublime.DRAW_NO_FILL |
-            sublime.DRAW_SQUIGGLY_UNDERLINE |
-            sublime.DRAW_EMPTY_AS_OVERWRITE,
+        sublime.DRAW_EMPTY |
+        sublime.DRAW_NO_OUTLINE |
+        sublime.DRAW_NO_FILL |
+        sublime.DRAW_SQUIGGLY_UNDERLINE |
+        sublime.DRAW_EMPTY_AS_OVERWRITE,
         'style': '''
+        <dict>
+            <key>name</key>
+            <string>Dartlint Warning</string>
+            <key>scope</key>
+            <string>dartlint.mark.warning</string>
+            <key>settings</key>
             <dict>
-                <key>name</key>
-                <string>Dartlint Warning</string>
-                <key>scope</key>
-                <string>dartlint.mark.warning</string>
-                <key>settings</key>
-                <dict>
-                    <key>foreground</key>
-                    <string>#F18512</string>
-                </dict>
+                <key>foreground</key>
+                <string>#F18512</string>
             </dict>
-        '''
+        </dict>
+
+    '''
     },
-    'mark.info':{
+    'dartlint.mark.info': {
         'flags':
-            sublime.DRAW_EMPTY |
-            sublime.DRAW_NO_OUTLINE |
-            sublime.DRAW_NO_FILL |
-            sublime.DRAW_SQUIGGLY_UNDERLINE |
-            sublime.DRAW_EMPTY_AS_OVERWRITE,
+        sublime.DRAW_EMPTY |
+        sublime.DRAW_NO_OUTLINE |
+        sublime.DRAW_NO_FILL |
+        sublime.DRAW_SQUIGGLY_UNDERLINE |
+        sublime.DRAW_EMPTY_AS_OVERWRITE,
         'style': '''
+        <dict>
+            <key>name</key>
+            <string>Dartlint Info</string>
+            <key>scope</key>
+            <string>dartlint.mark.info</string>
+            <key>settings</key>
             <dict>
-                <key>name</key>
-                <string>Dartlint Info</string>
-                <key>scope</key>
-                <string>dartlint.mark.info</string>
-                <key>settings</key>
-                <dict>
-                    <key>foreground</key>
-                    <string>#0000FC</string>
-                </dict>
+                <key>foreground</key>
+                <string>#0000FC</string>
             </dict>
-        '''
+        </dict>
+
+    '''
     }
 }
+
+THEME_Head = '''<?xml version="1.0" encoding="{}"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+'''
 
 
 class DartLint(sublime_plugin.EventListener):
@@ -98,13 +107,67 @@ class DartLint(sublime_plugin.EventListener):
         system_prefs = sublime.load_settings('Preferences.sublime-settings')
         theme = system_prefs.get('color_scheme')
         theme_xml = sublime.load_resource(theme)
+        append_xml = False
+        append_scopes = []
         # Check for required scopes
+        for scopes in SCOPES_Dartlint:
+            if theme_xml.find(scopes) is not -1:
+                # Good to go
+                print('%s found! (%i) in theme' %
+                      (scopes, theme_xml.find(scopes)))
+            else:
+                # append to xml
+                append_xml = True
+                append_scopes.append(scopes)
+                print('%s not found (%i) in theme' %
+                      (scopes, theme_xml.find(scopes)))
+        print('Scopes to add ', append_scopes)
         plist = ElementTree.XML(theme_xml)
         styles = plist.find('./dict/array')
         # Add missing elements
-        # styles.append()
-        # write back to 'Packages/User/<theme>.tmTheme'
-        pass
+        if append_xml:
+            for s2append in append_scopes:
+                styles.append(
+                    ElementTree.fromstring(SCOPES_Dartlint[s2append]['style']))
+        else:
+            # No need to do anything
+            return
+        # write back to 'Packages/User/<theme> DL.tmTheme'
+        original_name = os.path.splitext(os.path.basename(theme))[0]
+        new_name = original_name + ' DL'
+        theme_path = os.path.join(sublime.packages_path(),
+                                  'User', new_name + '.tmTheme')
+        with open(theme_path, 'w', encoding='utf8') as f:
+            f.write(THEME_Head.format('UTF-8'))
+            f.write(ElementTree.tostring(plist, encoding='unicode'))
+
+        # Set the amended color scheme to the current color scheme
+        path = os.path.join('User', os.path.basename(theme_path))
+        prep_path = FormRelativePath(path)
+        if prep_path is not False:
+            system_prefs.set('color_scheme', prep_path)
+            sublime.save_settings('Preferences.sublime-settings')
+
+
+def FormRelativePath(path):
+    new_path = '/'
+    # Dir exists?
+    if os.path.isabs(path) and \
+            os.path.exists(os.path.dirname(path)) is False:
+        print('% s Does not exist' % path)
+        return False
+    elif os.path.exists(os.path.join(sublime.packages_path(),
+                        os.path.dirname(path))) is False:
+        print('% s Does not exist' % os.path.join(sublime.packages_path(),
+              os.path.dirname(path)))
+        return False
+    if os.path.isabs(path):
+        new_path = os.path.relpath(path, sublime.packages_path())
+    else:
+        new_path = path
+    new_path = os.path.join('Packages', new_path)
+    print(new_path)
+    return new_path
 
 
 def RunDartanalyzer(view, fileName):
@@ -140,8 +203,7 @@ class DartLintThread(threading.Thread):
         msg_pattern_machine = re.compile(
             r'^(?P<severity>\w+)\|(?P<type>\w+)\|(?P<code>\w+)\|(?P<file_name>.+)\|(?P<line>\d+)\|(?P<col>\d+)\|(?P<err_length>\d+)\|(?P<message>.+)')
 
-        lines = proc.stderr.read().decode(
-            locale.getpreferredencoding()).split('\n')
+        lines = proc.stderr.read().decode('UTF-8').split('\n')
         # Collect data needed to generate error messages
         lint_data = []
         lines_out = ''
@@ -202,12 +264,12 @@ class DartLintThread(threading.Thread):
         self.clear_all()
         for reg_id, reg_list in culp_regions.items():
             # set the scope name
-            this_scope = 'mark.warning'
+            this_scope = 'dartlint.mark.warning'
             if reg_id.endswith('ERROR') is True:
-                this_scope = 'mark.error'
+                this_scope = 'dartlint.mark.error'
             if reg_id.endswith('INFO') is True:
-                this_scope = 'mark.info'
-            print('Region: %s\nScope: %s' % (reg_id, this_scope))
+                this_scope = 'dartlint.mark.info'
+            # print('Region: %s\nScope: %s' % (reg_id, this_scope))
             self.view.add_regions(
                 reg_id,
                 reg_list,
