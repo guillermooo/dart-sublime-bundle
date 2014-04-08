@@ -80,6 +80,22 @@ SCOPES_Dartlint = {
         </dict>
 
     '''
+    },
+    'dartlint.mark.gutter': {
+        'flags':
+        sublime.DRAW_EMPTY |
+        sublime.DRAW_NO_OUTLINE |
+        sublime.DRAW_NO_FILL |
+        sublime.DRAW_EMPTY_AS_OVERWRITE,
+        'style': '''
+        <dict>
+            <key>name</key>
+            <string>Dartlint Gutter Mark</string>
+            <key>scope</key>
+            <string>dartlint.mark.gutter</string>
+        </dict>
+
+    '''
     }
 }
 
@@ -191,13 +207,18 @@ class DartLintThread(threading.Thread):
         options = '--machine'
         proc = subprocess.Popen([analyzer_path, options, self.fileName],
                                 stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-        while not proc.poll():
-            # Wait for it...
-            pass
+        print('DA - analyzing')
+        try:
+            outs, errs = proc.communicate(timeout=15)
+        except TimeoutExpired:
+            proc.kill()
+            outs, errs = proc.communicate()
+
+        print('DA - finished analyzing')
         msg_pattern_machine = re.compile(
             r'^(?P<severity>\w+)\|(?P<type>\w+)\|(?P<code>\w+)\|(?P<file_name>.+)\|(?P<line>\d+)\|(?P<col>\d+)\|(?P<err_length>\d+)\|(?P<message>.+)')
 
-        lines = proc.stderr.read().decode('UTF-8').split('\n')
+        lines = errs.decode('UTF-8').split('\n')
         # Collect data needed to generate error messages
         lint_data = []
         lines_out = ''
@@ -207,7 +228,6 @@ class DartLintThread(threading.Thread):
             line_out = ''
             line_data = {}
             line_groups = msg_pattern_machine.match(line)
-
             if line_groups is not None:
                 if line_groups.group('file_name') != self.fileName:
                     # output is for a different file
@@ -244,34 +264,40 @@ class DartLintThread(threading.Thread):
                         (int(line_data['err_length']) - 1))
                 else:
                     # Set the line as the error region
-                    line_data['culp_region'] = sublime.Region(
-                        line_data['line_pt'],
+                    line_data['culp_region'] = self.view.line(
                         line_data['line_pt'])
                 # Add the region to the apropriate region collection
-                if ('dartlint-' + line_data['severity']) not in culp_regions:
+                if ('dartlint_' + line_data['severity']) not in culp_regions.keys():
                     culp_regions['dartlint_%s' % line_data['severity']] = []
                 culp_regions['dartlint_%s' % line_data['severity']].append(
                     line_data['culp_region'])
                 lines_out += line_out
                 lint_data.append(line_data)
                 err_count += 1
-        for reg_id, reg_list in culp_regions.items():
+        for reg_id in culp_regions.keys():
             # set the scope name
+            reg_list = culp_regions[reg_id]
             this_scope = 'dartlint.mark.warning'
             if reg_id.endswith('ERROR') is True:
                 this_scope = 'dartlint.mark.error'
             if reg_id.endswith('INFO') is True:
                 this_scope = 'dartlint.mark.info'
+            # Seperate gutter and underline regions
+            gutter_reg = []
+            for reg in reg_list:
+                gutter_reg.append(self.view.line(reg.begin()))
+            self.view.add_regions(
+                reg_id + '_gutter',
+                gutter_reg,
+                'dartlint.mark.gutter',
+                icon=GUTTER_Icon[reg_id],
+                flags=SCOPES_Dartlint['dartlint.mark.gutter']['flags'])
             self.view.add_regions(
                 reg_id,
                 reg_list,
                 this_scope,
-                GUTTER_Icon[reg_id],
-                sublime.DRAW_EMPTY |
-                sublime.DRAW_NO_OUTLINE |
-                sublime.DRAW_NO_FILL |
-                sublime.DRAW_SQUIGGLY_UNDERLINE |
-                sublime.DRAW_EMPTY_AS_OVERWRITE)
+                flags=SCOPES_Dartlint[this_scope]['flags'])
+            # Set icon presidence?
         if lines_out is '':
             self.output = None
             print('No errors.')
@@ -298,15 +324,17 @@ class DartLintThread(threading.Thread):
 
     def goto_error(self, index):
         this_error = self.output[index]
-        self.view.sel().clear()
-        self.view.sel().add(this_error['culp_region'])
+        # self.view.sel().clear()
+        # self.view.sel().add(this_error['culp_region'])
         self.view.show_at_center(this_error['point'])
 
     def clear_all(self):
         for region_name in \
                 ('dartlint_INFO', 'dartlint_WARNING', 'dartlint_ERROR'):
-            print('Clearing region: %s' % region_name)
-            self.view.erase_regions('%s' % region_name)
+            print('Clearing region: %s and %s' % (region_name, region_name +
+                  '_gutter'))
+            self.view.erase_regions(region_name)
+            self.view.erase_regions(region_name + '_gutter')
 
 
 def IsWindows():
