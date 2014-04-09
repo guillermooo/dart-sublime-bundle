@@ -251,7 +251,7 @@ class DartLintThread(threading.Thread):
                     int(line_data['line']) - 1, int(line_data['col']))
                 next_line = self.view.text_point(int(line_data['line']), 0)
 
-                # Add a region (set status, gutter mark and underline)
+                # Add a region (gutter mark and underline)
                 if int(line_data['err_length']) > 0 and \
                         int(line_data['point']) + \
                         (int(line_data['err_length']) - 1) < next_line:
@@ -305,8 +305,10 @@ class DartLintThread(threading.Thread):
             idx = 0
             err_keys = []
             for entry in lint_data:
-                line_val = '{0:{fill}{align}16}'.format(entry['line'], fill='0', align='>')
-                col_val = '{0:{fill}{align}16}'.format(entry['col'], fill='0', align='>')
+                line_val = '{0:{fill}{align}16}'.format(
+                    entry['line'], fill='0', align='>')
+                col_val = '{0:{fill}{align}16}'.format(
+                    entry['col'], fill='0', align='>')
                 list_val = '%s-%s-%s' % (line_val, col_val, str(idx))
                 err_keys.append(list_val)
                 idx += 1
@@ -338,7 +340,8 @@ class DartLintThread(threading.Thread):
     def goto_error(self, index):
         this_error = self.output[index]
         self.view.sel().clear()
-        end_point = int(this_error['point']) + int(this_error['err_length']) - 1
+        end_point = int(this_error['point']) + \
+            int(this_error['err_length']) - 1
         self.view.sel().add(sublime.Region(end_point, end_point))
         self.view.show_at_center(this_error['point'])
 
