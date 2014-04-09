@@ -1,4 +1,15 @@
 {
 	// The path to the dart-sdk.
-	"dartsdk_path" : ""
+	"dartsdk_path" : "",
+	// Dartlint plugin settings
+	// Whether to run the linter after save
+	"dartlint_active" : False, 
+	// Dartlint utter icons
+	"dartlint_gutter_icon_error" : "Packages/Dart/gutter/dartlint-simple-error.png",
+	"dartlint_gutter_icon_warning" : "Packages/Dart/gutter/dartlint-simple-warning.png",
+	"dartlint_gutter_icon_info" : "Packages/Dart/gutter/dartlint-simple-info.png",
+	// Underline colors
+	"dartlint_underline_color_error" : "C7321C",
+	"dartlint_underline_color_warning" : "F18512",
+	"dartlint_underline_color_info" : "0000FC"
 }

@@ -9,10 +9,8 @@ from xml.etree import ElementTree
 
 locale.setlocale(locale.LC_ALL, '')
 
-GUTTER_Icon = {
-    'dartlint_ERROR': 'Packages/Dart/gutter/dartlint-color-error3.png',
-    'dartlint_WARNING': 'Packages/Dart/gutter/dartlint-color-warning3.png',
-    'dartlint_INFO': 'Packages/Dart/gutter/dartlint-color-info3.png'}
+GUTTER_Icon = {}
+ULINE_Color = {}
 
 SCOPES_Dartlint = {
     'dartlint.mark.error': {
@@ -31,7 +29,7 @@ SCOPES_Dartlint = {
             <key>settings</key>
             <dict>
                 <key>foreground</key>
-                <string>#C7321C</string>
+                <string>#{}</string>
             </dict>
         </dict>
 
@@ -53,7 +51,7 @@ SCOPES_Dartlint = {
             <key>settings</key>
             <dict>
                 <key>foreground</key>
-                <string>#F18512</string>
+                <string>#{}</string>
             </dict>
         </dict>
 
@@ -75,7 +73,7 @@ SCOPES_Dartlint = {
             <key>settings</key>
             <dict>
                 <key>foreground</key>
-                <string>#0000FC</string>
+                <string>#{}</string>
             </dict>
         </dict>
 
@@ -110,7 +108,12 @@ class DartLint(sublime_plugin.EventListener):
         print("Dart lint active.")
 
     def on_post_save(self, view):
-        self.check_theme()
+        self.check_theme(view)
+
+        # Is the linter disabled?
+        if not self.do_lint:
+            return
+
         fileName = view.file_name()
         if view.file_name().endswith('.dart') is False:
             return
@@ -118,7 +121,26 @@ class DartLint(sublime_plugin.EventListener):
         # run dartanalyzer in its own thread
         RunDartanalyzer(view, fileName)
 
-    def check_theme(self):
+    def check_theme(self, view):
+        # Get some settings
+        settings = view.settings()
+        self.do_lint = settings.get('dartlint_active')
+        error_color = settings.get('dartlint_underline_color_error')
+        warn_color = settings.get('dartlint_underline_color_warning')
+        info_color = settings.get('dartlint_underline_color_error')
+        error_icon = settings.get('dartlint_gutter_icon_error')
+        warn_icon = settings.get('dartlint_gutter_icon_warning')
+        info_icon = settings.get('dartlint_gutter_icon_info')
+        # Set the icons and colors in the file scope
+        GUTTER_Icon.update({
+            'dartlint_ERROR': error_icon,
+            'dartlint_WARNING': warn_icon,
+            'dartlint_INFO': info_icon})
+        ULINE_Color.update({
+            'dartlint.mark.error': error_color,
+            'dartlint.mark.info': warn_color,
+            'dartlint.mark.info': info_color})
+
         # Get the current theme
         system_prefs = sublime.load_settings('Preferences.sublime-settings')
         theme = system_prefs.get('color_scheme')
@@ -138,7 +160,7 @@ class DartLint(sublime_plugin.EventListener):
         if append_xml:
             for s2append in append_scopes:
                 styles.append(
-                    ElementTree.fromstring(SCOPES_Dartlint[s2append]['style']))
+                    ElementTree.fromstring(SCOPES_Dartlint[s2append]['style'].format(ULINE_Color[s2append])))
         else:
             # No need to do anything
             return
