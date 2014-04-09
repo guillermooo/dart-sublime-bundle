@@ -207,14 +207,12 @@ class DartLintThread(threading.Thread):
         options = '--machine'
         proc = subprocess.Popen([analyzer_path, options, self.fileName],
                                 stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-        print('DA - analyzing')
         try:
             outs, errs = proc.communicate(timeout=15)
         except TimeoutExpired:
             proc.kill()
             outs, errs = proc.communicate()
 
-        print('DA - finished analyzing')
         msg_pattern_machine = re.compile(
             r'^(?P<severity>\w+)\|(?P<type>\w+)\|(?P<code>\w+)\|(?P<file_name>.+)\|(?P<line>\d+)\|(?P<col>\d+)\|(?P<err_length>\d+)\|(?P<message>.+)')
 
@@ -303,7 +301,20 @@ class DartLintThread(threading.Thread):
             print('No errors.')
             self.view.set_status('dartlint', 'Dartlint: No errors')
         else:
-            self.output = lint_data
+            # Sort list
+            idx = 0
+            err_keys = []
+            for entry in lint_data:
+                line_val = '{0:{fill}{align}16}'.format(entry['line'], fill='0', align='>')
+                col_val = '{0:{fill}{align}16}'.format(entry['col'], fill='0', align='>')
+                list_val = '%s-%s-%s' % (line_val, col_val, str(idx))
+                err_keys.append(list_val)
+                idx += 1
+            new_err_list = []
+            err_keys.sort()
+            for ek in err_keys:
+                new_err_list.append(lint_data[int(ek.split('-')[2])])
+            self.output = new_err_list
             # Out to console
             print('\n' + lines_out)
             # Output to a popup
@@ -311,8 +322,6 @@ class DartLintThread(threading.Thread):
 
     def popup_errors(self, window, view, ErrorData):
         # Process data into a list of errors
-        # TODO: Sort by Line
-
         window.focus_view(view)
         dd_list = []
         for entry in ErrorData:
@@ -320,19 +329,22 @@ class DartLintThread(threading.Thread):
         window.show_quick_panel(
             dd_list,
             on_select=self.goto_error,
-            on_highlight=self.goto_error)
+            on_highlight=self.show_error)
+
+    def show_error(self, index):
+        this_error = self.output[index]
+        self.view.show_at_center(this_error['point'])
 
     def goto_error(self, index):
         this_error = self.output[index]
-        # self.view.sel().clear()
-        # self.view.sel().add(this_error['culp_region'])
+        self.view.sel().clear()
+        end_point = int(this_error['point']) + int(this_error['err_length']) - 1
+        self.view.sel().add(sublime.Region(end_point, end_point))
         self.view.show_at_center(this_error['point'])
 
     def clear_all(self):
         for region_name in \
                 ('dartlint_INFO', 'dartlint_WARNING', 'dartlint_ERROR'):
-            print('Clearing region: %s and %s' % (region_name, region_name +
-                  '_gutter'))
             self.view.erase_regions(region_name)
             self.view.erase_regions(region_name + '_gutter')
 
