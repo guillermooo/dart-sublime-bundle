@@ -105,7 +105,7 @@ THEME_Head = '''<?xml version="1.0" encoding="{}"?>
 class DartLint(sublime_plugin.EventListener):
     def __init__(self, *args, **kwargs):
         sublime_plugin.EventListener.__init__(self, *args, **kwargs)
-        print("Dart lint active.")
+        print("Dartlint plugin loaded.")
 
     def on_post_save(self, view):
         self.check_theme(view)
@@ -147,6 +147,7 @@ class DartLint(sublime_plugin.EventListener):
         theme_xml = sublime.load_resource(theme)
         append_xml = False
         append_scopes = []
+
         # Check for required scopes
         for scopes in SCOPES_Dartlint:
             if theme_xml.find(scopes) is -1:
@@ -156,6 +157,7 @@ class DartLint(sublime_plugin.EventListener):
                 print('%s not found in theme' % scopes)
         plist = ElementTree.XML(theme_xml)
         styles = plist.find('./dict/array')
+
         # Add missing elements
         if append_xml:
             for s2append in append_scopes:
@@ -164,6 +166,7 @@ class DartLint(sublime_plugin.EventListener):
         else:
             # No need to do anything
             return
+
         # write back to 'Packages/User/<theme> DL.tmTheme'
         original_name = os.path.splitext(os.path.basename(theme))[0]
         new_name = original_name + ' DL'
@@ -239,6 +242,7 @@ class DartLintThread(threading.Thread):
             r'^(?P<severity>\w+)\|(?P<type>\w+)\|(?P<code>\w+)\|(?P<file_name>.+)\|(?P<line>\d+)\|(?P<col>\d+)\|(?P<err_length>\d+)\|(?P<message>.+)')
 
         lines = errs.decode('UTF-8').split('\n')
+
         # Collect data needed to generate error messages
         lint_data = []
         lines_out = ''
@@ -309,6 +313,7 @@ class DartLintThread(threading.Thread):
             self.view.add_regions(
                 reg_id + '_gutter',
                 gutter_reg,
+                # set this to this_scope for tinted gutter icons
                 'dartlint.mark.gutter',
                 icon=GUTTER_Icon[reg_id],
                 flags=SCOPES_Dartlint['dartlint.mark.gutter']['flags'])
