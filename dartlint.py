@@ -97,9 +97,9 @@ SCOPES_Dartlint = {
     }
 }
 
-THEME_Head = '''<?xml version="1.0" encoding="{}"?>
-<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
-'''
+THEME_Head = ('<?xml version="1.0" encoding="{}"?>\n'
+              '<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN"'
+              ' "http://www.apple.com/DTDs/PropertyList-1.0.dtd">')
 
 
 class DartLint(sublime_plugin.EventListener):
@@ -162,7 +162,9 @@ class DartLint(sublime_plugin.EventListener):
         if append_xml:
             for s2append in append_scopes:
                 styles.append(
-                    ElementTree.fromstring(SCOPES_Dartlint[s2append]['style'].format(ULINE_Color[s2append])))
+                    ElementTree.fromstring(
+                        SCOPES_Dartlint[s2append]['style'].format(
+                            ULINE_Color[s2append])))
         else:
             # No need to do anything
             return
@@ -239,7 +241,9 @@ class DartLintThread(threading.Thread):
             outs, errs = proc.communicate()
 
         msg_pattern_machine = re.compile(
-            r'^(?P<severity>\w+)\|(?P<type>\w+)\|(?P<code>\w+)\|(?P<file_name>.+)\|(?P<line>\d+)\|(?P<col>\d+)\|(?P<err_length>\d+)\|(?P<message>.+)')
+            r'^(?P<severity>\w+)\|(?P<type>\w+)\|(?P<code>\w+)\|'
+            '(?P<file_name>.+)\|(?P<line>\d+)\|(?P<col>\d+)\|'
+            '(?P<err_length>\d+)\|(?P<message>.+)')
 
         lines = errs.decode('UTF-8').split('\n')
 
@@ -291,7 +295,8 @@ class DartLintThread(threading.Thread):
                     line_data['culp_region'] = self.view.line(
                         line_data['line_pt'])
                 # Add the region to the apropriate region collection
-                if ('dartlint_' + line_data['severity']) not in culp_regions.keys():
+                if ('dartlint_' + line_data['severity']) not in \
+                        culp_regions.keys():
                     culp_regions['dartlint_%s' % line_data['severity']] = []
                 culp_regions['dartlint_%s' % line_data['severity']].append(
                     line_data['culp_region'])
