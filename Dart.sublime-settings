@@ -4,7 +4,7 @@
 	// Dartlint plugin settings
 	// Whether to run the linter after save
 	"dartlint_active" : False, 
-	// Dartlint utter icons
+	// Dartlint gutter icons
 	"dartlint_gutter_icon_error" : "Packages/Dart/gutter/dartlint-simple-error.png",
 	"dartlint_gutter_icon_warning" : "Packages/Dart/gutter/dartlint-simple-warning.png",
 	"dartlint_gutter_icon_info" : "Packages/Dart/gutter/dartlint-simple-info.png",
