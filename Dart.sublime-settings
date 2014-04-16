@@ -2,8 +2,7 @@
 	// The path to the dart-sdk.
 	"dartsdk_path" : "",
 	// Dartlint plugin settings
-	// Whether to run the linter after save
-	"dartlint_active" : False, 
+	"dartlint_active" : false, 
 	// Dartlint gutter icons
 	"dartlint_gutter_icon_error" : "Packages/Dart/gutter/dartlint-simple-error.png",
 	"dartlint_gutter_icon_warning" : "Packages/Dart/gutter/dartlint-simple-warning.png",
