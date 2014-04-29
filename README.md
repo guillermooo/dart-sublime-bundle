@@ -57,12 +57,12 @@ BUILD SYSTEM USAGE
 
 LINTER USAGE
 ============
-By default the dartanalyzer feedback is turned off.  If you would like to use this feature you will need to change the `dartlint_active` setting to `True`.
+By default the dartanalyzer feedback is turned off.  If you would like to use this feature you will need to change the `dartlint_active` setting to `true`.
 
     {
         ...
         
-        "dartlint_active" : True, 
+        "dartlint_active" : true, 
         
         ...
     }
