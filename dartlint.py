@@ -111,7 +111,7 @@ class DartLint(sublime_plugin.EventListener):
         self.check_theme(view)
 
         # Is the linter disabled?
-        if not self.do_lint:
+        if not self.do_lint or not self.do_save:
             return
 
         fileName = view.file_name()
@@ -119,18 +119,35 @@ class DartLint(sublime_plugin.EventListener):
             return
         print("Dart lint: Running dartanalyzer on ", fileName)
         # run dartanalyzer in its own thread
-        RunDartanalyzer(view, fileName)
+        RunDartanalyzer(view, fileName, True)
+
+    def on_load(self, view):
+        self.check_theme(view)
+
+        # Is the linter or function disabled?
+        if not self.do_lint or not self.do_load:
+            return
+
+        fileName = view.file_name()
+        if view.file_name().endswith('.dart') is False:
+            return
+        print("Dart lint: Running dartanalyzer on ", fileName)
+        # run dartanalyzer in its own thread
+        RunDartanalyzer(view, fileName, False)
 
     def check_theme(self, view):
         # Get some settings
-        settings = view.settings()
-        self.do_lint = settings.get('dartlint_active')
-        error_color = settings.get('dartlint_underline_color_error')
-        warn_color = settings.get('dartlint_underline_color_warning')
-        info_color = settings.get('dartlint_underline_color_error')
-        error_icon = settings.get('dartlint_gutter_icon_error')
-        warn_icon = settings.get('dartlint_gutter_icon_warning')
-        info_icon = settings.get('dartlint_gutter_icon_info')
+        self.settings = view.settings()
+        self.do_lint = self.settings.get('dartlint_active')
+        self.do_save = self.settings.get('dartlint_on_save')
+        self.do_load = self.settings.get('dartlint_on_load')
+        self.do_modify = self.settings.get('dartlint_on_modify')
+        error_color = self.settings.get('dartlint_underline_color_error')
+        warn_color = self.settings.get('dartlint_underline_color_warning')
+        info_color = self.settings.get('dartlint_underline_color_error')
+        error_icon = self.settings.get('dartlint_gutter_icon_error')
+        warn_icon = self.settings.get('dartlint_gutter_icon_warning')
+        info_icon = self.settings.get('dartlint_gutter_icon_info')
         # Set the icons and colors in the file scope
         GUTTER_Icon.update({
             'dartlint_ERROR': error_icon,
@@ -208,17 +225,18 @@ def FormRelativePath(path):
     return new_path
 
 
-def RunDartanalyzer(view, fileName):
+def RunDartanalyzer(view, fileName, show_popup=True):
     settings = view.settings()
     dartsdk_path = settings.get('dartsdk_path')
 
     if dartsdk_path:
-        DartLintThread(view, dartsdk_path, fileName).start()
+        DartLintThread(view, dartsdk_path, fileName, show_popup).start()
 
 
 class DartLintThread(threading.Thread):
-    def __init__(self, view, dartsdk_path, fileName):
+    def __init__(self, view, dartsdk_path, fileName, show_popup):
         super(DartLintThread, self).__init__()
+        self.show_popup = show_popup
         self.daemon = True
         self.view = view
         self.window = view.window()
@@ -352,7 +370,8 @@ class DartLintThread(threading.Thread):
             # Out to console
             print('\n' + lines_out)
             # Output to a popup
-            self.popup_errors(self.window, self.view, self.output)
+            if self.show_popup:
+                self.popup_errors(self.window, self.view, self.output)
 
     def popup_errors(self, window, view, ErrorData):
         # Process data into a list of errors
