@@ -62,7 +62,7 @@ By default the dartanalyzer feedback is turned off.  If you would like to use th
     {
         ...
         
-        "dartlint_active" : True, 
+        "dartlint_active" : true, 
         
         ...
     }
