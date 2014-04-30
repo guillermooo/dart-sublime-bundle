@@ -7,7 +7,7 @@
 			match = '^(#!.*)$';
 		},
 		{	name = 'meta.declaration.dart';
-			begin = '\b(library|import|part of|part)\b';
+			begin = '\b(library|import|export|part of|part)\b';
 			end = ';';
 			beginCaptures = { 0 = { name = 'keyword.other.import.dart'; }; };
 			endCaptures = { 0 = { name = 'punctuation.terminator.dart'; }; };
