@@ -138,8 +138,9 @@ class DartLint(sublime_plugin.EventListener):
             'dartlint_INFO': info_icon})
         ULINE_Color.update({
             'dartlint.mark.error': error_color,
-            'dartlint.mark.info': warn_color,
-            'dartlint.mark.info': info_color})
+            'dartlint.mark.warning': warn_color,
+            'dartlint.mark.info': info_color,
+            'dartlint.mark.gutter': 'not used'})
 
         # Get the current theme
         system_prefs = sublime.load_settings('Preferences.sublime-settings')
