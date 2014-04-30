@@ -22,7 +22,7 @@
 		</dict>
 		<dict>
 			<key>begin</key>
-			<string>\b(library|import|part of|part)\b</string>
+			<string>\b(library|import|export|part of|part)\b</string>
 			<key>beginCaptures</key>
 			<dict>
 				<key>0</key>
