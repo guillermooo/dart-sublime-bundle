@@ -144,7 +144,7 @@ class DartLint(sublime_plugin.EventListener):
         self.do_modify = self.settings.get('dartlint_on_modify')
         error_color = self.settings.get('dartlint_underline_color_error')
         warn_color = self.settings.get('dartlint_underline_color_warning')
-        info_color = self.settings.get('dartlint_underline_color_error')
+        info_color = self.settings.get('dartlint_underline_color_info')
         error_icon = self.settings.get('dartlint_gutter_icon_error')
         warn_icon = self.settings.get('dartlint_gutter_icon_warning')
         info_icon = self.settings.get('dartlint_gutter_icon_info')
@@ -155,7 +155,7 @@ class DartLint(sublime_plugin.EventListener):
             'dartlint_INFO': info_icon})
         ULINE_Color.update({
             'dartlint.mark.error': error_color,
-            'dartlint.mark.info': warn_color,
+            'dartlint.mark.warning': warn_color,
             'dartlint.mark.info': info_color})
 
         # Get the current theme
@@ -178,10 +178,16 @@ class DartLint(sublime_plugin.EventListener):
         # Add missing elements
         if append_xml:
             for s2append in append_scopes:
-                styles.append(
-                    ElementTree.fromstring(
-                        SCOPES_Dartlint[s2append]['style'].format(
-                            ULINE_Color[s2append])))
+                if s2append.endswith('gutter'):
+                    # Gutter has no color
+                    styles.append(
+                        ElementTree.fromstring(
+                            SCOPES_Dartlint[s2append]['style']))
+                else:
+                    styles.append(
+                        ElementTree.fromstring(
+                            SCOPES_Dartlint[s2append]['style'].format(
+                                ULINE_Color[s2append])))
         else:
             # No need to do anything
             return
