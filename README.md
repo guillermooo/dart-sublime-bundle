@@ -57,6 +57,7 @@ BUILD SYSTEM USAGE
 
 LINTER USAGE
 ============
+
 By default the linter feedback is turned off.  If you would like to use this feature you will need to change the `dartlint_active` setting to `true`.
 
     {
@@ -77,6 +78,12 @@ The linter will run when documents are loaded, and when they are saved.  If you 
     	
     	...
     }
+
+Highlight colors can be customized by changing the `dartlint_underline_color_error`, `dartlint_underline_color_warning`, and `dartlint_underline_color_info` settings.  
+
+Gutter icons can be changed with the `dartlint_gutter_icon_error`, `dartlint_gutter_icon_warning`, and `dartlint_gutter_icon_info` settings.  Icon paths must start from the Packages directory. 
+
+Example: `"dartlint_gutter_icon_error" : "Packages/Users/Icons/error.png"`.
 
 DEVELOPMENT
 ===========
