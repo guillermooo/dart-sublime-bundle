@@ -57,14 +57,25 @@ BUILD SYSTEM USAGE
 
 LINTER USAGE
 ============
-By default the dartanalyzer feedback is turned off.  If you would like to use this feature you will need to change the `dartlint_active` setting to `True`.
+By default the linter feedback is turned off.  If you would like to use this feature you will need to change the `dartlint_active` setting to `true`.
 
     {
         ...
         
-        "dartlint_active" : True, 
+        "dartlint_active" : true, 
         
         ...
+    }
+
+The linter will run when documents are loaded, and when they are saved.  If you would like to change this behaviour you can change either of these settings to `false` to turn them off:
+
+    {
+    	...
+    	
+    	"dartlint_on_load" : true,
+    	"dartlint_on_save" : true,
+    	
+    	...
     }
 
 DEVELOPMENT
