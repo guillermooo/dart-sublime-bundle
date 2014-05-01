@@ -10,6 +10,7 @@ currently provided:
 * Some snippets for inserting common Dart code.
 * dart2js support through Sublime's build system.
 * Support for installing Pub packages.
+* dartanalyzer support for Linter feedback.
 
 The bundle identifies dart source by the file extension (.dart).
 
@@ -53,6 +54,18 @@ BUILD SYSTEM USAGE
   - CTRL+B or CMD+B will run the dart2js compiler on the current open file.
   - Open the command pallete (CTRL-SHIFT-P or CMD-SHIFT-P), type 'Dart' to see
     other Dart commands: `Run`, `Analyzer`, `pub install`, `pub update`.
+
+LINTER USAGE
+============
+By default the dartanalyzer feedback is turned off.  If you would like to use this feature you will need to change the `dartlint_active` setting to `true`.
+
+    {
+        ...
+        
+        "dartlint_active" : true, 
+        
+        ...
+    }
 
 DEVELOPMENT
 ===========
