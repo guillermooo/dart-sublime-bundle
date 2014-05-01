@@ -156,7 +156,8 @@ class DartLint(sublime_plugin.EventListener):
         ULINE_Color.update({
             'dartlint.mark.error': error_color,
             'dartlint.mark.warning': warn_color,
-            'dartlint.mark.info': info_color})
+            'dartlint.mark.info': info_color,
+            'dartlint.mark.gutter': 'not used'})
 
         # Get the current theme
         system_prefs = sublime.load_settings('Preferences.sublime-settings')
@@ -178,16 +179,10 @@ class DartLint(sublime_plugin.EventListener):
         # Add missing elements
         if append_xml:
             for s2append in append_scopes:
-                if s2append.endswith('gutter'):
-                    # Gutter has no color
-                    styles.append(
-                        ElementTree.fromstring(
-                            SCOPES_Dartlint[s2append]['style']))
-                else:
-                    styles.append(
-                        ElementTree.fromstring(
-                            SCOPES_Dartlint[s2append]['style'].format(
-                                ULINE_Color[s2append])))
+                styles.append(
+                    ElementTree.fromstring(
+                        SCOPES_Dartlint[s2append]['style'].format(
+                            ULINE_Color[s2append])))
         else:
             # No need to do anything
             return
