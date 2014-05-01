@@ -3,6 +3,8 @@
 	"dartsdk_path" : "",
 	// Dartlint plugin settings
 	"dartlint_active" : false, 
+	"dartlint_on_load" : true,
+	"dartlint_on_save" : true,
 	// Dartlint gutter icons
 	"dartlint_gutter_icon_error" : "Packages/Dart/gutter/dartlint-simple-error.png",
 	"dartlint_gutter_icon_warning" : "Packages/Dart/gutter/dartlint-simple-warning.png",
