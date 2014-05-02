@@ -63,7 +63,7 @@
 					match = '\bas\b';
 				},
 				{	name = 'keyword.control.catch-exception.dart';
-					match = '\b(try|catch|finally|throw)\b';
+					match = '\b(try|catch|finally|throw|on)\b';
 				},
 				{	name = 'keyword.control.ternary.dart';
 					match = '\?|:';
