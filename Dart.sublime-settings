@@ -5,6 +5,7 @@
 	"dartlint_active" : false, 
 	"dartlint_on_load" : true,
 	"dartlint_on_save" : true,
+	"dartlint_show_popup_level" : "WARNING",
 	// Dartlint gutter icons
 	"dartlint_gutter_icon_error" : "Packages/Dart/gutter/dartlint-simple-error.png",
 	"dartlint_gutter_icon_warning" : "Packages/Dart/gutter/dartlint-simple-warning.png",

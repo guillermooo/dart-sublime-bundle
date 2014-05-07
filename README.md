@@ -57,6 +57,8 @@ BUILD SYSTEM USAGE
 
 LINTER USAGE
 ============
+### Turning on the linter
+
 By default the dartanalyzer feedback is turned off.  If you would like to use this feature you will need to change the `dartlint_active` setting to `true`.
 
     {
@@ -66,7 +68,8 @@ By default the dartanalyzer feedback is turned off.  If you would like to use th
         
         ...
     }
-
+### Changing when the linter runs
+ 
 The linter will run when documents are loaded, and when they are saved.  If you would like to change this behaviour you can change either of these settings to `false` to turn them off:
 
     {
@@ -78,11 +81,23 @@ The linter will run when documents are loaded, and when they are saved.  If you 
     	...
     }
 
+### Changing the initial highlight colors
+
 Highlight colors can be customized by changing the `dartlint_underline_color_error`, `dartlint_underline_color_warning`, and `dartlint_underline_color_info` settings.  
 
 Gutter icons can be changed with the `dartlint_gutter_icon_error`, `dartlint_gutter_icon_warning`, and `dartlint_gutter_icon_info` settings.  Icon paths must start from the Packages directory. 
 
 Example: `"dartlint_gutter_icon_error" : "Packages/Users/Icons/error.png"`.
+
+### Changing the linter popup behaviour
+ 
+The setting `dartlint_show_popup_level` sets the level of severity to trigger a pop up.  Possible values are: 
+   
+`ERROR` - Will only show pop up when there are errors in the source.
+
+`WARNING` - Will show pop up on errors and warnings.
+
+`INFO` - Will show a pop up on any results from dartanalyzer. 
 
 DEVELOPMENT
 ===========
