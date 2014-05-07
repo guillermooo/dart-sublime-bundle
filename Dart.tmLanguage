@@ -162,7 +162,7 @@
 				</dict>
 				<dict>
 					<key>match</key>
-					<string>\b(try|catch|finally|throw)\b</string>
+					<string>\b(try|catch|finally|throw|on)\b</string>
 					<key>name</key>
 					<string>keyword.control.catch-exception.dart</string>
 				</dict>

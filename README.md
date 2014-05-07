@@ -67,6 +67,23 @@ By default the dartanalyzer feedback is turned off.  If you would like to use th
         ...
     }
 
+The linter will run when documents are loaded, and when they are saved.  If you would like to change this behaviour you can change either of these settings to `false` to turn them off:
+
+    {
+    	...
+    	
+    	"dartlint_on_load" : true,
+    	"dartlint_on_save" : true,
+    	
+    	...
+    }
+
+Highlight colors can be customized by changing the `dartlint_underline_color_error`, `dartlint_underline_color_warning`, and `dartlint_underline_color_info` settings.  
+
+Gutter icons can be changed with the `dartlint_gutter_icon_error`, `dartlint_gutter_icon_warning`, and `dartlint_gutter_icon_info` settings.  Icon paths must start from the Packages directory. 
+
+Example: `"dartlint_gutter_icon_error" : "Packages/Users/Icons/error.png"`.
+
 DEVELOPMENT
 ===========
 
