@@ -2,7 +2,7 @@
 	// The path to the dart-sdk.
 	"dartsdk_path" : "",
 	// Dartlint plugin settings
-	"dartlint_active" : true, 
+	"dartlint_active" : false, 
 	"dartlint_on_load" : true,
 	"dartlint_on_save" : true,
 	"dartlint_show_popup_level" : "WARNING",
