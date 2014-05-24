@@ -1,6 +1,7 @@
 import sublime
 import sublime_plugin
 import os
+import posixpath
 import subprocess
 import threading
 import re
@@ -224,11 +225,11 @@ def FormRelativePath(path):
               os.path.dirname(path)))
         return False
     if os.path.isabs(path):
-        new_path = os.path.relpath(path, sublime.packages_path())
+        new_path = posixpath.relpath(path, sublime.packages_path())
     else:
         new_path = path
     # Preferences requires 'Packages' in the path
-    new_path = os.path.join('Packages', new_path)
+    new_path = posixpath.join('Packages', new_path)
     return new_path
 
 
