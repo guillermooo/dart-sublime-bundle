@@ -258,8 +258,14 @@ class DartLintThread(threading.Thread):
         if IsWindows():
             analyzer_path += '.bat'
         options = '--machine'
+        startupinfo = None
+        if os.name == "nt":
+            startupinfo = subprocess.STARTUPINFO()
+            startupinfo.dwFlags |= subprocess.STARTF_USESHOWWINDOW
+
         proc = subprocess.Popen([analyzer_path, options, self.fileName],
-                                stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+                                stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+                                startupinfo=startupinfo, )
         try:
             outs, errs = proc.communicate(timeout=15)
         except TimeoutExpired:
@@ -271,7 +277,7 @@ class DartLintThread(threading.Thread):
             '(?P<file_name>.+)\|(?P<line>\d+)\|(?P<col>\d+)\|'
             '(?P<err_length>\d+)\|(?P<message>.+)')
 
-        lines = errs.decode('UTF-8').split('\n')
+        lines = errs.decode('UTF-8').split(os.linesep)
 
         # Collect data needed to generate error messages
         lint_data = []
