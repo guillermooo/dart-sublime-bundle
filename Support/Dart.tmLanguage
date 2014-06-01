@@ -6,10 +6,6 @@
 	<array>
 		<string>dart</string>
 	</array>
-	<key>foldingStartMarker</key>
-	<string>\{\s*$</string>
-	<key>foldingStopMarker</key>
-	<string>^\s*\}</string>
 	<key>name</key>
 	<string>Dart</string>
 	<key>patterns</key>
@@ -64,6 +60,14 @@
 		<dict>
 			<key>include</key>
 			<string>#constants-and-special-vars</string>
+		</dict>
+		<dict>
+			<key>include</key>
+			<string>#decl-typedef</string>
+		</dict>
+		<dict>
+			<key>include</key>
+			<string>#decl-class</string>
 		</dict>
 		<dict>
 			<key>include</key>
@@ -147,6 +151,108 @@
 					<string>\b((0(x|X)[0-9a-fA-F]*)|(([0-9]+\.?[0-9]*)|(\.[0-9]+))((e|E)(\+|-)?[0-9]+)?)\b</string>
 					<key>name</key>
 					<string>constant.numeric.dart</string>
+				</dict>
+			</array>
+		</dict>
+		<key>decl-class</key>
+		<dict>
+			<key>patterns</key>
+			<array>
+				<dict>
+					<key>begin</key>
+					<string>class</string>
+					<key>beginCaptures</key>
+					<dict>
+						<key>0</key>
+						<dict>
+							<key>name</key>
+							<string>keyword.control.new.dart</string>
+						</dict>
+					</dict>
+					<key>end</key>
+					<string>(?={)</string>
+					<key>name</key>
+					<string>meta.declaration.class.dart</string>
+					<key>patterns</key>
+					<array>
+						<dict>
+							<key>captures</key>
+							<dict>
+								<key>1</key>
+								<dict>
+									<key>name</key>
+									<string>class.name.dart</string>
+								</dict>
+							</dict>
+							<key>match</key>
+							<string>([a-zA-Z_][a-zA-Z0-9_]*)(?:\s+(.*?))?</string>
+						</dict>
+					</array>
+				</dict>
+			</array>
+		</dict>
+		<key>decl-typedef</key>
+		<dict>
+			<key>patterns</key>
+			<array>
+				<dict>
+					<key>begin</key>
+					<string>typedef</string>
+					<key>beginCaptures</key>
+					<dict>
+						<key>0</key>
+						<dict>
+							<key>name</key>
+							<string>keyword.control.new.dart</string>
+						</dict>
+					</dict>
+					<key>end</key>
+					<string>;</string>
+					<key>endCaptures</key>
+					<dict>
+						<key>0</key>
+						<dict>
+							<key>name</key>
+							<string>punctuation.terminator.dart</string>
+						</dict>
+					</dict>
+					<key>name</key>
+					<string>meta.declaration.typedef.dart</string>
+					<key>patterns</key>
+					<array>
+						<dict>
+							<key>captures</key>
+							<dict>
+								<key>1</key>
+								<dict>
+									<key>name</key>
+									<string>typedef.return.dart</string>
+								</dict>
+								<key>2</key>
+								<dict>
+									<key>name</key>
+									<string>typedef.name.dart</string>
+								</dict>
+							</dict>
+							<key>match</key>
+							<string>([a-zA-Z_][a-zA-Z0-9_]*)\s+([a-zA-Z_][a-zA-Z0-9_]+)</string>
+						</dict>
+						<dict>
+							<key>begin</key>
+							<string>\(</string>
+							<key>end</key>
+							<string>\)</string>
+							<key>name</key>
+							<string>typedef.params.dart</string>
+							<key>patterns</key>
+							<array>
+								<dict>
+									<key>include</key>
+									<string>#keywords</string>
+								</dict>
+							</array>
+						</dict>
+					</array>
 				</dict>
 			</array>
 		</dict>
