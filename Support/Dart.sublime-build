@@ -1,0 +1,95 @@
+{
+    // Default: dart2js
+    "cmd": ["dart2js", "--minify", "-o$file.js", "$file"],
+    // xyz/test.dart:5:1: Warning: cannot resolve type foo
+    "file_regex": "(\\S*):(\\d*):(\\d*): (.*)",
+    "selector": "source.dart",
+    "working_dir": "${project_path:${folder}}",
+
+    "windows":  
+    {  
+        "cmd": ["dart2js.bat", "--minify", "-o$file.js", "$file"]
+    },
+    "osx":
+    {
+        // TODO: Not just Mac should print out the file name.
+        "cmd": ["/bin/bash", "--login", "-c", "dart2js --minify -o$file.js $file && echo \"Generated JavaScript file: $file.js\""]
+    },
+
+    "variants": [
+        {
+            "cmd": ["dart2js", "--minify", "-o$file.js", "$file"],
+            "name": "Dart dart2js",
+
+            "windows":  
+            {  
+                "cmd": ["dart2js.bat", "--minify", "-o$file.js", "$file"]
+            },
+            "osx":
+            {
+                "cmd": ["/bin/bash", "--login", "-c", "dart2js --minify -o$file.js $file"]
+            }
+        },
+        {
+            "cmd": ["dartanalyzer", "--enable_type_checks",
+                    "--fatal-type-errors", "--extended-exit-code",
+                    "--type-checks-for-inferred-types", "--incremental",
+                    "$file"],
+            "name": "Dart Analyzer",
+
+            "windows":  
+            {  
+                "cmd": ["dartanalyzer.bat", "--enable_type_checks",
+                        "--fatal-type-errors", "--extended-exit-code",
+                        "--type-checks-for-inferred-types", "--incremental",
+                        "$file"]
+            },
+            "osx":
+            {
+                "cmd": ["/bin/bash", "--login", "-c",
+                        "dartanalyzer --enable_type_checks --fatal-type-errors --extended-exit-code --type-checks-for-inferred-types --incremental $file"]
+            }
+        },
+
+        {
+            "cmd": ["pub", "install"],
+            "name": "Dart Pub Install",
+            "shell" : true,
+
+            "windows":  
+            {  
+                "cmd": ["pub.bat", "install"]
+            },
+            "osx":
+            {
+                "cmd": ["/bin/bash", "--login", "-c", "pub install"]
+            }
+        },
+        {
+            "cmd": ["pub", "update"],
+            "name": "Dart Pub Update",
+
+            "windows":  
+            {  
+                "cmd": ["pub.bat", "update"]
+            },
+            "osx":
+            {
+                "cmd": ["/bin/bash", "--login", "-c", "pub update"]
+            }
+        },
+        {
+            "cmd": ["dart", "$file"],
+            "name": "Dart Run",
+
+            "windows":  
+            {  
+                "cmd": ["dart.exe", "$file"]
+            },
+            "osx":
+            {
+                "cmd": ["/bin/bash", "--login", "-c", "dart $file"]
+            }
+        }
+    ]
+}
