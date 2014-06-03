@@ -1,0 +1,7 @@
+{
+	"scope": "source.dart comment.block.dart",
+
+	"completions": [
+		// TODO: add snippets for Markdown.
+	]
+}
