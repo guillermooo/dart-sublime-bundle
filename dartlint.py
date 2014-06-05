@@ -271,7 +271,7 @@ class DartLintThread(threading.Thread):
         analyzer_path = os.path.join(self.dartsdk_path, 'bin', 'dartanalyzer')
         # Clear all regions
         self.clear_all()
-        if IsWindows():
+        if is_windows():
             analyzer_path += '.bat'
         options = '--machine'
         startupinfo = None
@@ -446,5 +446,5 @@ class DartLintThread(threading.Thread):
             self.view.erase_regions(region_name + '_gutter')
 
 
-def IsWindows():
+def is_windows():
         return sublime.platform() == 'windows'
