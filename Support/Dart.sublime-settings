@@ -2,7 +2,7 @@
 	// The path to the dart-sdk.
 	"dartsdk_path" : "",
 	// Dartlint plugin settings
-	"dartlint_active" : false, 
+	"dartlint_active" : false,
 	"dartlint_on_load" : true,
 	"dartlint_on_save" : true,
 	"dartlint_show_popup_level" : "WARNING",
@@ -13,5 +13,9 @@
 	// Underline colors
 	"dartlint_underline_color_error" : "C7321C",
 	"dartlint_underline_color_warning" : "F18512",
-	"dartlint_underline_color_info" : "0000FC"
+	"dartlint_underline_color_info" : "0000FC",
+
+	// Log level (for debugging).
+	// Can be one of: debug > info > warning > error > critical
+	"dart_log_level": "error"
 }
