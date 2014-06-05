@@ -1,12 +1,18 @@
 import sublime
 import sublime_plugin
+
+from subprocess import TimeoutExpired
+from xml.etree import ElementTree
+import locale
 import os
 import posixpath
+import re
 import subprocess
 import threading
-import re
-import locale
-from xml.etree import ElementTree
+
+from . import PluginLogger
+
+logger = PluginLogger(__name__)
 
 locale.setlocale(locale.LC_ALL, '')
 
@@ -119,12 +125,18 @@ class DartLint(sublime_plugin.EventListener):
 
         # Is the linter disabled?
         if not self.do_lint or not self.do_save:
+            logger.debug("linter is disabled (on_post_save)")
+            logger.debug("do_lint: %s", str(self.do_lint))
+            logger.debug("do_save: %s", str(self.do_save))
             return
 
         fileName = view.file_name()
         if view.file_name().endswith('.dart') is False:
+            logger.debug("not a dart file: %s", fileName)
             return
+
         print("Dart lint: Running dartanalyzer on ", fileName)
+        logger.debug("running dartanalyzer on %s", fileName)
         # run dartanalyzer in its own thread
         RunDartanalyzer(view, fileName, self.settings, True)
 
@@ -133,12 +145,16 @@ class DartLint(sublime_plugin.EventListener):
 
         # Is the linter or function disabled?
         if not self.do_lint or not self.do_load:
+            logger.debug("linter is disabled (on_load)")
             return
 
         fileName = view.file_name()
         if view.file_name().endswith('.dart') is False:
+            logger.debug("not a dart file: %s", fileName)
             return
+
         print("Dart lint: Running dartanalyzer on ", fileName)
+        logger.debug("running dartanalyzer on %s", fileName)
         # run dartanalyzer in its own thread
         RunDartanalyzer(view, fileName, self.settings, False)
 
@@ -268,7 +284,8 @@ class DartLintThread(threading.Thread):
                                 startupinfo=startupinfo, )
         try:
             outs, errs = proc.communicate(timeout=15)
-        except TimeoutExpired:
+        except TimeoutExpired as e:
+            logger.debug("error running DartLintThread: " + e.message)
             proc.kill()
             outs, errs = proc.communicate()
 
@@ -424,7 +441,7 @@ class DartLintThread(threading.Thread):
 
     def clear_all(self):
         for region_name in \
-                ('dartlint_INFO', 'dartlint_WARNING', 'dartlint_ERROR'):
+                ('dartlint_debug', 'dartlint_WARNING', 'dartlint_ERROR'):
             self.view.erase_regions(region_name)
             self.view.erase_regions(region_name + '_gutter')
 
