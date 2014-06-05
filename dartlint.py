@@ -441,7 +441,7 @@ class DartLintThread(threading.Thread):
 
     def clear_all(self):
         for region_name in \
-                ('dartlint_debug', 'dartlint_WARNING', 'dartlint_ERROR'):
+                ('dartlint_INFO', 'dartlint_WARNING', 'dartlint_ERROR'):
             self.view.erase_regions(region_name)
             self.view.erase_regions(region_name + '_gutter')
 
