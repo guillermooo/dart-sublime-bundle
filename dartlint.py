@@ -120,20 +120,26 @@ class DartLint(sublime_plugin.EventListener):
         sublime_plugin.EventListener.__init__(self, *args, **kwargs)
         print("Dartlint plugin loaded.")
 
-    def on_post_save(self, view):
-        self.check_theme(view)
+    @property
+    def do_lint_on_post_save(self):
+        return (self.do_lint and self.do_save)
 
-        # Is the linter disabled?
-        if not self.do_lint or not self.do_save:
+    @property
+    def do_lint_on_load(self):
+        return (self.do_lint and self.do_load)
+
+    def on_post_save(self, view):
+        if not is_dart_script(view):
+            logger.debug("not a dart file: %s", view.file_name())
+            return
+
+        if not self.do_lint_on_post_save:
             logger.debug("linter is disabled (on_post_save)")
             logger.debug("do_lint: %s", str(self.do_lint))
             logger.debug("do_save: %s", str(self.do_save))
             return
 
-        fileName = view.file_name()
-        if view.file_name().endswith('.dart') is False:
-            logger.debug("not a dart file: %s", fileName)
-            return
+        self.check_theme(view)
 
         print("Dart lint: Running dartanalyzer on ", fileName)
         logger.debug("running dartanalyzer on %s", fileName)
@@ -141,17 +147,15 @@ class DartLint(sublime_plugin.EventListener):
         RunDartanalyzer(view, fileName, self.settings, True)
 
     def on_load(self, view):
-        self.check_theme(view)
+        if not is_dart_script(view):
+            logger.debug("not a dart file: %s", view.file_name())
+            return
 
-        # Is the linter or function disabled?
-        if not self.do_lint or not self.do_load:
+        if not self.do_lint_on_load:
             logger.debug("linter is disabled (on_load)")
             return
 
-        fileName = view.file_name()
-        if view.file_name().endswith('.dart') is False:
-            logger.debug("not a dart file: %s", fileName)
-            return
+        self.check_theme(view)
 
         print("Dart lint: Running dartanalyzer on ", fileName)
         logger.debug("running dartanalyzer on %s", fileName)
@@ -447,4 +451,14 @@ class DartLintThread(threading.Thread):
 
 
 def is_windows():
-        return sublime.platform() == 'windows'
+    return sublime.platform() == 'windows'
+
+
+def extension_equals(view, extension):
+    if view.file_name() is None:
+        return False
+    return os.path.splitext(view.file_name())[1] == extension
+
+
+def is_dart_script(view):
+    return extension_equals(view, '.dart')
