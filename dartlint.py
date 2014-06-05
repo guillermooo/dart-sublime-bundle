@@ -129,7 +129,7 @@ class DartLint(sublime_plugin.EventListener):
         return (self.do_lint and self.do_load)
 
     def on_post_save(self, view):
-        if not is_dart_script(view):
+        if not is_view_dart_script(view):
             logger.debug("not a dart file: %s", view.file_name())
             return
 
@@ -147,7 +147,7 @@ class DartLint(sublime_plugin.EventListener):
         RunDartanalyzer(view, fileName, self.settings, True)
 
     def on_load(self, view):
-        if not is_dart_script(view):
+        if not is_view_dart_script(view):
             logger.debug("not a dart file: %s", view.file_name())
             return
 
@@ -454,11 +454,31 @@ def is_windows():
     return sublime.platform() == 'windows'
 
 
-def extension_equals(view, extension):
+def view_extension_equals(view, extension):
+    """Compares @view's extensions with @extension.
+
+    Returns `True` if they are the same.
+    Returns `False` if @view isn't saved on disk.
+    """
     if view.file_name() is None:
         return False
-    return os.path.splitext(view.file_name())[1] == extension
+    return extension_equals(view.file_name(), extension)
 
 
-def is_dart_script(view):
-    return extension_equals(view, '.dart')
+def extension_equals(path, extension):
+    return os.path.splitext(path)[1] == extension
+
+
+def is_view_dart_script(view):
+    """Checks whether @view looks like a Dart script file.
+
+    Returns `True` if @view's file name ends with '.dart'.
+    Returns `False` if @view isn't saved on disk.
+    """
+    if view.file_name() is None:
+        return False
+    return is_dart_script(view.file_name())
+
+
+def is_dart_script(path):
+    return extension_equals(path, '.dart')
