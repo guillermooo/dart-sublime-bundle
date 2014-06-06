@@ -1,112 +1,148 @@
-# Dart bundle for Sublime
+# Dart – Sublime Text Package
 
-This bundle provides basic Dart support for Sublime Text. This bundle supports
-both Sublime Text 2 and the Sublime Text 3 Beta. The following features are
-currently provided:
 
-* Syntax highlighting.
-* Preferences for comments so that you can use CMD-/ to (de)comment source
-  lines.
-* Some snippets for inserting common Dart code.
-* dart2js support through Sublime's build system.
-* Support for installing Pub packages.
-* dartanalyzer support for Linter feedback.
+## Overview
 
-The bundle identifies dart source by the file extension (.dart).
+Basic Dart support for Sublime Text 3. These are the current features at a
+glance:
 
-For an overview of installing and working with this plugin, check out our
-[introductory video][6].
+* Syntax highlighting
+* Comment/uncomment lines and text blocks.
+* Snippets
+* JavaScript translation through `dart2js` using ST3's build system
+* Pub support to manage Dart packages
+* Code linting using `dartanalyzer`
+* Basic symbol navigation using ST3's built-in symbol indexing
+* Works on **OS X**, **Linux** and **Windows**
 
-PRE-REQ
-=======
+Most features are only active in files with a `.dart` extension.
 
-You will need the Dart SDK before you use the full features of this bundle.
+Check out or [introductory video][6] for a short tutorial on using this pacakge.
+
+
+## Getting Started
+
+Things to do before you can take full advantage of this package.
 
 1. [Download and install the Dart SDK][sdk]
-2. Ensure the SDK's `bin` directory is on your path.
+2. Make sure the SDK's `bin` directory is on your PATH.
 
-INSTALLATION
-============
 
-If you are using the [Package Control][1] plugin, installation is very easy.
-Open the command palette (CTRL-SHIFT-P or CMD-SHIFT-P), type 'Install' and
-select 'Package Control: Install Package' from the list. Next, type 'Dart' and
-select the Dart package from the list. You may need to close and reopen any Dart
-files you currently have open for the syntax highlighting to activate.
+## Installation
 
-To install this package manually, copy the the contents of this repository to a
-new directory in the Sublime packages directory (on OSX:
-~/Library/Application Support/Sublime Text 2/Packages).
+You can install the Dart package in two ways.
 
-For the best experience, make sure the `dart-sdk/bin` directory is on your path.
-Also, add the `dartsdk_path` variable to your user settings:
+### Using Package Control
 
+Installing through the [Package Control][1] plugin is the easiest way:
+
+- Open the command palette (<kbd>Ctrl+Shift+P</kbd> or <kbd>⌘+Shift+P</kbd>)
+- Type 'install'
+- Select **Package Control: Install Package** from the list
+- Type 'Dart'
+- Select Dart package from the list
+
+You may need to restart ST3 before you can start using all the features in the
+package.
+
+### Manually
+
+- Clone this repository
+- Copy its content to a new *Dart* directory inside *Packages*
+
+To quicklu open your *Packages* folder, select **Preferences → Browse Packages**
+from the ST3 menu or use the command palette.
+
+---
+
+For an optimal experience:
+
+- Add Dart's SDK *bin* directory to your path
+- Add the `dartsdk_path` variable to your ST3 user settings
+
+```json
     {
-      "dartsdk_path" : "/Users/foo/dart-sdk"  
+      "dartsdk_path" : "/Users/foo/dart-sdk"
     }
+```
 
-Looking for an IDE experience? Try [Dart Editor][2],
-[Dart plugin for Eclipse][3], or [Dart plugin for IntelliJ/WebStorm][4].
+---
 
-BUILD SYSTEM USAGE
-==================
+Looking for an IDE experience? Try [Dart Editor][2], the
+[Dart plugin for Eclipse][3], or the [Dart plugin for IntelliJ/WebStorm][4].
 
-  - CTRL+B or CMD+B will run the dart2js compiler on the current open file.
-  - Open the command pallete (CTRL-SHIFT-P or CMD-SHIFT-P), type 'Dart' to see
-    other Dart commands: `Run`, `Analyzer`, `pub install`, `pub update`.
+## Using the Build System
 
-LINTER USAGE
-============
-### Turning on the linter
+<kbd>Ctrl+B</kbd> or <kbd>⌘+B</kbd> will run the `dart2js` compiler on
+the active file.
 
-By default the dartanalyzer feedback is turned off.  If you would like to use this feature you will need to change the `dartlint_active` setting to `true`.
+Browse other Dart commands via ST3's command pallete: `Run`, `Analyzer`,
+`pub install`, `pub update`...
 
-    {
-        ...
-        
-        "dartlint_active" : true, 
-        
-        ...
-    }
-### Changing when the linter runs
- 
-The linter will run when documents are loaded, and when they are saved.  If you would like to change this behaviour you can change either of these settings to `false` to turn them off:
 
-    {
-    	...
-    	
-    	"dartlint_on_load" : true,
-    	"dartlint_on_save" : true,
-    	
-    	...
-    }
+## Using the Linter
 
-### Changing the initial highlight colors
+### Getting Started
 
-Highlight colors can be customized by changing the `dartlint_underline_color_error`, `dartlint_underline_color_warning`, and `dartlint_underline_color_info` settings.  
+The `dartanalyzer` is deactivated by default. To use this feature you must
+set the `dartlint_active` setting to `true`.
 
-Gutter icons can be changed with the `dartlint_gutter_icon_error`, `dartlint_gutter_icon_warning`, and `dartlint_gutter_icon_info` settings.  Icon paths must start from the Packages directory. 
+You may need to make this change in `Packages/User/Preferences.sublime-settings`
+or in a `Dart.sublime-settings` file within your `Packages/User` folder.
 
-Example: `"dartlint_gutter_icon_error" : "Packages/Users/Icons/error.png"`.
+```json
+{
+  "dartlint_active" : true,
+}
+```
 
-### Changing the linter popup behaviour
- 
-The setting `dartlint_show_popup_level` sets the level of severity to trigger a pop up.  Possible values are: 
-   
-`ERROR` - Will only show pop up when there are errors in the source.
+### Configuration
 
-`WARNING` - Will show pop up on errors and warnings.
+The linter will run when Dart scripts are loaded or saved. You can change this
+behavior through the `dartlint_on_load` and `dartlint_on_save` settings.
 
-`INFO` - Will show a pop up on any results from dartanalyzer. 
 
-DEVELOPMENT
-===========
+### Customizing Highlight Colors
 
-Please ensure that all .tmPreferences, .tmLanguage, .tmSnippets, etc. files stay
-in sync with the related [Dart TextMate repository][5].
+Use the following settings:
 
-LICENSE
-=======
+- `dartlint_underline_color_error`,
+- `dartlint_underline_color_warning`
+- `dartlint_underline_color_info`
+
+To customize gutter icons:
+
+`dartlint_gutter_icon_error`
+`dartlint_gutter_icon_warning`
+`dartlint_gutter_icon_info`
+
+Paths to icons must start at the *Packages* directory.
+
+#### Example
+
+```json
+{
+  `"dartlint_gutter_icon_error" : "Packages/Users/Icons/error.png"`
+}
+```
+
+### Linter Popup Configuration
+
+Use `dartlint_show_popup_level` setting to control when the pop up should
+show. Valid values are:
+
+- `ERROR`
+- `WARNING`
+- `INFO`
+
+
+## DEVELOPMENT
+
+Please ensure that all .tmPreferences, .tmLanguage, .tmSnippets, etc. files
+stay in sync with the related [Dart TextMate repository][5].
+
+
+## LICENSE
 
     Copyright 2012, the Dart project authors. All rights reserved.
     Redistribution and use in source and binary forms, with or without
