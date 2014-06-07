@@ -11,6 +11,12 @@ import subprocess
 import threading
 
 from . import PluginLogger
+from .lib.path import extension_equals
+from .lib.path import is_dart_script
+from .lib.path import is_view_dart_script
+from .lib.path import view_extension_equals
+from .lib.plat import is_windows
+
 
 logger = PluginLogger(__name__)
 
@@ -455,37 +461,3 @@ class DartLintThread(threading.Thread):
                 ('dartlint_INFO', 'dartlint_WARNING', 'dartlint_ERROR'):
             self.view.erase_regions(region_name)
             self.view.erase_regions(region_name + '_gutter')
-
-
-def is_windows():
-    return sublime.platform() == 'windows'
-
-
-def view_extension_equals(view, extension):
-    """Compares @view's extensions with @extension.
-
-    Returns `True` if they are the same.
-    Returns `False` if @view isn't saved on disk.
-    """
-    if view.file_name() is None:
-        return False
-    return extension_equals(view.file_name(), extension)
-
-
-def extension_equals(path, extension):
-    return os.path.splitext(path)[1] == extension
-
-
-def is_view_dart_script(view):
-    """Checks whether @view looks like a Dart script file.
-
-    Returns `True` if @view's file name ends with '.dart'.
-    Returns `False` if @view isn't saved on disk.
-    """
-    if view.file_name() is None:
-        return False
-    return is_dart_script(view.file_name())
-
-
-def is_dart_script(path):
-    return extension_equals(path, '.dart')

@@ -1,10 +1,12 @@
 import sublime
 import sublime_plugin
+
+from os.path import join
 import os
 import subprocess
 import threading
 
-from os.path import join
+from .lib.plat import is_windows
 
 
 class PubspecListener(sublime_plugin.EventListener):
@@ -35,7 +37,7 @@ class PubThread(threading.Thread):
         self.file_name = file_name
 
     def get_startupinfo(self):
-        if IsWindows():
+        if is_windows():
             startupinfo = subprocess.STARTUPINFO()
             startupinfo.dwFlags |= subprocess.STARTF_USESHOWWINDOW
             startupinfo.wShowWindow = subprocess.SW_HIDE
@@ -45,7 +47,7 @@ class PubThread(threading.Thread):
     def run(self):
         working_directory = os.path.dirname(self.file_name)
         pub_path = join(self.dartsdk_path, 'bin', 'pub')
-        if IsWindows():
+        if is_windows():
             pub_path += '.bat'
 
         print('pub install %s' % self.file_name)
@@ -64,7 +66,3 @@ class PubThread(threading.Thread):
         edit = output_panel.begin_edit()
         output_panel.insert(edit, output_panel.size(), self.output)
         output_panel.end_edit(edit)
-
-
-def IsWindows():
-    return sublime.platform() == 'windows'
