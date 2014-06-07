@@ -7,6 +7,11 @@ import subprocess
 import threading
 
 from .lib.plat import is_windows
+from .lib.plat import supress_window
+from . import PluginLogger
+
+
+_logger = PluginLogger(__name__)
 
 
 class PubspecListener(sublime_plugin.EventListener):
@@ -17,15 +22,18 @@ class PubspecListener(sublime_plugin.EventListener):
         name = view.file_name()
 
         if os.path.basename(name) == 'pubspec.yaml':
+            _logger.debug("running pub with %s", name)
             RunPub(view, name)
 
 
 def RunPub(view, file_name):
-    settings = view.settings()
-    dartsdk_path = settings.get('dartsdk_path')
+    dartsdk_path = view.settings.get('dartsdk_path')
 
-    if dartsdk_path:
-        PubThread(view.window(), dartsdk_path, file_name).start()
+    if not dartsdk_path:
+        _logger.debug("`dartsdk_path` missing; aborting pub")
+        return
+
+    PubThread(view.window(), dartsdk_path, file_name).start()
 
 
 class PubThread(threading.Thread):
@@ -36,27 +44,23 @@ class PubThread(threading.Thread):
         self.dartsdk_path = dartsdk_path
         self.file_name = file_name
 
-    def get_startupinfo(self):
-        if is_windows():
-            startupinfo = subprocess.STARTUPINFO()
-            startupinfo.dwFlags |= subprocess.STARTF_USESHOWWINDOW
-            startupinfo.wShowWindow = subprocess.SW_HIDE
-            return startupinfo
-        return None
-
     def run(self):
         working_directory = os.path.dirname(self.file_name)
         pub_path = join(self.dartsdk_path, 'bin', 'pub')
+
         if is_windows():
             pub_path += '.bat'
 
         print('pub install %s' % self.file_name)
-        proc = subprocess.Popen([pub_path, 'install'], cwd=working_directory,
-            stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
-            startupinfo=self.get_startupinfo())
+        proc = subprocess.Popen([pub_path, 'install'],
+                                cwd=working_directory,
+                                stdout=subprocess.PIPE,
+                                stderr=subprocess.STDOUT,
+                                startupinfo=supress_window())
         out, _ = proc.communicate()
 
         if proc.returncode != 0:
+            _logger.error("error running pub: %s\n%s", self.file_name, out)
             self.output = 'error running pub: %s\n%s' % (self.file_name, out)
             sublime.set_timeout(self.callback, 0)
 

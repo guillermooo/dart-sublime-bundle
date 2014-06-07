@@ -16,6 +16,7 @@ from .lib.path import is_dart_script
 from .lib.path import is_view_dart_script
 from .lib.path import view_extension_equals
 from .lib.plat import is_windows
+from .lib.plat import supress_window
 
 
 logger = PluginLogger(__name__)
@@ -291,11 +292,7 @@ class DartLintThread(threading.Thread):
         if is_windows():
             analyzer_path += '.bat'
         options = '--machine'
-        startupinfo = None
-        if os.name == "nt":
-            startupinfo = subprocess.STARTUPINFO()
-            startupinfo.dwFlags |= subprocess.STARTF_USESHOWWINDOW
-
+        startupinfo = supress_window()
         proc = subprocess.Popen([analyzer_path, options, self.fileName],
                                 stdout=subprocess.PIPE, stderr=subprocess.PIPE,
                                 startupinfo=startupinfo, )
