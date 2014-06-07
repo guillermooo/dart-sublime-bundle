@@ -6,6 +6,7 @@ import threading
 
 from os.path import join
 
+
 class PubspecListener(sublime_plugin.EventListener):
     def __init__(self, *args, **kwargs):
         sublime_plugin.EventListener.__init__(self, *args, **kwargs)
@@ -15,6 +16,7 @@ class PubspecListener(sublime_plugin.EventListener):
 
         if os.path.basename(name) == 'pubspec.yaml':
             RunPub(view, name)
+
 
 def RunPub(view, fileName):
     settings = view.settings()
