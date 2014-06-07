@@ -59,7 +59,7 @@ class OutputPanel(object):
         self.view.settings().set(name, value)
 
     def write(self, text):
-        assert text is str, 'must pass decoded text data'
+        assert isinstance(text, str), 'must pass decoded text data'
         fun = lambda: self.view.run_command('append', {'characters': text})
         sublime.set_timeout(fun, 0)
 
