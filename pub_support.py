@@ -8,6 +8,7 @@ import threading
 
 from .lib.plat import is_windows
 from .lib.plat import supress_window
+from .lib.panels import OutputPanel
 from . import PluginLogger
 
 
@@ -73,6 +74,6 @@ class PubThread(threading.Thread):
         return data.replace('\r', '')
 
     def callback(self, data):
-        panel = self.window.get_output_panel('pub')
-        panel.run_command('append', {'characters': self.format_data(data)})
-        self.window.run_command('show_panel', {'panel': 'output.pub'})
+        panel = OutputPanel('dart.pub')
+        panel.write(self.format_data(data))
+        panel.show()
