@@ -27,7 +27,7 @@ class PubspecListener(sublime_plugin.EventListener):
 
 
 def RunPub(view, file_name):
-    dartsdk_path = view.settings.get('dartsdk_path')
+    dartsdk_path = view.settings().get('dartsdk_path')
 
     if not dartsdk_path:
         _logger.debug("`dartsdk_path` missing; aborting pub")
@@ -36,6 +36,7 @@ def RunPub(view, file_name):
     PubThread(view.window(), dartsdk_path, file_name).start()
 
 
+# TODO(guillermooo): Perhaps we can replace this with Default.exec.AsyncProc.
 class PubThread(threading.Thread):
     def __init__(self, window, dartsdk_path, file_name):
         super(PubThread, self).__init__()
@@ -57,16 +58,21 @@ class PubThread(threading.Thread):
                                 stdout=subprocess.PIPE,
                                 stderr=subprocess.STDOUT,
                                 startupinfo=supress_window())
-        out, _ = proc.communicate()
+
+        out, errs = proc.communicate()
+        data = out.decode('utf-8')
 
         if proc.returncode != 0:
-            _logger.error("error running pub: %s\n%s", self.file_name, out)
-            self.output = 'error running pub: %s\n%s' % (self.file_name, out)
-            sublime.set_timeout(self.callback, 0)
+            errs = errs.decode('utf-8')
+            _logger.error("error running pub: %s\n%s", self.file_name, errs)
+            data = 'error running pub: %s\n%s' % (self.file_name, errs)
 
-    def callback(self):
-        output_panel = self.window.get_output_panel('pub')
+        sublime.set_timeout(lambda: self.callback(data), 50)
+
+    def format_data(self, data):
+        return data.replace('\r', '')
+
+    def callback(self, data):
+        panel = self.window.get_output_panel('pub')
+        panel.run_command('append', {'characters': self.format_data(data)})
         self.window.run_command('show_panel', {'panel': 'output.pub'})
-        edit = output_panel.begin_edit()
-        output_panel.insert(edit, output_panel.size(), self.output)
-        output_panel.end_edit(edit)
