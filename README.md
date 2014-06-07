@@ -1,5 +1,7 @@
 # Dart – Sublime Text Package
 
+ Works on **OS X**, **Linux** and **Windows**
+ 
 
 ## Overview
 
@@ -7,25 +9,33 @@ Basic Dart support for Sublime Text 3. These are the current features at a
 glance:
 
 * Syntax highlighting
-* Comment/uncomment lines and text blocks.
+* Comment/uncomment lines and text blocks
 * Snippets
 * JavaScript translation through `dart2js` using ST3's build system
 * Pub support to manage Dart packages
 * Code linting using `dartanalyzer`
 * Basic symbol navigation using ST3's built-in symbol indexing
-* Works on **OS X**, **Linux** and **Windows**
 
 Most features are only active in files with a `.dart` extension.
 
-Check out or [introductory video][6] for a short tutorial on using this pacakge.
+Check out or [introductory video][6] for a short tutorial on using this package.
 
 
 ## Getting Started
 
-Things to do before you can take full advantage of this package.
+Follow these steps to take full advantage of this package.
 
 1. [Download and install the Dart SDK][sdk]
-2. Make sure the SDK's `bin` directory is on your PATH.
+2. Make sure the SDK's `bin` directory is on your PATH
+3. Set the `dartsdk_path` variable in your ST3 user settings
+
+##### Example:
+
+```json
+    {
+      "dartsdk_path" : "/Users/foo/dart-sdk" // Ajust as necessary.
+    }
+```
 
 
 ## Installation
@@ -34,13 +44,13 @@ You can install the Dart package in two ways.
 
 ### Using Package Control
 
-Installing through the [Package Control][1] plugin is the easiest way:
+Installing through the [Package Control][1] plugin is the recommended way:
 
 - Open the command palette (<kbd>Ctrl+Shift+P</kbd> or <kbd>⌘+Shift+P</kbd>)
 - Type 'install'
-- Select **Package Control: Install Package** from the list
+- Select **Package Control: Install Package**
 - Type 'Dart'
-- Select Dart package from the list
+- Select the 'Dart'
 
 You may need to restart ST3 before you can start using all the features in the
 package.
@@ -50,21 +60,8 @@ package.
 - Clone this repository
 - Copy its content to a new *Dart* directory inside *Packages*
 
-To quicklu open your *Packages* folder, select **Preferences → Browse Packages**
+To quickly open your *Packages* folder, select **Preferences → Browse Packages**
 from the ST3 menu or use the command palette.
-
----
-
-For an optimal experience:
-
-- Add Dart's SDK *bin* directory to your path
-- Add the `dartsdk_path` variable to your ST3 user settings
-
-```json
-    {
-      "dartsdk_path" : "/Users/foo/dart-sdk"
-    }
-```
 
 ---
 
@@ -73,26 +70,28 @@ Looking for an IDE experience? Try [Dart Editor][2], the
 
 ## Using the Build System
 
-<kbd>Ctrl+B</kbd> or <kbd>⌘+B</kbd> will run the `dart2js` compiler on
-the active file.
+<kbd>Ctrl+B</kbd>/<kbd>⌘+B</kbd> will run the `dart2js` compiler on the active
+file.
 
 Browse other Dart commands via ST3's command pallete: `Run`, `Analyzer`,
-`pub install`, `pub update`...
+`pub install`, `pub update`…
 
 
 ## Using the Linter
 
 ### Getting Started
 
-The `dartanalyzer` is deactivated by default. To use this feature you must
+The code linter is deactivated by default. To activate this feature you must
 set the `dartlint_active` setting to `true`.
 
-You may need to make this change in `Packages/User/Preferences.sublime-settings`
-or in a `Dart.sublime-settings` file within your `Packages/User` folder.
+(You may need to make this change in `Packages/User/Preferences.sublime-settings`
+or in a `Dart.sublime-settings` file within your `Packages/User` folder.)
+
+##### Example:
 
 ```json
 {
-  "dartlint_active" : true,
+  "dartlint_active" : true
 }
 ```
 
@@ -106,7 +105,7 @@ behavior through the `dartlint_on_load` and `dartlint_on_save` settings.
 
 Use the following settings:
 
-- `dartlint_underline_color_error`,
+- `dartlint_underline_color_error`
 - `dartlint_underline_color_warning`
 - `dartlint_underline_color_info`
 
@@ -118,11 +117,11 @@ To customize gutter icons:
 
 Paths to icons must start at the *Packages* directory.
 
-#### Example
+##### Example:
 
 ```json
 {
-  `"dartlint_gutter_icon_error" : "Packages/Users/Icons/error.png"`
+  "dartlint_gutter_icon_error" : "Packages/Users/Icons/error.png"
 }
 ```
 
@@ -136,13 +135,7 @@ show. Valid values are:
 - `INFO`
 
 
-## DEVELOPMENT
-
-Please ensure that all .tmPreferences, .tmLanguage, .tmSnippets, etc. files
-stay in sync with the related [Dart TextMate repository][5].
-
-
-## LICENSE
+## License
 
     Copyright 2012, the Dart project authors. All rights reserved.
     Redistribution and use in source and binary forms, with or without
