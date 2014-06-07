@@ -1,7 +1,7 @@
 # Dart – Sublime Text Package
 
  Works on **OS X**, **Linux** and **Windows**
- 
+
 
 ## Overview
 
@@ -33,7 +33,7 @@ Follow these steps to take full advantage of this package.
 
 ```json
     {
-      "dartsdk_path" : "/Users/foo/dart-sdk" // Ajust as necessary.
+      "dartsdk_path" : "/Users/foo/dart-sdk"
     }
 ```
 
@@ -50,7 +50,7 @@ Installing through the [Package Control][1] plugin is the recommended way:
 - Type 'install'
 - Select **Package Control: Install Package**
 - Type 'Dart'
-- Select the 'Dart'
+- Select 'Dart'
 
 You may need to restart ST3 before you can start using all the features in the
 package.
