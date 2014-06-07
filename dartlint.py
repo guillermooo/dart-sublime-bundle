@@ -133,6 +133,7 @@ class DartLint(sublime_plugin.EventListener):
             logger.debug("not a dart file: %s", view.file_name())
             return
 
+        self.load_settings(view)
         if not self.do_lint_on_post_save:
             logger.debug("linter is disabled (on_post_save)")
             logger.debug("do_lint: %s", str(self.do_lint))
@@ -141,34 +142,40 @@ class DartLint(sublime_plugin.EventListener):
 
         self.check_theme(view)
 
-        print("Dart lint: Running dartanalyzer on ", fileName)
-        logger.debug("running dartanalyzer on %s", fileName)
+        file_name = view.file_name()
+        print("Dart lint: Running dartanalyzer on ", file_name)
+        logger.debug("running dartanalyzer on %s", file_name)
         # run dartanalyzer in its own thread
-        RunDartanalyzer(view, fileName, self.settings, True)
+        RunDartanalyzer(view, file_name, self.settings, True)
 
     def on_load(self, view):
         if not is_view_dart_script(view):
             logger.debug("not a dart file: %s", view.file_name())
             return
 
+        self.load_settings(view)
         if not self.do_lint_on_load:
             logger.debug("linter is disabled (on_load)")
             return
 
         self.check_theme(view)
 
-        print("Dart lint: Running dartanalyzer on ", fileName)
-        logger.debug("running dartanalyzer on %s", fileName)
+        file_name = view.file_name()
+        print("Dart lint: Running dartanalyzer on ", file_name)
+        logger.debug("running dartanalyzer on %s", file_name)
         # run dartanalyzer in its own thread
-        RunDartanalyzer(view, fileName, self.settings, False)
+        RunDartanalyzer(view, file_name, self.settings, False)
 
-    def check_theme(self, view):
-        # Get some settings
+    def load_settings(self, view):
         self.settings = view.settings()
         self.do_lint = self.settings.get('dartlint_active')
         self.do_save = self.settings.get('dartlint_on_save')
         self.do_load = self.settings.get('dartlint_on_load')
         self.do_modify = self.settings.get('dartlint_on_modify')
+
+    def check_theme(self, view):
+        # Get some settings
+        self.settings = view.settings()
         error_color = self.settings.get('dartlint_underline_color_error')
         warn_color = self.settings.get('dartlint_underline_color_warning')
         info_color = self.settings.get('dartlint_underline_color_info')
