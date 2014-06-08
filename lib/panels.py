@@ -58,8 +58,12 @@ class OutputPanel(object):
     def set(self, name, value):
         self.view.settings().set(name, value)
 
+    def _clean_text(self, text):
+        return text.replace('\r', '')
+
     def write(self, text):
         assert isinstance(text, str), 'must pass decoded text data'
+        text = self._clean_text(text)
         fun = lambda: self.view.run_command('append', {'characters': text})
         sublime.set_timeout(fun, 0)
 
