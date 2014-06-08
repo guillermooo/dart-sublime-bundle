@@ -17,6 +17,7 @@ from .lib.path import is_view_dart_script
 from .lib.path import view_extension_equals
 from .lib.plat import is_windows
 from .lib.plat import supress_window
+from .lib.panels import OutputPanel
 
 
 logger = PluginLogger(__name__)
@@ -153,7 +154,10 @@ class DartLint(sublime_plugin.EventListener):
         print("Dart lint: Running dartanalyzer on ", file_name)
         logger.debug("running dartanalyzer on %s", file_name)
         # run dartanalyzer in its own thread
-        RunDartanalyzer(view, file_name, self.settings, True)
+        # TODO(guillermooo): Disable quick list error navigation, since we are
+        # enabling output panel-based error navigation (via F4). We should
+        # choose one of the two and remove the other.
+        RunDartanalyzer(view, file_name, self.settings, show_popup=False)
 
     def on_load(self, view):
         if not is_view_dart_script(view):
@@ -294,21 +298,30 @@ class DartLintThread(threading.Thread):
         options = '--machine'
         startupinfo = supress_window()
         proc = subprocess.Popen([analyzer_path, options, self.fileName],
-                                stdout=subprocess.PIPE, stderr=subprocess.PIPE,
-                                startupinfo=startupinfo, )
+                                stdout=subprocess.PIPE,
+                                stderr=subprocess.PIPE,
+                                startupinfo=startupinfo)
         try:
             outs, errs = proc.communicate(timeout=15)
         except TimeoutExpired as e:
-            logger.debug("error running DartLintThread: " + e.message)
+            logger.debug("error running DartLintThread: ", e.message)
             proc.kill()
             outs, errs = proc.communicate()
 
-        msg_pattern_machine = re.compile(
-            r'^(?P<severity>\w+)\|(?P<type>\w+)\|(?P<code>\w+)\|'
-            '(?P<file_name>.+)\|(?P<line>\d+)\|(?P<col>\d+)\|'
-            '(?P<err_length>\d+)\|(?P<message>.+)')
+        pattern = (r'^(?P<severity>\w+)\|(?P<type>\w+)\|(?P<code>\w+)\|' +
+            r'(?P<file_name>.+)\|(?P<line>\d+)\|(?P<col>\d+)\|' +
+            r'(?P<err_length>\d+)\|(?P<message>.+)')
+        msg_pattern_machine = re.compile(pattern)
 
-        lines = errs.decode('UTF-8').split(os.linesep)
+        lines = errs.decode('utf-8').split(os.linesep)
+
+        # Show errors in output panel and enable error navigation via F4.
+        panel = OutputPanel('dart.analyzer')
+        # Capture file name, rowcol and error message information.
+        errors_pattern = r'^\w+\|\w+\|\w+\|(.+)\|(\d+)\|(\d+)\|\d+\|(.+)'
+        panel.set('result_file_regex', errors_pattern)
+        panel.write(errs.decode('utf-8'))
+        panel.show()
 
         # Collect data needed to generate error messages
         lint_data = []
