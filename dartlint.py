@@ -11,6 +11,7 @@ import subprocess
 import threading
 
 from . import PluginLogger
+from .lib.encoding import utf8_to_text
 from .lib.path import extension_equals
 from .lib.path import is_dart_script
 from .lib.path import is_view_dart_script
@@ -313,14 +314,14 @@ class DartLintThread(threading.Thread):
             r'(?P<err_length>\d+)\|(?P<message>.+)')
         msg_pattern_machine = re.compile(pattern)
 
-        lines = errs.decode('utf-8').split(os.linesep)
+        lines = utf8_to_text(errs).split(os.linesep)
 
         # Show errors in output panel and enable error navigation via F4.
         panel = OutputPanel('dart.analyzer')
         # Capture file name, rowcol and error message information.
         errors_pattern = r'^\w+\|\w+\|\w+\|(.+)\|(\d+)\|(\d+)\|\d+\|(.+)'
         panel.set('result_file_regex', errors_pattern)
-        panel.write(errs.decode('utf-8'))
+        panel.write(utf8_to_text(errs))
         panel.show()
 
         # Collect data needed to generate error messages
