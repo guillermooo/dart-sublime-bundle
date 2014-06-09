@@ -1,11 +1,11 @@
-import unittest
-
 import sublime
 
-from Dart.dartlint import is_dart_script
-from Dart.dartlint import is_view_dart_script
-from Dart.dartlint import extension_equals
-from Dart.dartlint import view_extension_equals
+import unittest
+
+from Dart.lib.path import is_dart_script
+from Dart.lib.path import is_view_dart_script
+from Dart.lib.path import extension_equals
+from Dart.lib.path import view_extension_equals
 
 
 class Test_is_dart_script(unittest.TestCase):

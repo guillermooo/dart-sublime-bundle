@@ -11,6 +11,14 @@ import subprocess
 import threading
 
 from . import PluginLogger
+from .lib.path import extension_equals
+from .lib.path import is_dart_script
+from .lib.path import is_view_dart_script
+from .lib.path import view_extension_equals
+from .lib.plat import is_windows
+from .lib.plat import supress_window
+from .lib.panels import OutputPanel
+
 
 logger = PluginLogger(__name__)
 
@@ -133,6 +141,7 @@ class DartLint(sublime_plugin.EventListener):
             logger.debug("not a dart file: %s", view.file_name())
             return
 
+        self.load_settings(view)
         if not self.do_lint_on_post_save:
             logger.debug("linter is disabled (on_post_save)")
             logger.debug("do_lint: %s", str(self.do_lint))
@@ -141,34 +150,43 @@ class DartLint(sublime_plugin.EventListener):
 
         self.check_theme(view)
 
-        print("Dart lint: Running dartanalyzer on ", fileName)
-        logger.debug("running dartanalyzer on %s", fileName)
+        file_name = view.file_name()
+        print("Dart lint: Running dartanalyzer on ", file_name)
+        logger.debug("running dartanalyzer on %s", file_name)
         # run dartanalyzer in its own thread
-        RunDartanalyzer(view, fileName, self.settings, True)
+        # TODO(guillermooo): Disable quick list error navigation, since we are
+        # enabling output panel-based error navigation (via F4). We should
+        # choose one of the two and remove the other.
+        RunDartanalyzer(view, file_name, self.settings, show_popup=False)
 
     def on_load(self, view):
         if not is_view_dart_script(view):
             logger.debug("not a dart file: %s", view.file_name())
             return
 
+        self.load_settings(view)
         if not self.do_lint_on_load:
             logger.debug("linter is disabled (on_load)")
             return
 
         self.check_theme(view)
 
-        print("Dart lint: Running dartanalyzer on ", fileName)
-        logger.debug("running dartanalyzer on %s", fileName)
+        file_name = view.file_name()
+        print("Dart lint: Running dartanalyzer on ", file_name)
+        logger.debug("running dartanalyzer on %s", file_name)
         # run dartanalyzer in its own thread
-        RunDartanalyzer(view, fileName, self.settings, False)
+        RunDartanalyzer(view, file_name, self.settings, False)
 
-    def check_theme(self, view):
-        # Get some settings
+    def load_settings(self, view):
         self.settings = view.settings()
         self.do_lint = self.settings.get('dartlint_active')
         self.do_save = self.settings.get('dartlint_on_save')
         self.do_load = self.settings.get('dartlint_on_load')
         self.do_modify = self.settings.get('dartlint_on_modify')
+
+    def check_theme(self, view):
+        # Get some settings
+        self.settings = view.settings()
         error_color = self.settings.get('dartlint_underline_color_error')
         warn_color = self.settings.get('dartlint_underline_color_warning')
         info_color = self.settings.get('dartlint_underline_color_info')
@@ -278,27 +296,32 @@ class DartLintThread(threading.Thread):
         if is_windows():
             analyzer_path += '.bat'
         options = '--machine'
-        startupinfo = None
-        if os.name == "nt":
-            startupinfo = subprocess.STARTUPINFO()
-            startupinfo.dwFlags |= subprocess.STARTF_USESHOWWINDOW
-
+        startupinfo = supress_window()
         proc = subprocess.Popen([analyzer_path, options, self.fileName],
-                                stdout=subprocess.PIPE, stderr=subprocess.PIPE,
-                                startupinfo=startupinfo, )
+                                stdout=subprocess.PIPE,
+                                stderr=subprocess.PIPE,
+                                startupinfo=startupinfo)
         try:
             outs, errs = proc.communicate(timeout=15)
         except TimeoutExpired as e:
-            logger.debug("error running DartLintThread: " + e.message)
+            logger.debug("error running DartLintThread: ", e.message)
             proc.kill()
             outs, errs = proc.communicate()
 
-        msg_pattern_machine = re.compile(
-            r'^(?P<severity>\w+)\|(?P<type>\w+)\|(?P<code>\w+)\|'
-            '(?P<file_name>.+)\|(?P<line>\d+)\|(?P<col>\d+)\|'
-            '(?P<err_length>\d+)\|(?P<message>.+)')
+        pattern = (r'^(?P<severity>\w+)\|(?P<type>\w+)\|(?P<code>\w+)\|' +
+            r'(?P<file_name>.+)\|(?P<line>\d+)\|(?P<col>\d+)\|' +
+            r'(?P<err_length>\d+)\|(?P<message>.+)')
+        msg_pattern_machine = re.compile(pattern)
 
-        lines = errs.decode('UTF-8').split(os.linesep)
+        lines = errs.decode('utf-8').split(os.linesep)
+
+        # Show errors in output panel and enable error navigation via F4.
+        panel = OutputPanel('dart.analyzer')
+        # Capture file name, rowcol and error message information.
+        errors_pattern = r'^\w+\|\w+\|\w+\|(.+)\|(\d+)\|(\d+)\|\d+\|(.+)'
+        panel.set('result_file_regex', errors_pattern)
+        panel.write(errs.decode('utf-8'))
+        panel.show()
 
         # Collect data needed to generate error messages
         lint_data = []
@@ -448,37 +471,3 @@ class DartLintThread(threading.Thread):
                 ('dartlint_INFO', 'dartlint_WARNING', 'dartlint_ERROR'):
             self.view.erase_regions(region_name)
             self.view.erase_regions(region_name + '_gutter')
-
-
-def is_windows():
-    return sublime.platform() == 'windows'
-
-
-def view_extension_equals(view, extension):
-    """Compares @view's extensions with @extension.
-
-    Returns `True` if they are the same.
-    Returns `False` if @view isn't saved on disk.
-    """
-    if view.file_name() is None:
-        return False
-    return extension_equals(view.file_name(), extension)
-
-
-def extension_equals(path, extension):
-    return os.path.splitext(path)[1] == extension
-
-
-def is_view_dart_script(view):
-    """Checks whether @view looks like a Dart script file.
-
-    Returns `True` if @view's file name ends with '.dart'.
-    Returns `False` if @view isn't saved on disk.
-    """
-    if view.file_name() is None:
-        return False
-    return is_dart_script(view.file_name())
-
-
-def is_dart_script(path):
-    return extension_equals(path, '.dart')
