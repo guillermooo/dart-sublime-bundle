@@ -5,19 +5,20 @@
 	<key>name</key>
 	<string>Symbol List</string>
 	<key>scope</key>
-	<string>source.dart meta.declaration.typedef.dart, source.dart meta.declaration.class.dart</string>
+	<string>source.dart meta.declaration.typedef.dart, source.dart meta.declaration.class.dart, source.dart meta.declaration.function.dart</string>
 	<key>settings</key>
 	<dict>
 		<key>showInSymbolList</key>
 		<integer>1</integer>
 		<key>symbolTransformation</key>
-		<!-- keeping these here for later **************************************************** -->
-		<!-- s/([A-Za-z_][A-Za-z0-9_]*)?\s+([A-Za-z_][A-Za-z0-9_]*)\((?:.+)?\)\s*(\{)/$2/g; -->
-		<!-- the `class` symbol seems to be detected automatically by ST -->
-		<!-- s/class\s+([A-Za-z_][A-Za-z0-9_]*)(?:.+)?\s*(\{)/[class] $1/g; -->
-		<!-- ********************************************************************************* -->
 		<string>
-		s/typedef\s+([A-Za-z_][A-Za-z0-9_]*)\s+([A-Za-z_][A-Za-z0-9_]*)\((?:(.{0,40}?\))|((.{40}).+?\)))(\;)/[typedef] $2/g;
+		<!-- TODO: Use conditional replacement strings where necessary. -->
+		s/^\s*(\w+)\s+(get)\s+(\w+)/$1 $2 $3/g;
+		s/^\s*(get)\s+(\w+)/$1 $2/g;
+		s/^\s*typedef(\s+\w+)?\s+(\w+)/typedef $1 $2/g;
+		s/^\s*class(\s+\w+)/class $1/g;
+		s/^\s*(\w+) (\w+)\((.{0,40})/$1 $2\($3\)/g;
+		s/^\s*(\w+)\((.{0,40})/$1\($2\)/g;
 		</string>
 	</dict>
 	<key>uuid</key>
