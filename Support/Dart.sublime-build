@@ -6,8 +6,8 @@
     "selector": "source.dart",
     "working_dir": "${project_path:${folder}}",
 
-    "windows":  
-    {  
+    "windows":
+    {
         "cmd": ["dart2js.bat", "--minify", "-o$file.js", "$file"]
     },
     "osx":
@@ -21,8 +21,8 @@
             "cmd": ["dart2js", "--minify", "-o$file.js", "$file"],
             "name": "Dart dart2js",
 
-            "windows":  
-            {  
+            "windows":
+            {
                 "cmd": ["dart2js.bat", "--minify", "-o$file.js", "$file"]
             },
             "osx":
@@ -37,8 +37,8 @@
                     "$file"],
             "name": "Dart Analyzer",
 
-            "windows":  
-            {  
+            "windows":
+            {
                 "cmd": ["dartanalyzer.bat", "--enable_type_checks",
                         "--fatal-type-errors", "--extended-exit-code",
                         "--type-checks-for-inferred-types", "--incremental",
@@ -56,8 +56,8 @@
             "name": "Dart Pub Install",
             "shell" : true,
 
-            "windows":  
-            {  
+            "windows":
+            {
                 "cmd": ["pub.bat", "install"]
             },
             "osx":
@@ -69,8 +69,8 @@
             "cmd": ["pub", "update"],
             "name": "Dart Pub Update",
 
-            "windows":  
-            {  
+            "windows":
+            {
                 "cmd": ["pub.bat", "update"]
             },
             "osx":
@@ -79,11 +79,12 @@
             }
         },
         {
-            "cmd": ["dart", "$file"],
             "name": "Dart Run",
+            "cmd": ["dart", "$file"],
+            "file_regex": "'file:///(.+)': error: line (\\d+) pos (\\d+): (.*)$",
 
-            "windows":  
-            {  
+            "windows":
+            {
                 "cmd": ["dart.exe", "$file"]
             },
             "osx":
