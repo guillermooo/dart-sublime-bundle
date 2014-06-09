@@ -1,0 +1,15 @@
+[
+	{
+		"keys": ["enter"], "command": "insert_snippet", "args": { "contents": "\n* $0" },
+		"context": [
+			{ "key": "selector", "operator": "equal", "operand": "comment.block.dart", "match_all": true }
+			]
+	},
+
+	{
+		"keys": ["enter"], "command": "insert_snippet", "args": { "contents": "\n// $0" },
+		"context": [
+			{ "key": "preceding_text", "match_all": true, "operator": "regex_match", "operand": "^\\s*//.*" }
+			]
+	}
+]
