@@ -1,6 +1,13 @@
 CHANGES
 =======
 
+20140616
+
+- Add 'Open Dart Editor' command to open the Dart Editor from ST.
+- Add generic support code.
+- Add tests.
+- Add SDK abstraction.
+
 20140609
 
 - Add CHANGELOG.txt.
