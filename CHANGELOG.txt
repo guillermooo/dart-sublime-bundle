@@ -1,0 +1,6 @@
+CHANGES
+=======
+
+20140609
+
+- Add CHANGELOG.txt.
