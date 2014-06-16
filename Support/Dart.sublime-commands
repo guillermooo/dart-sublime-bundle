@@ -1,0 +1,3 @@
+[
+    { "caption": "Dart: Browse API Reference", "command": "open_browser", "args": {"url": "https://api.dartlang.org/apidocs/channels/stable/dartdoc-viewer/home" } }
+]
