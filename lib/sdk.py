@@ -2,11 +2,16 @@ import sublime
 
 from Dart.lib.plat import is_windows
 from Dart.lib.plat import to_platform_path
+from Dart import PluginLogger
 
-from subprocess import call
+from subprocess import Popen
+from subprocess import TimeoutExpired
 from os.path import join
 from os.path import realpath
 from os.path import exists
+
+
+_logger = PluginLogger(__name__)
 
 
 class SDK(object):
@@ -32,11 +37,26 @@ class SDK(object):
         assert not any((file_name, row, col)), 'not implemented'
         bin_name = to_platform_path('DartEditor', '.exe')
 
+        # TODO: Add path_to_editor property.
         path = realpath(join(self.path, '../{0}'.format(bin_name)))
         if not exists(path):
-            raise IOError('cannot find DartEditor binary')
+            print("Dart: Error - Cannot find Dart Editor binary.")
+            print("            | Is `dartsdk_path` set?")
+            print("            | Is the Dart Editor installed?")
+            _logger.info('cannot find Dart Editor binary')
+            _logger.info('using path to Dart SDK: %s', self.path)
+            return
 
-        call([path])
+        # Don't wait for process to terminate so we don't block ST.
+        proc = Popen([path])
+        try:
+            # Just see if we got an error sort of quickly.
+            proc.wait(.500)
+        except TimeoutExpired:
+            pass
+        else:
+            if proc.returncode != 0:
+                _logger('Dart Editor exited with error code %d', proc.returncode)
 
     @property
     def path_to_dart(self):
