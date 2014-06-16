@@ -1,6 +1,10 @@
 CHANGES
 =======
 
+20140617
+
+- Don't wait on Dart Editor process to terminate.
+
 20140616
 
 - Add 'Open Dart Editor' command to open the Dart Editor from ST.
