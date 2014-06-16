@@ -43,4 +43,4 @@ class SDK(object):
         """Returns path to dart interpreter.
         """
         bin_name = to_platform_path('dart', '.exe')
-        return realpath(join(self.path, bin_name))
+        return realpath(join(self.path, 'bin', bin_name))
