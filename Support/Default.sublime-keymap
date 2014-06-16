@@ -11,5 +11,9 @@
 		"context": [
 			{ "key": "preceding_text", "match_all": true, "operator": "regex_match", "operand": "^\\s*//.*" }
 			]
+	},
+
+	{
+		"keys": ["ctrl+.", "ctrl+."], "command": "show_overlay", "args": { "overlay": "command_palette", "text": "Dart: " }
 	}
 ]
