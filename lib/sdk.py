@@ -56,7 +56,7 @@ class SDK(object):
             pass
         else:
             if proc.returncode != 0:
-                _logger('Dart Editor exited with error code %d', proc.returncode)
+                _logger.error('Dart Editor exited with error code %d', proc.returncode)
 
     @property
     def path_to_dart(self):
