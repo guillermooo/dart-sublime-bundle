@@ -1,0 +1,12 @@
+Sublime Text Dart Package
+=========================
+
+The Sublime Text Dart Package has been updated!
+
+
+Reporting Bugs
+--------------
+
+Please report any bugs here:
+
+* https://github.com/dart-lang/dart-sublime-bundle/issues
