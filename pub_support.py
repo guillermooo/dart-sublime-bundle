@@ -6,6 +6,7 @@ import os
 import subprocess
 import threading
 
+from .lib.encoding import utf8_to_text
 from .lib.plat import is_windows
 from .lib.plat import supress_window
 from .lib.panels import OutputPanel
@@ -61,10 +62,10 @@ class PubThread(threading.Thread):
                                 startupinfo=supress_window())
 
         out, errs = proc.communicate()
-        data = out.decode('utf-8')
+        data = utf8_to_text(out)
 
         if proc.returncode != 0:
-            errs = errs.decode('utf-8')
+            errs = utf8_to_text(errs)
             _logger.error("error running pub: %s\n%s", self.file_name, errs)
             data = 'error running pub: %s\n%s' % (self.file_name, errs)
 
