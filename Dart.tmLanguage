@@ -219,7 +219,7 @@
 					<key>comment</key>
 					<string>A getter with a primitive return type.</string>
 					<key>match</key>
-					<string>^\s*(?:\b(void|bool|num|int|double|Dynamic|dynamic|var|String)\b)\s+(get)\s+(\w+)\s+(?==&gt;)</string>
+					<string>^\s*(?:\b(void|bool|num|int|double|dynamic|var|String)\b)\s+(get)\s+(\w+)\s+(?==&gt;)</string>
 					<key>name</key>
 					<string>meta.declaration.function.dart</string>
 				</dict>
