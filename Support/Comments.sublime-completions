@@ -1,0 +1,8 @@
+{
+	"scope": "source.dart",
+
+	"completions": [
+		{ "trigger": "comm - line comment", "contents": "// $0" },
+		{ "trigger": "commm - block comment", "contents": "/**\n * $0\n*/" }
+	]
+}
