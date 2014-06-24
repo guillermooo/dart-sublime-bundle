@@ -219,7 +219,7 @@
 					<key>comment</key>
 					<string>A getter with a primitive return type.</string>
 					<key>match</key>
-					<string>^\s*(?:\b(void|bool|num|int|double|Dynamic|var|String)\b)\s+(get)\s+(\w+)\s+(?==&gt;)</string>
+					<string>^\s*(?:\b(void|bool|num|int|double|dynamic|var|String)\b)\s+(get)\s+(\w+)\s+(?==&gt;)</string>
 					<key>name</key>
 					<string>meta.declaration.function.dart</string>
 				</dict>
@@ -285,7 +285,7 @@
 				</dict>
 				<dict>
 					<key>begin</key>
-					<string>^\s*(?:\b(void|bool|num|int|double|Dynamic|var|String)\b)\s+(\w+)(?=\()</string>
+					<string>^\s*(?:\b(void|bool|num|int|double|dynamic|var|String)\b)\s+(\w+)(?=\()</string>
 					<key>beginCaptures</key>
 					<dict>
 						<key>1</key>
@@ -388,7 +388,7 @@
 			<array>
 				<dict>
 					<key>begin</key>
-					<string>(?:\b(void|bool|num|int|double|Dynamic|var|String)\b)\s+(\w+)(?=\()</string>
+					<string>(?:\b(void|bool|num|int|double|dynamic|var|String)\b)\s+(\w+)(?=\()</string>
 					<key>beginCaptures</key>
 					<dict>
 						<key>1</key>
@@ -658,7 +658,7 @@
 				</dict>
 				<dict>
 					<key>match</key>
-					<string>\b(?:void|bool|num|int|double|Dynamic|var|String)\b</string>
+					<string>\b(?:void|bool|num|int|double|dynamic|var|String)\b</string>
 					<key>name</key>
 					<string>storage.type.primitive.dart</string>
 				</dict>
