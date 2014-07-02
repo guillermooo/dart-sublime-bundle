@@ -85,7 +85,7 @@
 
             "windows":
             {
-                "cmd": ["dart.exe", "-c", "$file"]
+                "cmd": ["dart.exe", "--checked", "$file"]
             },
             "osx":
             {
