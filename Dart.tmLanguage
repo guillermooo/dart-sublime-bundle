@@ -279,6 +279,10 @@
 						</dict>
 						<dict>
 							<key>include</key>
+							<string>#strings</string>
+						</dict>
+						<dict>
+							<key>include</key>
 							<string>#keywords</string>
 						</dict>
 					</array>
@@ -313,6 +317,10 @@
 						</dict>
 						<dict>
 							<key>include</key>
+							<string>#strings</string>
+						</dict>
+						<dict>
+							<key>include</key>
 							<string>#keywords</string>
 						</dict>
 					</array>
@@ -344,6 +352,10 @@
 						<dict>
 							<key>include</key>
 							<string>#decl-function-parameter</string>
+						</dict>
+						<dict>
+							<key>include</key>
+							<string>#strings</string>
 						</dict>
 						<dict>
 							<key>include</key>
@@ -387,6 +399,10 @@
 						</dict>
 						<dict>
 							<key>include</key>
+							<string>#strings</string>
+						</dict>
+						<dict>
+							<key>include</key>
 							<string>#keywords</string>
 						</dict>
 					</array>
@@ -421,6 +437,10 @@
 						</dict>
 						<dict>
 							<key>include</key>
+							<string>#strings</string>
+						</dict>
+						<dict>
+							<key>include</key>
 							<string>#keywords</string>
 						</dict>
 					</array>
@@ -447,6 +467,10 @@
 						<dict>
 							<key>include</key>
 							<string>#decl-function-parameter</string>
+						</dict>
+						<dict>
+							<key>include</key>
+							<string>#strings</string>
 						</dict>
 						<dict>
 							<key>include</key>
