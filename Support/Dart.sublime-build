@@ -89,7 +89,7 @@
             },
             "osx":
             {
-                "cmd": ["/bin/bash", "--login", "-c", "dart $file"]
+                "cmd": ["/bin/bash", "--login", "-c", "dart --checked $file"]
             }
         }
     ]
