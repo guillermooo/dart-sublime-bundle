@@ -1,5 +1,5 @@
 # Set the default behavior, in case people don't have core.autocrlf set.
-j* text=auto
+* text=auto
 
 # These files need to have LF as line terminator, even on Windows.
 *.tmSnippet text eol=lf
