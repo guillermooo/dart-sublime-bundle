@@ -85,11 +85,11 @@
 
             "windows":
             {
-                "cmd": ["dart.exe", "$file"]
+                "cmd": ["dart.exe", "--checked", "$file"]
             },
             "osx":
             {
-                "cmd": ["/bin/bash", "--login", "-c", "dart $file"]
+                "cmd": ["/bin/bash", "--login", "-c", "dart --checked $file"]
             }
         }
     ]
