@@ -80,7 +80,7 @@
         },
         {
             "name": "Dart Run",
-            "cmd": ["dart", "$file"],
+            "cmd": ["dart", "--checked", "$file"],
             "file_regex": "'file:///(.+)': error: line (\\d+) pos (\\d+): (.*)$",
 
             "windows":
