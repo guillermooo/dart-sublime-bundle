@@ -164,7 +164,7 @@
 			<array>
 				<dict>
 					<key>begin</key>
-					<string>class</string>
+					<string>\bclass\b</string>
 					<key>beginCaptures</key>
 					<dict>
 						<key>0</key>
@@ -586,7 +586,7 @@
 				</dict>
 				<dict>
 					<key>match</key>
-					<string>\b(abstract|class|extends|external|factory|implements|with|interface|get|native|operator|set|typedef)\b</string>
+					<string>\b(abstract|extends|external|factory|implements|with|interface|get|native|operator|set|typedef)\b</string>
 					<key>name</key>
 					<string>keyword.declaration.dart</string>
 				</dict>
