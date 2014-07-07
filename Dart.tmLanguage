@@ -539,7 +539,7 @@
 				</dict>
 				<dict>
 					<key>match</key>
-					<string>\?|:</string>
+					<string>\s+\?\s+|\s+:\s+</string>
 					<key>name</key>
 					<string>keyword.control.ternary.dart</string>
 				</dict>
