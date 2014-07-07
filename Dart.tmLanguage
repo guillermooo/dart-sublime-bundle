@@ -515,16 +515,21 @@
 								<key>1</key>
 								<dict>
 									<key>name</key>
-									<string>typedef.return.dart</string>
+									<string>storage.type.primitive.dart</string>
 								</dict>
 								<key>2</key>
+								<dict>
+									<key>name</key>
+									<string>typedef.return.dart</string>
+								</dict>
+								<key>3</key>
 								<dict>
 									<key>name</key>
 									<string>typedef.name.dart</string>
 								</dict>
 							</dict>
 							<key>match</key>
-							<string>([a-zA-Z_][a-zA-Z0-9_]*)\s+([a-zA-Z_][a-zA-Z0-9_]+)</string>
+							<string>(?:\b(void|bool|num|int|double|dynamic|var|String)\b|([a-zA-Z_][a-zA-Z0-9_]*))\s+([a-zA-Z_][a-zA-Z0-9_]+)</string>
 						</dict>
 						<dict>
 							<key>begin</key>
