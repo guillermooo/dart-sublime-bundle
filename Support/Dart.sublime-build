@@ -31,23 +31,19 @@
             }
         },
         {
-            "cmd": ["dartanalyzer", "--enable_type_checks",
-                    "--fatal-type-errors", "--extended-exit-code",
-                    "--type-checks-for-inferred-types", "--incremental",
+            "cmd": ["dartanalyzer",
                     "$file"],
             "name": "Dart Analyzer",
 
             "windows":
             {
-                "cmd": ["dartanalyzer.bat", "--enable_type_checks",
-                        "--fatal-type-errors", "--extended-exit-code",
-                        "--type-checks-for-inferred-types", "--incremental",
+                "cmd": ["dartanalyzer.bat",
                         "$file"]
             },
             "osx":
             {
                 "cmd": ["/bin/bash", "--login", "-c",
-                        "dartanalyzer --enable_type_checks --fatal-type-errors --extended-exit-code --type-checks-for-inferred-types --incremental $file"]
+                        "dartanalyzer $file"]
             }
         },
 
