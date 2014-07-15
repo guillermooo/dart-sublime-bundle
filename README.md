@@ -18,7 +18,7 @@ glance:
 
 Most features are only active in files with a `.dart` extension.
 
-Check out or [introductory video][6] for a short tutorial on using this package.
+Check out our [introductory video][6] for a short tutorial on using this package.
 
 
 ## Getting Started
