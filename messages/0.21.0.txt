@@ -1,4 +1,12 @@
-0.21.0 - 20140715
+Sublime Text Dart Package
+=========================
+
+v. 0.21.0
+
+The Sublime Text Dart Package has been updated!
+
+
+NOTABLE CHANGES:
 
 	- Fix analyzer build task.
 	- Add 'rethrow' keyword to syntax definition.
@@ -11,17 +19,10 @@
 	- Integrate with Travis.
 	- 'Open Dart Editor' command mustn't wait for Dart Editor process to terminate.
 
-20140617
 
-- Don't wait on Dart Editor process to terminate.
+Reporting Bugs
+--------------
 
-20140616
+Please report any bugs here:
 
-- Add 'Open Dart Editor' command to open the Dart Editor from ST.
-- Add generic support code.
-- Add tests.
-- Add SDK abstraction.
-
-20140609
-
-- Add CHANGELOG.txt.
+* https://github.com/dart-lang/dart-sublime-bundle/issues
