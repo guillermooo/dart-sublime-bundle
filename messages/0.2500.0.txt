@@ -1,0 +1,24 @@
+Version 0.2500.0
+
+The Sublime Text Dart Package has been updated!
+
+
+MAIN CHANGES
+------------
+
+- Fix analyzer build task.
+- Add 'rethrow' keyword to syntax definition.
+- Fix highlighting of 'class' keyword.
+- Add '--checked' flag to 'Dart Run' build command.
+- Highlight primitive types in typedefs.
+- Highlight strings in default parameters.
+- Fix highlighting of ternary operator.
+- 'Open Dart Editor' command mustn't wait for Dart Editor process to terminate.
+
+
+Reporting Bugs
+--------------
+
+Please report any bugs here:
+
+* https://github.com/dart-lang/dart-sublime-bundle/issues
