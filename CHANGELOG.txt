@@ -2,7 +2,7 @@
 
 	- Fix analyzer build task.
 	- Add 'rethrow' keyword to syntax definition.
-	- Fix highlighting of 'class' keyword'.
+	- Fix highlighting of 'class' keyword.
 	- Add '--checked' flag to 'Dart Run' build command.
 	- Highlight primitive types in typedefs.
 	- Highlight strings in default parameters.
