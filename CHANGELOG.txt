@@ -1,5 +1,15 @@
-CHANGES
-=======
+0.2500.0 - 20140715
+
+	- Fix analyzer build task.
+	- Add 'rethrow' keyword to syntax definition.
+	- Fix highlighting of 'class' keyword.
+	- Add '--checked' flag to 'Dart Run' build command.
+	- Highlight primitive types in typedefs.
+	- Highlight strings in default parameters.
+	- Fix highlighting of ternary operator.
+	- Remove ambiguous rule targeting function definitions.
+	- Integrate with Travis.
+	- 'Open Dart Editor' command mustn't wait for Dart Editor process to terminate.
 
 20140617
 

@@ -2,6 +2,7 @@
 
  Works on **OS X**, **Linux** and **Windows**
 
+[![Build Status](https://travis-ci.org/dart-lang/dart-sublime-bundle.svg?branch=master)](https://travis-ci.org/dart-lang/dart-sublime-bundle)
 
 ## Overview
 
