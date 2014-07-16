@@ -313,6 +313,12 @@ class DartLintThread(threading.Thread):
             r'(?P<err_length>\d+)\|(?P<message>.+)')
         msg_pattern_machine = re.compile(pattern)
 
+        # Don't show any panel if there are no errors.
+        if not errs.decode('utf-8').strip():
+            print('No errors.')
+            self.view.set_status('dartlint', 'Dartlint: No errors')
+            return
+
         lines = errs.decode('utf-8').split(os.linesep)
 
         # Show errors in output panel and enable error navigation via F4.
