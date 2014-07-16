@@ -1,3 +1,7 @@
+# This module uses multiple threads. We don't do any synchronization with ST
+# because its API is reportedly fully thread-safe:
+# http://www.sublimetext.com/docs/3/api_reference.html
+
 import sublime
 import sublime_plugin
 
@@ -22,7 +26,6 @@ from .lib.path import view_extension_equals
 from .lib.plat import is_windows
 from .lib.plat import supress_window
 from .lib.panels import OutputPanel
-
 
 _logger = PluginLogger(__name__)
 
