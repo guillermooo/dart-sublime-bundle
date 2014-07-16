@@ -24,19 +24,17 @@ from .lib.plat import supress_window
 from .lib.panels import OutputPanel
 
 
+_logger = PluginLogger(__name__)
 
-logger = PluginLogger(__name__)
-
-# Identifies the currently valid linter operation.
-OPERATION_TOKEN = defaultdict(lambda: None)
-g_token_lock = threading.Lock()
+# Maps buffer ids to their only valid linter operation token.
+g_operations_tokens = defaultdict(lambda: None)
+g_tokens_lock = threading.Lock()
 g_edits_lock = threading.Lock()
-# Holds finished lint ops that now need to be processed and displayed to the
-# user.
-# Since the Dart analyzer runs asynchronously, we will collect many runs, each
-# new one obsoleting the previous run. Therefore, the consumer thread will
-# discard all but the most recent result.
-g_operations = queue.Queue(maxsize=100)
+# Holds linter results that need to be relayed to the user. Since the Dart
+# linter runs asynchronously, we will potentially collect many runs for the
+# active buffer. Each new run obsoletes the previous one. Therefore, the
+# consumer thread will discard all but the most recent result.
+g_linter_results = queue.Queue(maxsize=100)
 
 locale.setlocale(locale.LC_ALL, '')
 
@@ -144,8 +142,8 @@ def plugin_loaded():
 
 
 class DartLint(sublime_plugin.EventListener):
-    """Orchestrates the running of the Dart analyzer and the UI updating with
-    the analyzer result.
+    """Keeps tabs on the views currently being edited and starts linter
+    passes as needed.
     """
     # How many times has buffer x been changed since its last analysis?
     edits = defaultdict(lambda: 0)
@@ -162,22 +160,25 @@ class DartLint(sublime_plugin.EventListener):
     def do_lint_on_load(self):
         return (self.do_lint and self.do_load)
 
+    # TODO(guillermooo): Rename on_load stuff, as we're not linting on_load
+    # any more.
     def on_activated(self, view):
         if not is_view_dart_script(view):
-            logger.debug("not a dart file: %s", view.file_name())
+            _logger.debug("not a dart file: %s", view.file_name())
             return
 
+        # TODO(guillermooo): Some of this stuff is duplicated.
         self.load_settings(view)
         if not self.do_lint_on_load:
-            logger.debug("linter is disabled (on_load)")
-            logger.debug("do_lint: %s", str(self.do_lint))
-            logger.debug("do_save: %s", str(self.do_save))
+            _logger.debug("linter is disabled (on_load)")
+            _logger.debug("do_lint: %s", str(self.do_lint))
+            _logger.debug("do_save: %s", str(self.do_save))
             return
 
         self.check_theme(view)
         file_name = view.file_name()
         print("Dart lint: Running dartanalyzer on ", file_name)
-        logger.debug("running dartanalyzer on %s", file_name)
+        _logger.debug("running dartanalyzer on %s", file_name)
         # run dartanalyzer in its own thread
         # TODO(guillermooo): Disable quick list error navigation, since we are
         # enabling output panel-based error navigation (via F4). We should
@@ -186,7 +187,7 @@ class DartLint(sublime_plugin.EventListener):
 
     def on_post_save(self, view):
         if not is_view_dart_script(view):
-            logger.debug("not a dart file: %s", view.file_name())
+            _logger.debug("not a dart file: %s", view.file_name())
             return
 
         # The file has been (potentially) changed, so make a note.
@@ -195,39 +196,21 @@ class DartLint(sublime_plugin.EventListener):
 
         self.load_settings(view)
         if not self.do_lint_on_post_save:
-            logger.debug("linter is disabled (on_post_save)")
-            logger.debug("do_lint: %s", str(self.do_lint))
-            logger.debug("do_save: %s", str(self.do_save))
+            _logger.debug("linter is disabled (on_post_save)")
+            _logger.debug("do_lint: %s", str(self.do_lint))
+            _logger.debug("do_save: %s", str(self.do_save))
             return
 
         self.check_theme(view)
 
         file_name = view.file_name()
         print("Dart lint: Running dartanalyzer on ", file_name)
-        logger.debug("running dartanalyzer on %s", file_name)
+        _logger.debug("running dartanalyzer on %s", file_name)
         # run dartanalyzer in its own thread
         # TODO(guillermooo): Disable quick list error navigation, since we are
         # enabling output panel-based error navigation (via F4). We should
         # choose one of the two and remove the other.
         RunDartanalyzer(view, file_name, self.settings, show_popup=False)
-
-    # def on_load(self, view):
-    #     if not is_view_dart_script(view):
-    #         logger.debug("not a dart file: %s", view.file_name())
-    #         return
-
-    #     self.load_settings(view)
-    #     if not self.do_lint_on_load:
-    #         logger.debug("linter is disabled (on_load)")
-    #         return
-
-        # self.check_theme(view)
-
-        # file_name = view.file_name()
-        # print("Dart lint: Running dartanalyzer on ", file_name)
-        # logger.debug("running dartanalyzer on %s", file_name)
-        # run dartanalyzer in its own thread
-        # RunDartanalyzer(view, file_name, self.settings, False)
 
     def load_settings(self, view):
         self.settings = view.settings()
@@ -323,6 +306,7 @@ def FormRelativePath(path):
     return new_path
 
 
+# TODO(guillermooo): We can probably get rid of this.
 def RunDartanalyzer(view, fileName, our_settings, show_popup=True):
     dartsdk_path = our_settings.get('dartsdk_path')
 
@@ -331,6 +315,8 @@ def RunDartanalyzer(view, fileName, our_settings, show_popup=True):
 
 
 class DartLintThread(threading.Thread):
+    """Runs the Dart sdk analyzer in the background.
+    """
     def __init__(self, view, fileName, our_settings, show_popup):
         # TODO(guillermooo): In Python 3k, we should be able to simplify this.
         super(DartLintThread, self).__init__()
@@ -363,7 +349,7 @@ class DartLintThread(threading.Thread):
         try:
             outs, errs = proc.communicate(timeout=15)
         except TimeoutExpired as e:
-            logger.debug("error running DartLintThread: ", e.message)
+            _logger.debug("error running DartLintThread: ", e.message)
             proc.kill()
             outs, errs = proc.communicate()
 
@@ -378,26 +364,32 @@ class DartLintThread(threading.Thread):
             self.view.set_status('dartlint', 'Dartlint: No errors')
             return
 
+        # Don't bother if the buffer hasn't changed since the last analysis.
         with g_edits_lock:
             if DartLint.edits[self.view.buffer_id()] == 0:
                 return
 
-        # (token, buffer_id, data)
-        with g_token_lock:
+        # We've got a new linting result.
+        with g_tokens_lock:
             now = datetime.now()
-            OPERATION_TOKEN[self.view.buffer_id()] = (now.minute * 60 + now.second)
+            g_operations_tokens[self.view.buffer_id()] = (now.minute * 60 + now.second)
             lines = errs.decode('utf-8').split(os.linesep)
-            g_operations.put((OPERATION_TOKEN[self.view.buffer_id()],
+            g_linter_results.put((g_operations_tokens[self.view.buffer_id()],
                              self.view.buffer_id(), lines))
 
 
 class UIUpdater(threading.Thread):
+    """Gets items from the lint ops queue and acts on them.
+
+    Runs in intervals forever.
+    """
+    # TODO(guillermooo): There's currently no way of stopping this thread.
     def __init__(self):
-        super().__init__(self)
-        # checks queue, acts accordingly
+        super().__init__()
 
     @property
     def fileName(self):
+        # TODO(guillermooo): Is this entirely reliable?
         return sublime.active_window().active_view().file_name()
 
     @property
@@ -413,25 +405,41 @@ class UIUpdater(threading.Thread):
         self.view.settings()
 
     def get_data(self):
-        d = None
+        """Checks the linting results queue for new results. If a result's
+        token has expired, the result is discarded.
+
+        Returns the text lines (structured error data) obtained from the
+        Dart sdk analyzer's output, or `None` if the results queue is empty.
+        """
         while True:
             try:
-                token, bid, data = g_operations.get(0.1)
-                with g_token_lock:
-                    if token == OPERATION_TOKEN[bid]:
-                        return data
+                token, buffer_id, lines = g_linter_results.get(0.1)
+                with g_tokens_lock:
+                    if token == g_operations_tokens[buffer_id]:
+                        return lines
             except queue.Empty as e:
-                return d
+                return None
 
     def run(self):
+        """Runs forever checking the lint results available and displaying
+        them to the user.
+        """
         while True:
+            # Run at intervals.
             time.sleep(0.250)
+
+            # We've got results for this buffer. Reset its version count so
+            # the cycle starts again.
+            # TODO(guillermooo): It's possible that we'll miss some edits (?).
             with g_edits_lock:
                 DartLint.edits[self.view.buffer_id()] = 0
+
             lines = self.get_data()
             if lines is None:
                 continue
 
+            # TODO(guillermooo): Compose a DartLintOutputPanel from a plain
+            # OutputPanel to abstract all of this away.
             # Show errors in output panel and enable error navigation via F4.
             panel = OutputPanel('dart.analyzer')
             # Capture file name, rowcol and error message information.
