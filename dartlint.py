@@ -29,8 +29,8 @@ from .lib.panels import OutputPanel
 
 _logger = PluginLogger(__name__)
 
-# Maps buffer ids to their only valid linter operation token.
-g_operations_tokens = defaultdict(lambda: None)
+# Maps buffer ids to their single valid result token.
+g_result_tokens = defaultdict(lambda: None)
 g_tokens_lock = threading.Lock()
 g_edits_lock = threading.Lock()
 # Holds linter results that need to be relayed to the user. Since the Dart
@@ -375,9 +375,9 @@ class DartLintThread(threading.Thread):
         # We've got a new linter result.
         with g_tokens_lock:
             now = datetime.now()
-            g_operations_tokens[self.view.buffer_id()] = (now.minute * 60 + now.second)
+            g_result_tokens[self.view.buffer_id()] = (now.minute * 60 + now.second)
             lines = errs.decode('utf-8').split(os.linesep)
-            g_linter_results.put((g_operations_tokens[self.view.buffer_id()],
+            g_linter_results.put((g_result_tokens[self.view.buffer_id()],
                              self.view.buffer_id(), lines))
 
 
@@ -418,7 +418,7 @@ class UIUpdater(threading.Thread):
             try:
                 token, buffer_id, lines = g_linter_results.get(0.1)
                 with g_tokens_lock:
-                    if token == g_operations_tokens[buffer_id]:
+                    if token == g_result_tokens[buffer_id]:
                         return lines
             except queue.Empty as e:
                 return None
