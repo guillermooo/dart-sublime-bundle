@@ -1,14 +1,22 @@
+# This module uses multiple threads. We don't do any synchronization with ST
+# because its API is reportedly fully thread-safe:
+# http://www.sublimetext.com/docs/3/api_reference.html
+
 import sublime
 import sublime_plugin
 
 from subprocess import TimeoutExpired
+import time
 from xml.etree import ElementTree
+from collections import defaultdict
 import locale
+from datetime import datetime
 import os
 import posixpath
 import re
 import subprocess
 import threading
+import queue
 
 from . import PluginLogger
 from .lib.path import extension_equals
@@ -19,8 +27,17 @@ from .lib.plat import is_windows
 from .lib.plat import supress_window
 from .lib.panels import OutputPanel
 
+_logger = PluginLogger(__name__)
 
-logger = PluginLogger(__name__)
+# Maps buffer ids to their single valid result token.
+g_result_tokens = defaultdict(lambda: None)
+g_tokens_lock = threading.Lock()
+g_edits_lock = threading.Lock()
+# Holds linter results that need to be relayed to the user. Since the Dart
+# linter runs asynchronously, we will potentially collect many runs for the
+# active buffer. Each new run obsoletes the previous one. Therefore, the
+# consumer thread will discard all but the most recent result.
+g_linter_results = queue.Queue(maxsize=100)
 
 locale.setlocale(locale.LC_ALL, '')
 
@@ -123,7 +140,17 @@ SHOW_Levels = {
 }
 
 
+def plugin_loaded():
+    UIUpdater().start()
+
+
 class DartLint(sublime_plugin.EventListener):
+    """Keeps tabs on the views currently being edited and starts linter
+    passes as needed.
+    """
+    # How many times has buffer x been changed since its last analysis?
+    edits = defaultdict(lambda: 0)
+
     def __init__(self, *args, **kwargs):
         sublime_plugin.EventListener.__init__(self, *args, **kwargs)
         print("Dartlint plugin loaded.")
@@ -136,46 +163,57 @@ class DartLint(sublime_plugin.EventListener):
     def do_lint_on_load(self):
         return (self.do_lint and self.do_load)
 
-    def on_post_save(self, view):
+    # TODO(guillermooo): Rename on_load stuff, as we're not linting on_load
+    # any more.
+    def on_activated(self, view):
         if not is_view_dart_script(view):
-            logger.debug("not a dart file: %s", view.file_name())
+            _logger.debug("not a dart file: %s", view.file_name())
             return
 
+        # TODO(guillermooo): Some of this stuff is duplicated.
         self.load_settings(view)
-        if not self.do_lint_on_post_save:
-            logger.debug("linter is disabled (on_post_save)")
-            logger.debug("do_lint: %s", str(self.do_lint))
-            logger.debug("do_save: %s", str(self.do_save))
+        if not self.do_lint_on_load:
+            _logger.debug("linter is disabled (on_load)")
+            _logger.debug("do_lint: %s", str(self.do_lint))
+            _logger.debug("do_save: %s", str(self.do_save))
             return
 
         self.check_theme(view)
-
         file_name = view.file_name()
         print("Dart lint: Running dartanalyzer on ", file_name)
-        logger.debug("running dartanalyzer on %s", file_name)
+        _logger.debug("running dartanalyzer on %s", file_name)
         # run dartanalyzer in its own thread
         # TODO(guillermooo): Disable quick list error navigation, since we are
         # enabling output panel-based error navigation (via F4). We should
         # choose one of the two and remove the other.
         RunDartanalyzer(view, file_name, self.settings, show_popup=False)
 
-    def on_load(self, view):
+    def on_post_save(self, view):
         if not is_view_dart_script(view):
-            logger.debug("not a dart file: %s", view.file_name())
+            _logger.debug("not a dart file: %s", view.file_name())
             return
 
+        # The file has been (potentially) changed, so make a note.
+        with g_edits_lock:
+            DartLint.edits[view.buffer_id()] += 1
+
         self.load_settings(view)
-        if not self.do_lint_on_load:
-            logger.debug("linter is disabled (on_load)")
+        if not self.do_lint_on_post_save:
+            _logger.debug("linter is disabled (on_post_save)")
+            _logger.debug("do_lint: %s", str(self.do_lint))
+            _logger.debug("do_save: %s", str(self.do_save))
             return
 
         self.check_theme(view)
 
         file_name = view.file_name()
         print("Dart lint: Running dartanalyzer on ", file_name)
-        logger.debug("running dartanalyzer on %s", file_name)
+        _logger.debug("running dartanalyzer on %s", file_name)
         # run dartanalyzer in its own thread
-        RunDartanalyzer(view, file_name, self.settings, False)
+        # TODO(guillermooo): Disable quick list error navigation, since we are
+        # enabling output panel-based error navigation (via F4). We should
+        # choose one of the two and remove the other.
+        RunDartanalyzer(view, file_name, self.settings, show_popup=False)
 
     def load_settings(self, view):
         self.settings = view.settings()
@@ -271,6 +309,7 @@ def FormRelativePath(path):
     return new_path
 
 
+# TODO(guillermooo): We can probably get rid of this.
 def RunDartanalyzer(view, fileName, our_settings, show_popup=True):
     dartsdk_path = our_settings.get('dartsdk_path')
 
@@ -279,7 +318,10 @@ def RunDartanalyzer(view, fileName, our_settings, show_popup=True):
 
 
 class DartLintThread(threading.Thread):
+    """Runs the Dart sdk analyzer in the background.
+    """
     def __init__(self, view, fileName, our_settings, show_popup):
+        # TODO(guillermooo): In Python 3k, we should be able to simplify this.
         super(DartLintThread, self).__init__()
         self.settings = our_settings
         self.show_popup = show_popup
@@ -288,6 +330,12 @@ class DartLintThread(threading.Thread):
         self.window = view.window()
         self.dartsdk_path = our_settings.get('dartsdk_path')
         self.fileName = fileName
+
+    def clear_all(self):
+        for region_name in \
+                ('dartlint_INFO', 'dartlint_WARNING', 'dartlint_ERROR'):
+            self.view.erase_regions(region_name)
+            self.view.erase_regions(region_name + '_gutter')
 
     def run(self):
         analyzer_path = os.path.join(self.dartsdk_path, 'bin', 'dartanalyzer')
@@ -304,7 +352,7 @@ class DartLintThread(threading.Thread):
         try:
             outs, errs = proc.communicate(timeout=15)
         except TimeoutExpired as e:
-            logger.debug("error running DartLintThread: ", e.message)
+            _logger.debug("error running DartLintThread: ", e.message)
             proc.kill()
             outs, errs = proc.communicate()
 
@@ -313,123 +361,205 @@ class DartLintThread(threading.Thread):
             r'(?P<err_length>\d+)\|(?P<message>.+)')
         msg_pattern_machine = re.compile(pattern)
 
-        lines = errs.decode('utf-8').split(os.linesep)
-
-        # Show errors in output panel and enable error navigation via F4.
-        panel = OutputPanel('dart.analyzer')
-        # Capture file name, rowcol and error message information.
-        errors_pattern = r'^\w+\|\w+\|\w+\|(.+)\|(\d+)\|(\d+)\|\d+\|(.+)'
-        panel.set('result_file_regex', errors_pattern)
-        panel.write(errs.decode('utf-8'))
-        panel.show()
-
-        # Collect data needed to generate error messages
-        lint_data = []
-        lines_out = ''
-        err_count = 0
-        culp_regions = {}
-        for line in lines:
-            line_out = ''
-            line_data = {}
-            line_groups = msg_pattern_machine.match(line)
-            if line_groups is not None:
-                if line_groups.group('file_name') != self.fileName:
-                    # output is for a different file
-                    continue
-                line_out = '%s: %s on line %s, col %s: %s\n' % \
-                    (line_groups.group('severity'),
-                     line_groups.group('code'),
-                     line_groups.group('line'),
-                     line_groups.group('col'),
-                     line_groups.group('message'))
-
-                line_data['severity'] = line_groups.group('severity')
-                line_data['col'] = line_groups.group('col')
-                line_data['line'] = line_groups.group('line')
-                line_data['msg'] = line_groups.group('message')
-                line_data['code'] = line_groups.group('code')
-                line_data['type'] = line_groups.group('type')
-                line_data['err_length'] = line_groups.group('err_length')
-                line_data['lint_out'] = line_out
-                line_data['line_pt'] = self.view.text_point(
-                    int(line_data['line']) - 1, 0)
-                line_data['point'] = self.view.text_point(
-                    int(line_data['line']) - 1, int(line_data['col']))
-                next_line = self.view.text_point(int(line_data['line']), 0)
-
-                # Add a region (gutter mark and underline)
-                if int(line_data['err_length']) > 0 and \
-                        int(line_data['point']) + \
-                        (int(line_data['err_length']) - 1) < next_line:
-                    # Set the error region
-                    line_data['culp_region'] = sublime.Region(
-                        int(line_data['point']) - 1,
-                        int(line_data['point']) +
-                        (int(line_data['err_length']) - 1))
-                else:
-                    # Set the line as the error region
-                    line_data['culp_region'] = self.view.line(
-                        line_data['line_pt'])
-                # Add the region to the apropriate region collection
-                if ('dartlint_' + line_data['severity']) not in \
-                        culp_regions.keys():
-                    culp_regions['dartlint_%s' % line_data['severity']] = []
-                culp_regions['dartlint_%s' % line_data['severity']].append(
-                    line_data['culp_region'])
-                lines_out += line_out
-                lint_data.append(line_data)
-                err_count += 1
-        for reg_id in culp_regions.keys():
-            # set the scope name
-            reg_list = culp_regions[reg_id]
-            this_scope = 'dartlint.mark.warning'
-            if reg_id.endswith('ERROR') is True:
-                this_scope = 'dartlint.mark.error'
-            if reg_id.endswith('INFO') is True:
-                this_scope = 'dartlint.mark.info'
-            # Seperate gutter and underline regions
-            gutter_reg = []
-            for reg in reg_list:
-                gutter_reg.append(self.view.line(reg.begin()))
-            self.view.add_regions(
-                reg_id + '_gutter',
-                gutter_reg,
-                # set this to this_scope for tinted gutter icons
-                'dartlint.mark.gutter',
-                icon=GUTTER_Icon[reg_id],
-                flags=SCOPES_Dartlint['dartlint.mark.gutter']['flags'])
-            self.view.add_regions(
-                reg_id,
-                reg_list,
-                this_scope,
-                flags=SCOPES_Dartlint[this_scope]['flags'])
-            # Set icon presidence?
-        if lines_out is '':
-            self.output = None
+        # Don't show any panel if there are no errors.
+        if not errs.decode('utf-8').strip():
             print('No errors.')
             self.view.set_status('dartlint', 'Dartlint: No errors')
-        else:
-            # Sort list
-            idx = 0
-            err_keys = []
-            for entry in lint_data:
-                line_val = '{0:{fill}{align}16}'.format(
-                    entry['line'], fill='0', align='>')
-                col_val = '{0:{fill}{align}16}'.format(
-                    entry['col'], fill='0', align='>')
-                list_val = '%s-%s-%s' % (line_val, col_val, str(idx))
-                err_keys.append(list_val)
-                idx += 1
-            new_err_list = []
-            err_keys.sort()
-            for ek in err_keys:
-                new_err_list.append(lint_data[int(ek.split('-')[2])])
-            self.output = new_err_list
-            # Out to console
-            print('\n' + lines_out)
-            # Output to a popup
-            if self.show_popup:
-                self.popup_errors(self.window, self.view, self.output)
+            return
+
+        # Don't bother if the buffer hasn't changed since the last analysis.
+        with g_edits_lock:
+            if DartLint.edits[self.view.buffer_id()] == 0:
+                return
+
+        # We've got a new linter result.
+        with g_tokens_lock:
+            now = datetime.now()
+            g_result_tokens[self.view.buffer_id()] = (now.minute * 60 + now.second)
+            lines = errs.decode('utf-8').split(os.linesep)
+            g_linter_results.put((g_result_tokens[self.view.buffer_id()],
+                             self.view.buffer_id(), lines))
+
+
+class UIUpdater(threading.Thread):
+    """Gets items from the linter results queue and acts on them.
+
+    Runs forever in intervals.
+    """
+    # TODO(guillermooo): There's currently no way of stopping this thread.
+    def __init__(self):
+        super().__init__()
+
+    @property
+    def fileName(self):
+        # TODO(guillermooo): Is this entirely reliable?
+        return sublime.active_window().active_view().file_name()
+
+    @property
+    def view(self):
+        return sublime.active_window().active_view()
+
+    @property
+    def window(self):
+        return sublime.active_window()
+
+    @property
+    def settings(self):
+        self.view.settings()
+
+    def get_data(self):
+        """Checks the linter results queue for new items. Discards results
+        with an expired token.
+
+        Returns the text lines (structured error data) obtained from the
+        Dart sdk analyzer's output, or `None` if the results queue is empty.
+        """
+        while True:
+            try:
+                token, buffer_id, lines = g_linter_results.get(0.1)
+                with g_tokens_lock:
+                    if token == g_result_tokens[buffer_id]:
+                        return lines
+            except queue.Empty as e:
+                return None
+
+    def run(self):
+        """Runs forever checking for new linter results and displaying them
+        to the user.
+        """
+        while True:
+            # Run at intervals.
+            time.sleep(0.250)
+
+            # We've got results for this buffer. Reset its version count so
+            # the linting cycle can start again.
+            # TODO(guillermooo): It's possible that we'll miss some edits (?).
+            with g_edits_lock:
+                DartLint.edits[self.view.buffer_id()] = 0
+
+            lines = self.get_data()
+            if lines is None:
+                continue
+
+            # TODO(guillermooo): Compose a DartLintOutputPanel from a plain
+            # OutputPanel to abstract all of this away.
+            # Show errors in output panel and enable error navigation via F4.
+            panel = OutputPanel('dart.analyzer')
+            # Capture file name, rowcol and error message information.
+            errors_pattern = r'^\w+\|\w+\|\w+\|(.+)\|(\d+)\|(\d+)\|\d+\|(.+)'
+            panel.set('result_file_regex', errors_pattern)
+            panel.write('\n'.join(lines))
+            panel.show()
+
+            pattern = (r'^(?P<severity>\w+)\|(?P<type>\w+)\|(?P<code>\w+)\|' +
+                r'(?P<file_name>.+)\|(?P<line>\d+)\|(?P<col>\d+)\|' +
+                r'(?P<err_length>\d+)\|(?P<message>.+)')
+            msg_pattern_machine = re.compile(pattern)
+
+            # Collect data needed to generate error messages
+            lint_data = []
+            lines_out = ''
+            err_count = 0
+            culp_regions = {}
+            for line in lines:
+                line_out = ''
+                line_data = {}
+                line_groups = msg_pattern_machine.match(line)
+                if line_groups is not None:
+                    if line_groups.group('file_name') != self.fileName:
+                        # output is for a different file
+                        continue
+                    line_out = '%s: %s on line %s, col %s: %s\n' % \
+                        (line_groups.group('severity'),
+                         line_groups.group('code'),
+                         line_groups.group('line'),
+                         line_groups.group('col'),
+                         line_groups.group('message'))
+
+                    line_data['severity'] = line_groups.group('severity')
+                    line_data['col'] = line_groups.group('col')
+                    line_data['line'] = line_groups.group('line')
+                    line_data['msg'] = line_groups.group('message')
+                    line_data['code'] = line_groups.group('code')
+                    line_data['type'] = line_groups.group('type')
+                    line_data['err_length'] = line_groups.group('err_length')
+                    line_data['lint_out'] = line_out
+                    line_data['line_pt'] = self.view.text_point(
+                        int(line_data['line']) - 1, 0)
+                    line_data['point'] = self.view.text_point(
+                        int(line_data['line']) - 1, int(line_data['col']))
+                    next_line = self.view.text_point(int(line_data['line']), 0)
+
+                    # Add a region (gutter mark and underline)
+                    if int(line_data['err_length']) > 0 and \
+                            int(line_data['point']) + \
+                            (int(line_data['err_length']) - 1) < next_line:
+                        # Set the error region
+                        line_data['culp_region'] = sublime.Region(
+                            int(line_data['point']) - 1,
+                            int(line_data['point']) +
+                            (int(line_data['err_length']) - 1))
+                    else:
+                        # Set the line as the error region
+                        line_data['culp_region'] = self.view.line(
+                            line_data['line_pt'])
+                    # Add the region to the apropriate region collection
+                    if ('dartlint_' + line_data['severity']) not in \
+                            culp_regions.keys():
+                        culp_regions['dartlint_%s' % line_data['severity']] = []
+                    culp_regions['dartlint_%s' % line_data['severity']].append(
+                        line_data['culp_region'])
+                    lines_out += line_out
+                    lint_data.append(line_data)
+                    err_count += 1
+            for reg_id in culp_regions.keys():
+                # set the scope name
+                reg_list = culp_regions[reg_id]
+                this_scope = 'dartlint.mark.warning'
+                if reg_id.endswith('ERROR') is True:
+                    this_scope = 'dartlint.mark.error'
+                if reg_id.endswith('INFO') is True:
+                    this_scope = 'dartlint.mark.info'
+                # Seperate gutter and underline regions
+                gutter_reg = []
+                for reg in reg_list:
+                    gutter_reg.append(self.view.line(reg.begin()))
+                self.view.add_regions(
+                    reg_id + '_gutter',
+                    gutter_reg,
+                    # set this to this_scope for tinted gutter icons
+                    'dartlint.mark.gutter',
+                    icon=GUTTER_Icon[reg_id],
+                    flags=SCOPES_Dartlint['dartlint.mark.gutter']['flags'])
+                self.view.add_regions(
+                    reg_id,
+                    reg_list,
+                    this_scope,
+                    flags=SCOPES_Dartlint[this_scope]['flags'])
+                # Set icon presidence?
+            if lines_out is '':
+                self.output = None
+                print('No errors.')
+                self.view.set_status('dartlint', 'Dartlint: No errors')
+            else:
+                # Sort list
+                idx = 0
+                err_keys = []
+                for entry in lint_data:
+                    line_val = '{0:{fill}{align}16}'.format(
+                        entry['line'], fill='0', align='>')
+                    col_val = '{0:{fill}{align}16}'.format(
+                        entry['col'], fill='0', align='>')
+                    list_val = '%s-%s-%s' % (line_val, col_val, str(idx))
+                    err_keys.append(list_val)
+                    idx += 1
+                new_err_list = []
+                err_keys.sort()
+                for ek in err_keys:
+                    new_err_list.append(lint_data[int(ek.split('-')[2])])
+                self.output = new_err_list
+                # Out to console
+                print('\n' + lines_out)
 
     def popup_errors(self, window, view, ErrorData):
         # Process data into a list of errors
