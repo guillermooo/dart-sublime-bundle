@@ -369,7 +369,7 @@ class DartLintThread(threading.Thread):
             if DartLint.edits[self.view.buffer_id()] == 0:
                 return
 
-        # We've got a new linting result.
+        # We've got a new linter result.
         with g_tokens_lock:
             now = datetime.now()
             g_operations_tokens[self.view.buffer_id()] = (now.minute * 60 + now.second)
@@ -379,9 +379,9 @@ class DartLintThread(threading.Thread):
 
 
 class UIUpdater(threading.Thread):
-    """Gets items from the lint ops queue and acts on them.
+    """Gets items from the linter results queue and acts on them.
 
-    Runs in intervals forever.
+    Runs forever in intervals.
     """
     # TODO(guillermooo): There's currently no way of stopping this thread.
     def __init__(self):
@@ -405,8 +405,8 @@ class UIUpdater(threading.Thread):
         self.view.settings()
 
     def get_data(self):
-        """Checks the linting results queue for new results. If a result's
-        token has expired, the result is discarded.
+        """Checks the linter results queue for new items. Discards results
+        with an expired token.
 
         Returns the text lines (structured error data) obtained from the
         Dart sdk analyzer's output, or `None` if the results queue is empty.
@@ -421,15 +421,15 @@ class UIUpdater(threading.Thread):
                 return None
 
     def run(self):
-        """Runs forever checking the lint results available and displaying
-        them to the user.
+        """Runs forever checking for new linter results and displaying them
+        to the user.
         """
         while True:
             # Run at intervals.
             time.sleep(0.250)
 
             # We've got results for this buffer. Reset its version count so
-            # the cycle starts again.
+            # the linting cycle can start again.
             # TODO(guillermooo): It's possible that we'll miss some edits (?).
             with g_edits_lock:
                 DartLint.edits[self.view.buffer_id()] = 0
