@@ -34,6 +34,12 @@ class OpenDartEditor(sublime_plugin.TextCommand):
 
 class OpenDartSettings(sublime_plugin.WindowCommand):
     """Opens Dart settings files.
+
+    Default settings (that is, Packages/Dart/Support/Dart.sublime-settings)
+    are displayed as a read-only view not meant for editing.
+
+    User settings (that is, Packages/User/Dart.sublime-settings) are opened
+    as a regular view and are meant for editing.
     """
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -43,11 +49,34 @@ class OpenDartSettings(sublime_plugin.WindowCommand):
         return os.path.join(sublime.packages_path(),
                             'User/Dart.sublime-settings')
 
+    def open_default(self):
+        """Prints the default settings for Dart to a read-only view. The user
+        should not edit their settings here, but use the 'user' file instead.
+        """
+        setts = sublime.load_resource(
+            'Packages/Dart/Support/Dart.sublime-settings')
+
+        v = self.window.new_file()
+        v.run_command('append', {"characters": setts.replace('\r', '')})
+        v.set_name('Dart Settings – Default (read-only)')
+        # TODO(guillermooo): ST should detect that this is a JSON file by
+        # looking at the extension, but it isn't the case. Check with
+        # Sublime HQ. For now, set the syntax manually.
+        v.set_syntax_file('Packages/JavaScript/JSON.tmLanguage')
+        v.set_scratch(True)
+        v.set_read_only(True)
+
     def run(self, kind='user'):
+        """
+        @kind: Any of (user, default).
+        """
+        if kind == 'default':
+            _logger.debug('Opening default settings for viewing only.')
+            self.open_default()
+            return
+
         if kind != 'user':
-            sublime.status_message('Dart: Not supported settings kind: {0}'
-                .format(kind))
-            _logger.error('Not supported settings kind: %s', kind)
+            _logger.error('Unsupported settings type: %s', kind)
             return
 
         if not os.path.exists(self.user_file):
