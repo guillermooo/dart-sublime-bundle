@@ -19,121 +19,13 @@ glance:
 
 Most features are only active in files with a `.dart` extension.
 
-Check out our [introductory video][6] for a short tutorial on using this package.
+Check out our [introductory video][1] for a short tutorial on using this package.
 
 
-## Getting Started
+## Documentation
 
-Follow these steps to take full advantage of this package.
-
-1. [Download and install the Dart SDK][sdk]
-2. Make sure the SDK's `bin` directory is on your PATH
-3. Set the `dartsdk_path` variable in your ST3 user settings
-
-##### Example:
-
-```json
-    {
-      "dartsdk_path" : "/Users/foo/dart-sdk"
-    }
-```
-
-
-## Installation
-
-You can install the Dart package in two ways.
-
-### Using Package Control
-
-Installing through the [Package Control][1] plugin is the recommended way:
-
-- Open the command palette (<kbd>Ctrl+Shift+P</kbd> or <kbd>⌘+Shift+P</kbd>)
-- Type 'install'
-- Select **Package Control: Install Package**
-- Type 'Dart'
-- Select 'Dart'
-
-You may need to restart ST3 before you can start using all the features in the
+Check our [wiki][docs] for full documentation on how to install and use this
 package.
-
-### Manually
-
-- Clone this repository
-- Copy its content to a new *Dart* directory inside *Packages*
-
-To quickly open your *Packages* folder, select **Preferences → Browse Packages**
-from the ST3 menu or use the command palette.
-
----
-
-Looking for an IDE experience? Try [Dart Editor][2], the
-[Dart plugin for Eclipse][3], or the [Dart plugin for IntelliJ/WebStorm][4].
-
-## Using the Build System
-
-<kbd>Ctrl+B</kbd>/<kbd>⌘+B</kbd> will run the `dart2js` compiler on the active
-file.
-
-Browse other Dart commands via ST3's command pallete: `Run`, `Analyzer`,
-`pub install`, `pub update`…
-
-
-## Using the Linter
-
-### Getting Started
-
-The code linter is deactivated by default. To activate this feature you must
-set the `dartlint_active` setting to `true`.
-
-(You may need to make this change in `Packages/User/Preferences.sublime-settings`
-or in a `Dart.sublime-settings` file within your `Packages/User` folder.)
-
-##### Example:
-
-```json
-{
-  "dartlint_active" : true
-}
-```
-
-### Configuration
-
-The linter will run when Dart scripts are loaded or saved. You can change this
-behavior through the `dartlint_on_load` and `dartlint_on_save` settings.
-
-
-### Customizing Highlight Colors
-
-Use the following settings:
-
-- `dartlint_underline_color_error`
-- `dartlint_underline_color_warning`
-- `dartlint_underline_color_info`
-
-To customize gutter icons:
-
-`dartlint_gutter_icon_error`
-`dartlint_gutter_icon_warning`
-`dartlint_gutter_icon_info`
-
-Paths to icons must start at the *Packages* directory.
-
-##### Example:
-
-```json
-{
-  "dartlint_gutter_icon_error" : "Packages/Users/Icons/error.png"
-}
-```
-
-### Linter Popup Configuration
-
-Use `dartlint_show_popup_level` setting to control when the pop up should
-show. Valid values are:
-
-- `ERROR`
-- `WARNING`
-- `INFO`
 
 
 ## License
@@ -163,10 +55,5 @@ show. Valid values are:
     (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
     OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-[1]: http://wbond.net/sublime_packages/package_control
-[2]: http://www.dartlang.org/editor
-[3]: http://news.dartlang.org/2012/08/dart-plugin-for-eclipse-is-ready-for.html
-[4]: http://plugins.intellij.net/plugin/?id=6351
-[5]: http://github.com/dart-lang/dart-textmate-bundle
-[6]: http://news.dartlang.org/2013/02/using-dart-with-sublime-text.html
-[sdk]: http://www.dartlang.org/tools/sdk/
+[1]: http://news.dartlang.org/2013/02/using-dart-with-sublime-text.html
+[docs]: https://github.com/dart-lang/dart-sublime-bundle/wiki
