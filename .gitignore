@@ -4,3 +4,4 @@ Dart.tmbundle/tests
 
 # Editor files
 *.sublime-workspace
+dist/
