@@ -16,7 +16,7 @@
     [
         {
         	"name": "Run",
-	        "shell_cmd": "\"$project_path/build.sh\"",
+	        "shell_cmd": "\"$project_path/scripts/build.sh\"",
 	        "windows":
 	        {
                 "shell_cmd": "powershell -noninteractive -file \"$project_path\\scripts\\Build.ps1\""
