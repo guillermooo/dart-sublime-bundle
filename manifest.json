@@ -1,0 +1,43 @@
+{
+	"name": "Dart",
+	"include": {
+		"dev": [
+			["*.*", ["*builder.py",
+					"*build.sh",
+					"*toplist.py",
+					"*.sublime-workspace",
+					"*.sublime-project",
+					"*.JSON-tmLanguage",
+					"*.ps1",
+					"*.hg*",
+					"*.git*",
+					"_TODO.txt",
+					"*manifest.json"]
+			],
+
+			["./lib/*.py", []],
+
+			["./tests/*.py", []],
+			["./tests/lib/*.py", []]
+
+
+		],
+		"release": [
+			["*.*", ["*builder.py",
+					"*build.sh",
+					"*toplist.py",
+					"*.sublime-workspace",
+					"*.sublime-project",
+					"*.JSON-tmLanguage",
+					"*.ps1",
+					"*.hg*",
+					"*.git*",
+					"_TODO.txt",
+					"*manifest.json",
+					"test_runner.py"]
+			],
+
+			["./lib/*.py", []]
+		]
+	}
+}
