@@ -111,6 +111,7 @@ class AnalysisServer(object):
         self.proc = None
 
     def start(self):
+        # TODO(guillermooo): create pushcd context manager in lib/path.py.
         old = os.curdir
         # TODO(guillermooo): catch errors
         sdk = SDK()
