@@ -10,5 +10,24 @@
 	"SublimeLinter":
 	{
 		"@python": 3.4
-	}
+	},
+
+    "build_systems":
+    [
+        {
+        	"name": "Run",
+	        "shell_cmd": "\"$project_path/scripts/build.sh\"",
+	        "windows":
+	        {
+                "shell_cmd": "powershell -noninteractive -file \"$project_path\\scripts\\Build.ps1\""
+	        },
+	        "working_dir": "${project_path}",
+	        "variants": [
+                {
+                        "name": "Test",
+                        "target": "run_dart_tests",
+                }
+	        ]
+	    }
+    ]
 }
