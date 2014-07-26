@@ -5,9 +5,12 @@ from unittest import mock
 import os
 from subprocess import check_output
 
-from Dart.lib.path import find_in_path
-from Dart.lib.path import is_pubspec
 from Dart.lib.path import extension_equals
+from Dart.lib.path import find_in_path
+from Dart.lib.path import is_dart_script
+from Dart.lib.path import is_pubspec
+from Dart.lib.path import is_view_dart_script
+from Dart.lib.path import view_extension_equals
 
 
 class Test_find_in_path(unittest.TestCase):
@@ -43,6 +46,25 @@ class Test_is_pubspec(unittest.TestCase):
 
     def testFailsIfNotAPubspecFile(self):
         self.assertFalse(is_pubspec(self.view))
+
+
+class Test_is_dart_script(unittest.TestCase):
+    def testSucceedsIfDartScript(self):
+        self.assertTrue(is_dart_script("/some/path/foo.dart"))
+
+    def testFailsIfNotDartScript(self):
+        self.assertFalse(is_dart_script("/some/path/foo.txt"))
+
+    def testFailsWithEmtpyPath(self):
+        self.assertFalse(is_dart_script(""))
+
+
+class Test_is_view_dart_script(unittest.TestCase):
+    def setUp(self):
+        self.view = sublime.active_window().new_file()
+
+    def testFailsIfFileNotOnDisk(self):
+        self.assertFalse(is_view_dart_script(self.view))
 
     def tearDown(self):
         self.view.close()
