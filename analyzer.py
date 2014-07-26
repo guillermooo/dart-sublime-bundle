@@ -15,7 +15,8 @@ from . import PluginLogger
 from .lib.sdk import SDK
 from .lib.plat import supress_window
 from .lib.path import is_view_dart_script
-from .lib.path import find_pubspec_parent
+from .lib.path import find_pubspec
+from .lib.analyzer import requests
 
 
 _logger = PluginLogger(__name__)
@@ -75,7 +76,8 @@ class ActivityTracker(sublime_plugin.EventListener):
 
     def on_post_save(self, view):
         if not is_view_dart_script(view):
-            _logger.debug('not a dart file %s', view.file_name())
+            _logger.debug('on_post_save - not a dart file %s',
+                          view.file_name())
             return
 
         with g_edits_lock:
@@ -83,6 +85,14 @@ class ActivityTracker(sublime_plugin.EventListener):
             # across windows?
             ActivityTracker.edits[view.buffer_id()] += 1
             sublime.set_timeout(lambda: self.check_idle(view), 1000)
+
+    def on_activated(self, view):
+        if not is_view_dart_script(view):
+            _logger.debug('on_activated - not a dart file %s',
+                          view.file_name())
+            return
+
+        g_server.add_root(view.file_name())
 
 
 class StdoutWatcher(threading.Thread):
@@ -92,17 +102,17 @@ class StdoutWatcher(threading.Thread):
         self.path = path
 
     def start(self):
-        _logger.debug("starting StdoutWatcher")
+        _logger.info("starting StdoutWatcher")
         while True:
             data = self.proc.stdout.readline().decode('utf-8')
-            _logger.debug('data read from server: %s', data)
+            _logger.debug('data read from server: %s', repr(data))
             if not data:
-                _logger.debug("StdoutWatcher - no data")
+                _logger.info("StdoutWatcher - no data")
                 time.sleep(.25)
                 continue
 
             g_responses.put(json.loads(data))
-        _logger.debug('StdoutWatcher exited unexpectedly')
+        _logger.error('StdoutWatcher exited unexpectedly')
 
 
 class AnalysisServer(object):
@@ -111,8 +121,17 @@ class AnalysisServer(object):
         self.path = path
         self.proc = None
         self.roots = []
+        # buffer id -> token
+        self.tokens = {}
+        self.tokens_lock = threading.Lock()
 
-    def add_root(path, verbatim=False):
+    def new_token(self):
+        v = sublime.active_window().active_view()
+        now = datetime.now()
+        token = '{}:{}'.format(v.buffer_id(), now.minute * 60 + now.second)
+        return token
+
+    def add_root(self, path):
         """Adds `path` to the monitored roots if it is unknown.
 
         If a `pubspec.yaml` is found in the path, its parent is monitored.
@@ -121,16 +140,21 @@ class AnalysisServer(object):
         @path
           Can be a directory or a file path.
         """
-        p = find_pubspec_parent(path)
-        if not p:
-            _logger.debug('did not add path: %s', path)
+        if not path:
+            _logger.debug('not a valid path: %s', path)
             return
+
+        p, found = os.path.dirname(find_pubspec(path))
+        if not found:
+            _logger.debug('did not found pubspec.yaml in path: %s', path)
 
         if p not in self.roots:
             _logger.debug('adding new root: %s', p)
             self.roots.append(p)
+            self.send_set_roots(self.roots)
+            return
 
-            # TODO(guillermooo): update analyzer roots
+        _logger.debug('root already known: %s', p)
 
     def start(self):
         # TODO(guillermooo): create pushcd context manager in lib/path.py.
@@ -138,7 +162,7 @@ class AnalysisServer(object):
         # TODO(guillermooo): catch errors
         sdk = SDK()
         os.chdir(sdk.path_to_sdk)
-        _logger.debug('starting AnalysisServer')
+        _logger.info('starting AnalysisServer')
         self.proc = Popen(['dart',
                            sdk.path_to_analysis_snapshot,
                            '--sdk={0}'.format(sdk.path_to_sdk)],
@@ -159,6 +183,12 @@ class AnalysisServer(object):
         self.proc.stdin.write(data)
         self.proc.stdin.flush()
 
+    def send_set_roots(self, included=[], excluded=[]):
+        token = self.new_token()
+        req = requests.set_roots(token, included, excluded)
+        _logger.info('sending set_roots request')
+        g_requests.put(req)
+
 
 class ResponseHandler(threading.Thread):
     """ Handles responses from the analysis server.
@@ -167,12 +197,12 @@ class ResponseHandler(threading.Thread):
         super().__init__()
 
     def run(self):
-        _logger.debug('starting ResponseHandler')
+        _logger.info('starting ResponseHandler')
         while True:
             time.sleep(.25)
             try:
                 item = g_responses.get(0.1)
-                _logger.debug("processing response: %s", item)
+                _logger.info("processing response")
             except queue.Empty:
                 pass
 
@@ -184,7 +214,7 @@ class RequestHandler(threading.Thread):
         super().__init__()
 
     def run(self):
-        _logger.debug('starting RequestHandler')
+        _logger.info('starting RequestHandler')
         while True:
             time.sleep(.25)
             try:
