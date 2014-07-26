@@ -15,6 +15,7 @@ from . import PluginLogger
 from .lib.sdk import SDK
 from .lib.plat import supress_window
 from .lib.path import is_view_dart_script
+from .lib.path import find_pubspec_parent
 
 
 _logger = PluginLogger(__name__)
@@ -109,6 +110,27 @@ class AnalysisServer(object):
         super().__init__()
         self.path = path
         self.proc = None
+        self.roots = []
+
+    def add_root(path, verbatim=False):
+        """Adds `path` to the monitored roots if it is unknown.
+
+        If a `pubspec.yaml` is found in the path, its parent is monitored.
+        Otherwise the passed in path is monitored as is.
+
+        @path
+          Can be a directory or a file path.
+        """
+        p = find_pubspec_parent(path)
+        if not p:
+            _logger.debug('did not add path: %s', path)
+            return
+
+        if p not in self.roots:
+            _logger.debug('adding new root: %s', p)
+            self.roots.append(p)
+
+            # TODO(guillermooo): update analyzer roots
 
     def start(self):
         # TODO(guillermooo): create pushcd context manager in lib/path.py.
