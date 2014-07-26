@@ -16,6 +16,7 @@
 			],
 
 			["./lib/*.py", []],
+			["./lib/analyzer/*.py", []],
 
 			["./tests/*.py", []],
 			["./tests/lib/*.py", []],
@@ -44,7 +45,8 @@
 
 			["./gutter/*.*", []],
 			["./Snippets/*.*", []],
-			["./Support/*.*", []]
+			["./Support/*.*", []],
+			["./lib/analyzer/*.py", []]
 		]
 	}
 }
