@@ -12,12 +12,7 @@ class Test_SDK(unittest.TestCase):
 
     def testUsesUserDefinedPath(self):
         sdk = SDK('/xxx/yyy')
-        self.assertEqual(sdk.path, '/xxx/yyy')
-
-    def testUsesDefaultPath(self):
-        self.view.settings().set('dartsdk_path', 'foo/bar')
-        sdk = SDK()
-        self.assertEqual(sdk.path, 'foo/bar')
+        self.assertEqual(sdk.path_to_sdk, '/xxx/yyy')
 
     @unittest.skipUnless(os.name == 'nt', 'only for Windows')
     def testCanFindPathToDartInterpreterOnWindows(self):
@@ -27,8 +22,7 @@ class Test_SDK(unittest.TestCase):
 
     @unittest.skipIf(os.name == 'nt', 'only for non-Windows platforms')
     def testCanFindPathToDartInterpreter(self):
-        self.view.settings().set('dartsdk_path', '/foo/bar')
-        sdk = SDK()
+        sdk = SDK('/foo/bar')
         self.assertEqual(sdk.path_to_dart, '/foo/bar/bin/dart')
 
     def tearDown(self):

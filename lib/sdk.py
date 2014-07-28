@@ -22,14 +22,15 @@ class SDK(object):
     """
 
     def __init__(self, path=None):
+        # TODO(guillermooo): What if the user passes the wrong path?
         if path is not None:
-            self.__dict__[self.path_to_sdk.__name__] = path
+            self.__dict__['path_to_sdk'] = path
 
     @cached_property
     def path_to_sdk(self):
         return find_in_path('dart', '.exe')
 
-    def start_editor(self, file_name=None, row=None, col=None):
+    def start_editor(self, funiile_name=None, row=None, col=None):
         """Launches the Dart Editor.
 
         @file_name
