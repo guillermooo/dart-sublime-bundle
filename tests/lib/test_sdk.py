@@ -14,12 +14,6 @@ class Test_SDK(unittest.TestCase):
         sdk = SDK('/xxx/yyy')
         self.assertEqual(sdk.path_to_sdk, '/xxx/yyy')
 
-    @unittest.skipUnless(os.name == 'nt', 'only for Windows')
-    def testCanFindPathToDartInterpreterOnWindows(self):
-        self.view.settings().set('dartsdk_path', 'c:/foo/bar')
-        sdk = SDK()
-        self.assertEqual(sdk.path_to_dart, r'c:\foo\bar\bin\dart.exe')
-
     @unittest.skipIf(os.name == 'nt', 'only for non-Windows platforms')
     def testCanFindPathToDartInterpreter(self):
         sdk = SDK('/foo/bar')
