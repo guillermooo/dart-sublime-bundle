@@ -25,5 +25,10 @@ class Test_SDK(unittest.TestCase):
         sdk = SDK('/foo/bar')
         self.assertEqual(sdk.path_to_dart, '/foo/bar/bin/dart')
 
+    @unittest.skipIf(os.name == 'nt', 'only for non-Windows platforms')
+    def testCanFindPathToDartAnalyzer(self):
+        sdk = SDK('/foo/bar')
+        self.assertEqual(sdk.path_to_analyzer, '/foo/bar/bin/dartanalyzer')
+
     def tearDown(self):
         self.view.close()

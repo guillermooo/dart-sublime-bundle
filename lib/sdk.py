@@ -28,7 +28,7 @@ class SDK(object):
 
     @cached_property
     def path_to_sdk(self):
-        return find_in_path('dart', '.exe')
+        return os.path.dirname(find_in_path('dart', '.exe'))
 
     def start_editor(self, file_name=None, row=None, col=None):
         """Launches the Dart Editor.
@@ -76,4 +76,15 @@ class SDK(object):
             return
 
         bin_name = to_platform_path('dart', '.exe')
+        return realpath(join(self.path_to_sdk, 'bin', bin_name))
+
+    @property
+    def path_to_analyzer(self):
+        """Returns path to dart interpreter.
+        """
+        if not self.path_to_sdk:
+            _logger.info('could not locate dart sdk')
+            return
+
+        bin_name = to_platform_path('dartanalyzer', '.exe')
         return realpath(join(self.path_to_sdk, 'bin', bin_name))

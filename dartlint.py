@@ -26,6 +26,7 @@ from .lib.path import view_extension_equals
 from .lib.plat import is_windows
 from .lib.plat import supress_window
 from .lib.panels import OutputPanel
+from .lib.sdk import SDK
 
 _logger = PluginLogger(__name__)
 
@@ -311,7 +312,8 @@ def FormRelativePath(path):
 
 # TODO(guillermooo): We can probably get rid of this.
 def RunDartanalyzer(view, fileName, our_settings, show_popup=True):
-    dartsdk_path = our_settings.get('dartsdk_path')
+    # FIXME: Inefficient. We should store the SDK away and reuse it.
+    dartsdk_path = SDK().path_to_sdk
 
     if dartsdk_path:
         DartLintThread(view, fileName, our_settings, show_popup).start()
@@ -328,7 +330,7 @@ class DartLintThread(threading.Thread):
         self.daemon = True
         self.view = view
         self.window = view.window()
-        self.dartsdk_path = our_settings.get('dartsdk_path')
+        self.dartsdk_path = SDK().path_to_sdk
         self.fileName = fileName
 
     def clear_all(self):
