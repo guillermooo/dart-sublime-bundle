@@ -10,6 +10,7 @@ from .lib.plat import is_windows
 from .lib.plat import supress_window
 from .lib.panels import OutputPanel
 from . import PluginLogger
+from .lib.sdk import SDK
 
 
 _logger = PluginLogger(__name__)
@@ -28,7 +29,8 @@ class PubspecListener(sublime_plugin.EventListener):
 
 
 def RunPub(view, file_name):
-    dartsdk_path = view.settings().get('dartsdk_path')
+    # FIXME: Infefficient. We should store the path to the sdk away.
+    dartsdk_path = SDK().path_to_sdk
 
     if not dartsdk_path:
         _logger.debug("`dartsdk_path` missing; aborting pub")
