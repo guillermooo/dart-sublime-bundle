@@ -1,5 +1,7 @@
 import os
 
+from Dart.lib.plat import to_platform_path
+
 
 def view_extension_equals(view, extension):
     """Compares @view's extensions with @extension.
@@ -29,3 +31,21 @@ def is_view_dart_script(view):
 
 def is_dart_script(path):
     return extension_equals(path, '.dart')
+
+
+def find_in_path(what, win_ext=''):
+    '''Searches PATH for @what.
+
+    Returns the path containing @what or `None` if not found.
+
+    @what
+      Binary to search for.
+
+    @win_ext
+      An extension that will be added to @what on Windows.
+    '''
+    bin_name = to_platform_path(what, win_ext)
+    for path in os.environ['PATH'].split(os.path.pathsep):
+        if os.path.exists(os.path.join(path, bin_name)):
+            return os.path.realpath(path)
+
