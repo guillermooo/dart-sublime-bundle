@@ -30,7 +30,7 @@ class SDK(object):
     def path_to_sdk(self):
         return find_in_path('dart', '.exe')
 
-    def start_editor(self, funiile_name=None, row=None, col=None):
+    def start_editor(self, file_name=None, row=None, col=None):
         """Launches the Dart Editor.
 
         @file_name
