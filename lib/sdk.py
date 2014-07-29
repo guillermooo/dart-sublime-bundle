@@ -22,9 +22,11 @@ class SDK(object):
     """
 
     def __init__(self, path=None):
-        # TODO(guillermooo): What if the user passes the wrong path?
         if path is not None:
             self.__dict__['path_to_sdk'] = path
+            if not os.path.exists(os.path.join(path,
+                                  to_platform_path('dart', '.exe'))):
+                del self.path_to_sdk
 
     @cached_property
     def path_to_sdk(self):
@@ -69,7 +71,7 @@ class SDK(object):
 
     @property
     def path_to_dart(self):
-        """Returns path to dart interpreter.
+        """Returns the full path to the dart interpreter.
         """
         if not self.path_to_sdk:
             _logger.info('could not locate dart sdk')
@@ -80,7 +82,7 @@ class SDK(object):
 
     @property
     def path_to_analyzer(self):
-        """Returns path to dart interpreter.
+        """Returns the full path to the dart analyzer.
         """
         if not self.path_to_sdk:
             _logger.info('could not locate dart sdk')

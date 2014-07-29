@@ -1,7 +1,9 @@
 import sublime
 
 import unittest
+from unittest import mock
 import os
+
 
 from Dart.lib.sdk import SDK
 
@@ -11,8 +13,9 @@ class Test_SDK(unittest.TestCase):
         self.view = sublime.active_window().new_file()
 
     def testUsesUserDefinedPath(self):
-        sdk = SDK('/xxx/yyy')
-        self.assertEqual(sdk.path_to_sdk, '/xxx/yyy')
+        with mock.patch('os.path.exists', lambda x: True):
+            sdk = SDK('/xxx/yyy')
+            self.assertEqual(sdk.path_to_sdk, '/xxx/yyy')
 
     @unittest.skipIf(os.name == 'nt', 'only for non-Windows platforms')
     def testCanFindPathToDartInterpreter(self):
