@@ -11,7 +11,7 @@ _logger = PluginLogger(__name__)
 
 
 _flags = (sublime.DRAW_SQUIGGLY_UNDERLINE | sublime.DRAW_NO_FILL |
-          sublime.DRAW_NO_OUTLINE
+          sublime.DRAW_NO_OUTLINE)
 
 
 def display_error(errors):
