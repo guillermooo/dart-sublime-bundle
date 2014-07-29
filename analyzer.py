@@ -25,10 +25,9 @@ _logger = PluginLogger(__name__)
 
 
 _SERVER_START_DELAY = 2500
-_STOP_SIGNAL = object()
+_SIGNAL_STOP = object()
 
 
-g_shut_down_event = threading.Event()
 g_requests = queue.Queue()
 # Responses from server.
 g_responses = queue.Queue()
@@ -66,13 +65,17 @@ def init():
 
 
 def plugin_loaded():
+    # FIXME(guillermooo): Ignoring, then de-ignoring this package throws
+    # errors.
     # Make ST more responsive on startup --- also helps the logger get ready.
     sublime.set_timeout(init, _SERVER_START_DELAY)
 
 
 def plugin_unloaded():
-    g_requests.put({"_internal": _STOP_SIGNAL})
-    g_responses.put({"_internal": _STOP_SIGNAL})
+    # The worker threads handling requests/responses block when reading their
+    # queue, so give them something.
+    g_requests.put({'_internal': _SIGNAL_STOP})
+    g_responses.put({'_internal': _SIGNAL_STOP})
     g_server.stop()
 
 
@@ -240,24 +243,30 @@ class ResponseHandler(threading.Thread):
                 item = g_responses.get(0.1)
                 _logger.info("processing response")
 
-                if item.get('_internal') == _STOP_SIGNAL:
+                if item.get('_internal') == _SIGNAL_STOP:
                     _logger.info(
                         'ResponseHandler is exiting by internal request')
-                    break
+                    return
 
-                resp = Response(item)
-                if resp.type == 'analysis.errors':
-                    if resp.has_errors:
-                        sublime.set_timeout(
-                            lambda: actions.display_error(resp.errors), 0)
-                    else:
-                        sublime.set_timeout(actions.wipe_ui, 0)
-                elif resp.type == 'server.status':
-                    info = resp.status
-                    sublime.set_timeout(lambda: sublime.status_message(
-                                        "Dart: " + info.message))
-                else:
-                    pass
+                try:
+                    resp = Response(item)
+                    if resp.type == 'analysis.errors':
+                        if resp.has_errors:
+                            sublime.set_timeout(
+                                lambda: actions.display_error(resp.errors), 0)
+                        else:
+                            sublime.set_timeout(actions.wipe_ui, 0)
+                    elif resp.type == 'server.status':
+                        info = resp.status
+                        sublime.set_timeout(lambda: sublime.status_message(
+                                            "Dart: " + info.message))
+                except Exception as e:
+                    _logger.debug(e)
+                    print('Dart: exception while handling response.')
+                    print('========================================')
+                    print(e.message)
+                    print('========================================')
+
             except queue.Empty:
                 pass
 
@@ -275,10 +284,10 @@ class RequestHandler(threading.Thread):
             try:
                 item = g_requests.get(0.1)
 
-                if item.get('_internal') == _STOP_SIGNAL:
+                if item.get('_internal') == _SIGNAL_STOP:
                     _logger.info(
                         'RequestHandler is exiting by internal request')
-                    break
+                    return
 
                 g_server.send(item)
             except queue.Empty:
