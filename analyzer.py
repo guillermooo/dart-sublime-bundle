@@ -15,7 +15,7 @@ from . import PluginLogger
 from .lib.analyzer import actions
 from .lib.analyzer import requests
 from .lib.analyzer.response import Response
-from .lib.path import find_pubspec
+from .lib.path import find_pubspec_path
 from .lib.path import is_view_dart_script
 from .lib.plat import supress_window
 from .lib.sdk import SDK
@@ -181,7 +181,7 @@ class AnalysisServer(object):
             _logger.debug('not a valid path: %s', path)
             return
 
-        p, found = os.path.dirname(find_pubspec(path))
+        p, found = find_pubspec_path(path)
         if not found:
             _logger.debug('did not found pubspec.yaml in path: %s', path)
 

@@ -104,3 +104,9 @@ def to_platform_path(original, append):
             return original + append
         return join(original, append)
     return original
+
+
+def find_pubspec_path(path, original=None):
+    """Locates the directory containing a pubspec.yaml file.
+    """
+    raise TypeError('missing function here')
