@@ -36,10 +36,17 @@ def display_error(errors):
               sublime.DRAW_NO_FILL |
               sublime.DRAW_NO_OUTLINE)
 
+    v.add_regions('dart.infos', list(errors.infos_to_regions(v)),
+        scope='dartlint.mark.info',
+        flags=sublime.DRAW_SQUIGGLY_UNDERLINE |
+              sublime.DRAW_NO_FILL |
+              sublime.DRAW_NO_OUTLINE)
+
+
     panel = OutputPanel('dart.analyzer')
-    errors_pattern = r'^\w+\|\w+\|(.+)\|(\d+)\|(\d+)\|(.+)'
+    errors_pattern = r'^\w+\|\w+\|(.+)\|(\d+)\|(\d+)\|(.+)$'
     panel.set('result_file_regex', errors_pattern)
-    panel.write('\n'.join(list(errors.to_compact_text())))
+    panel.write('\n'.join(set(errors.to_compact_text())))
 
 
 def erase_errors():
@@ -47,3 +54,4 @@ def erase_errors():
     v = sublime.active_window().active_view()
     v.erase_regions('dart.errors')
     v.erase_regions('dart.warnings')
+    v.erase_regions('dart.infos')

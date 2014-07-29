@@ -24,6 +24,7 @@ class ErrorInfoCollection(object):
         self.data = data
         self._errors = []
         self._warnings = []
+        self._infos = []
 
     def __len__(self):
         return len(self.data['params']['errors'])
@@ -40,6 +41,10 @@ class ErrorInfoCollection(object):
         for ei in self.warnings:
             yield ei.to_region(view)
 
+    def infos_to_regions(self, view):
+        for ei in self.infos:
+            yield ei.to_region(view)
+
     @property
     def errors(self):
         if self._errors:
@@ -52,6 +57,8 @@ class ErrorInfoCollection(object):
                 yield ei
             elif ei.severity == 'WARNING':
                 self._warnings.append(ei)
+            elif ei.severity == 'INFO':
+                self._infos.append(ei)
 
     @property
     def warnings(self):
@@ -65,9 +72,29 @@ class ErrorInfoCollection(object):
                 yield ei
             elif ei.severity == 'ERROR':
                 self._errors.append(ei)
+            elif ei.severity == 'INFO':
+                self._infos.append(ei)
+
+    @property
+    def infos(self):
+        if self._warnings:
+            yield from self._warnings
+
+        for err in  self.data['params']['errors']:
+            ei = ErrorInfo(err)
+            if ei.severity == 'INFO':
+                self._infos.append(ei)
+                yield ei
+            elif ei.severity == 'ERROR':
+                self._errors.append(ei)
+            elif ei.severity == 'WARNING':
+                self._warnings.append(ei)
 
     def to_compact_text(self):
-        everything = sorted(self._errors + self._warnings,
+        # Make sure we populate the items cache.
+        self.infos
+
+        everything = sorted(self._errors + self._warnings + self._infos,
                             key=lambda x: x.offset)
         yield from (item.to_compact_text() for item in everything)
 
