@@ -1,0 +1,65 @@
+import sublime
+import sublime_plugin
+
+import os
+import unittest
+import contextlib
+import threading
+
+
+from Dart.lib.panels import OutputPanel
+
+
+class RunDartTests(sublime_plugin.WindowCommand):
+    '''Runs tests and displays the result.
+
+    - Do not use ST while tests are running.
+
+    @working_dir
+      Required. Should be the parent of the top-level directory for `tests`.
+
+    @loader_pattern
+      Optional. Only run tests matching this glob.
+
+    @active_file_only
+      Optional. Only run tests in the active file in ST. Shadows
+      @loader_pattern.
+
+    To use this runner conveniently, open the command palette and select one
+    of the `Build: Vintageous - Test *` commands.
+    '''
+    @contextlib.contextmanager
+    def chdir(self, path=None):
+        old_path = os.getcwd()
+        if path is not None:
+            assert os.path.exists(path), "'path' is invalid"
+            os.chdir(path)
+        yield
+        if path is not None:
+            os.chdir(old_path)
+
+    def run(self, **kwargs):
+        with self.chdir(kwargs.get('working_dir')):
+            p = os.path.join(os.getcwd(), 'tests')
+            patt = kwargs.get('loader_pattern', 'test*.py',)
+            # TODO(guillermooo): I can't get $file to expand in the build
+            # system. It should be possible to make the following code simpler
+            # with it.
+            if kwargs.get('active_file_only') is True:
+                patt = os.path.basename(self.window.active_view().file_name())
+            suite = unittest.TestLoader().discover(p, pattern=patt)
+
+            file_regex = r'^\s*File\s*"([^.].*?)",\s*line\s*(\d+),.*$'
+            display = OutputPanel('dart.tests')
+            display.set('result_file_regex', file_regex)
+            display.show()
+            runner = unittest.TextTestRunner(stream=display, verbosity=1)
+
+            def run_and_display():
+                runner.run(suite)
+
+            # XXX: It seems that the StdoutWatcher thread blocks the
+            # .set_timeout_async() BG thread and we cannot use it here. This
+            # seems to be the case, because in Vintageous I can run tests
+            # asynchronously with it if the Dart package is disabled.
+            threading.Thread(target=run_and_display).start()
