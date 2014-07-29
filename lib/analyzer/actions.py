@@ -2,6 +2,7 @@
 """
 
 import sublime
+from Dart.lib.panels import OutputPanel
 
 
 def display_error(errors):
@@ -18,6 +19,12 @@ def display_error(errors):
         flags=sublime.DRAW_SQUIGGLY_UNDERLINE |
               sublime.DRAW_NO_FILL |
               sublime.DRAW_NO_OUTLINE)
+
+    panel = OutputPanel('dart.analyzer')
+    errors_pattern = r'^\w+\|\w+\|(.+)\|(\d+)\|(\d+)\|(.+)'
+    panel.set('result_file_regex', errors_pattern)
+    panel.write('\n'.join(list(errors.to_compact_text())))
+    # panel.show()
 
 
 def erase_errors():

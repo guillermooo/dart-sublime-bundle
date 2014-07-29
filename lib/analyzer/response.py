@@ -59,6 +59,11 @@ class ErrorInfoCollection(object):
             elif ei.severity == 'ERROR':
                 self._errors.append(ei)
 
+    def to_compact_text(self):
+        everything = sorted(self._errors + self._warnings,
+                            key=lambda x: x.offset)
+        yield from (item.to_compact_text() for item in everything)
+
 
 
 class ErrorInfo(object):
@@ -66,7 +71,7 @@ class ErrorInfo(object):
         self.data = data
 
     def __str__(self):
-        return "{self.severity}:{self.type}:{self.file}:{self.start_line}:{self.start_column}".format(self=self)
+        return "{self.severity}|{self.type}|{self.file}|{self.start_line}|{self.start_column}".format(self=self)
 
     @property
     def location(self):
@@ -86,7 +91,7 @@ class ErrorInfo(object):
 
     @property
     def offset(self):
-        return self.data['location']['offset'] - 1
+        return self.data['location']['offset']
 
     @property
     def length(self):
@@ -106,6 +111,9 @@ class ErrorInfo(object):
 
     def to_region(self):
         return sublime.Region(self.offset, self.offset + self.length)
+
+    def to_compact_text(self):
+        return "{self.severity}|{self.type}|{self.file}|{self.start_line}|{self.start_column}|{self.message}".format(self=self)
 
 
 class Response(object):
