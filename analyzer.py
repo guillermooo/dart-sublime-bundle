@@ -1,30 +1,30 @@
 import sublime
 import sublime_plugin
 
-import os
 from collections import defaultdict
-import json
 from datetime import datetime
+from subprocess import PIPE
+from subprocess import Popen
+import json
+import os
 import queue
 import threading
 import time
-from subprocess import Popen
-from subprocess import PIPE
 
 from . import PluginLogger
-from .lib.sdk import SDK
-from .lib.plat import supress_window
-from .lib.path import is_view_dart_script
-from .lib.path import find_pubspec
-from .lib.analyzer import requests
 from .lib.analyzer import actions
+from .lib.analyzer import requests
 from .lib.analyzer.response import Response
+from .lib.path import find_pubspec
+from .lib.path import is_view_dart_script
+from .lib.plat import supress_window
+from .lib.sdk import SDK
 
 
 _logger = PluginLogger(__name__)
 
 
-SERVER_START_DELAY = 2500
+_SERVER_START_DELAY = 2500
 _STOP_SIGNAL = object()
 
 
@@ -57,7 +57,7 @@ def init():
 
 def plugin_loaded():
     # Make ST more responsive on startup --- also helps the logger get ready.
-    sublime.set_timeout(init, SERVER_START_DELAY)
+    sublime.set_timeout(init, _SERVER_START_DELAY)
 
 
 def plugin_unloaded():
@@ -110,7 +110,7 @@ class ActivityTracker(sublime_plugin.EventListener):
             else:
                 sublime.set_timeout(
                     lambda: g_server.add_root(view.file_name()),
-                                              SERVER_START_DELAY + 1000)
+                                              _SERVER_START_DELAY + 1000)
 
 
 class StdoutWatcher(threading.Thread):
@@ -127,7 +127,8 @@ class StdoutWatcher(threading.Thread):
 
             if not data:
                 if self.proc.stdin.closed:
-                    _logger.info('StdoutWatcher is exiting by internal request')
+                    _logger.info(
+                        'StdoutWatcher is exiting by internal request')
                     return
 
                 _logger.debug("StdoutWatcher - no data")
@@ -230,15 +231,17 @@ class ResponseHandler(threading.Thread):
                 _logger.info("processing response")
 
                 if item.get('_internal') == _STOP_SIGNAL:
-                    _logger.info('ResponseHandler is exiting by internal request')
+                    _logger.info(
+                        'ResponseHandler is exiting by internal request')
                     break
 
                 resp = Response(item)
                 if resp.type == 'analysis.errors':
                     if resp.has_errors:
-                        sublime.set_timeout(lambda: actions.display_error(resp.errors), 0)
+                        sublime.set_timeout(
+                            lambda: actions.display_error(resp.errors), 0)
                     else:
-                        sublime.set_timeout(actions.erase_errors, 0)
+                        sublime.set_timeout(actions.wipe_ui, 0)
                 elif resp.type == 'server.status':
                     info = resp.status
                     sublime.set_timeout(lambda: sublime.status_message(
@@ -263,7 +266,8 @@ class RequestHandler(threading.Thread):
                 item = g_requests.get(0.1)
 
                 if item.get('_internal') == _STOP_SIGNAL:
-                    _logger.info('RequestHandler is exiting by internal request')
+                    _logger.info(
+                        'RequestHandler is exiting by internal request')
                     break
 
                 g_server.send(item)
