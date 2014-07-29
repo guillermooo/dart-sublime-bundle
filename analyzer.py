@@ -43,16 +43,26 @@ def init():
     global g_server
     _logger.debug('starting dart analyzer')
 
-    reqh = RequestHandler()
-    reqh.daemon = True
-    reqh.start()
-    resh = ResponseHandler()
-    resh.daemon = True
-    resh.start()
+    try:
+        reqh = RequestHandler()
+        reqh.daemon = True
+        reqh.start()
 
-    with g_server_ready:
-        g_server = AnalysisServer()
-        g_server.start()
+        resh = ResponseHandler()
+        resh.daemon = True
+        resh.start()
+
+        with g_server_ready:
+            g_server = AnalysisServer()
+            g_server.start()
+    except Exception as e:
+        print('Dart: Exception occurred during init. Aborting')
+        print('==============================================')
+        print(e.message)
+        print('==============================================')
+        return
+
+    print('Dart: Analyzer started.')
 
 
 def plugin_loaded():
