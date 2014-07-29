@@ -25,6 +25,13 @@ class ErrorInfoCollection(object):
         self._errors = []
         self._warnings = []
 
+    def __len__(self):
+        return len(self.data['params']['errors'])
+
+    @property
+    def file(self):
+        return self.data['params']['file']
+
     def errors_to_regions(self):
         for ei in self.errors:
             yield ei.to_region()

@@ -4,9 +4,25 @@
 import sublime
 from Dart.lib.panels import OutputPanel
 
+from Dart import PluginLogger
+
+
+_logger = PluginLogger(__name__)
+
 
 def display_error(errors):
     v = sublime.active_window().active_view()
+
+    if len(errors) == 0:
+        _logger.debug('no errors - aborting')
+        return
+
+    # TODO(guillermooo): Use tokens to identify requests:file.
+    if errors.file != v.file_name():
+        _logger.debug('different view active - aborting')
+        return
+
+    _logger.debug('displaying errors to the user')
 
     v.add_regions('dart.errors', list(errors.errors_to_regions()),
         scope='dartlint.mark.error',
@@ -27,6 +43,7 @@ def display_error(errors):
 
 
 def erase_errors():
+    _logger.debug('erasing errors from view')
     v = sublime.active_window().active_view()
     v.erase_regions('dart.errors')
     v.erase_regions('dart.warnings')
