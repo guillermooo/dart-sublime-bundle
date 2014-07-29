@@ -1,7 +1,9 @@
 import sublime
 
 import unittest
+from unittest import mock
 import os
+
 
 from Dart.lib.sdk import SDK
 
@@ -11,25 +13,21 @@ class Test_SDK(unittest.TestCase):
         self.view = sublime.active_window().new_file()
 
     def testUsesUserDefinedPath(self):
-        sdk = SDK('/xxx/yyy')
-        self.assertEqual(sdk.path, '/xxx/yyy')
-
-    def testUsesDefaultPath(self):
-        self.view.settings().set('dartsdk_path', 'foo/bar')
-        sdk = SDK()
-        self.assertEqual(sdk.path, 'foo/bar')
-
-    @unittest.skipUnless(os.name == 'nt', 'only for Windows')
-    def testCanFindPathToDartInterpreterOnWindows(self):
-        self.view.settings().set('dartsdk_path', 'c:/foo/bar')
-        sdk = SDK()
-        self.assertEqual(sdk.path_to_dart, r'c:\foo\bar\bin\dart.exe')
+        with mock.patch('os.path.exists', lambda x: True):
+            sdk = SDK('/xxx/yyy')
+            self.assertEqual(sdk.path_to_sdk, '/xxx/yyy')
 
     @unittest.skipIf(os.name == 'nt', 'only for non-Windows platforms')
     def testCanFindPathToDartInterpreter(self):
-        self.view.settings().set('dartsdk_path', '/foo/bar')
-        sdk = SDK()
-        self.assertEqual(sdk.path_to_dart, '/foo/bar/bin/dart')
+        with mock.patch('os.path.exists', lambda x: True):
+            sdk = SDK('/foo/bar')
+            self.assertEqual(sdk.path_to_dart, '/foo/bar/bin/dart')
+
+    @unittest.skipIf(os.name == 'nt', 'only for non-Windows platforms')
+    def testCanFindPathToDartAnalyzer(self):
+        with mock.patch('os.path.exists', lambda x: True):
+            sdk = SDK('/foo/bar')
+            self.assertEqual(sdk.path_to_analyzer, '/foo/bar/bin/dartanalyzer')
 
     def tearDown(self):
         self.view.close()

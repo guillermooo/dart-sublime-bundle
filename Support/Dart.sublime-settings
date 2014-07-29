@@ -1,6 +1,4 @@
 {
-	// The path to the dart-sdk.
-	"dartsdk_path" : "",
 	// Dartlint plugin settings
 	"dartlint_active" : false,
 	"dartlint_on_load" : true,

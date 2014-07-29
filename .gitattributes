@@ -5,3 +5,4 @@ text=auto
 *.tmSnippet text eol=lf
 *.tmLanguage text eol=lf
 messages.json text eol=lf
+*.py text eol=lf
