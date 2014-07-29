@@ -19,13 +19,15 @@ class Test_SDK(unittest.TestCase):
 
     @unittest.skipIf(os.name == 'nt', 'only for non-Windows platforms')
     def testCanFindPathToDartInterpreter(self):
-        sdk = SDK('/foo/bar')
-        self.assertEqual(sdk.path_to_dart, '/foo/bar/bin/dart')
+        with mock.patch('os.path.exists', lambda x: True):
+            sdk = SDK('/foo/bar')
+            self.assertEqual(sdk.path_to_dart, '/foo/bar/bin/dart')
 
     @unittest.skipIf(os.name == 'nt', 'only for non-Windows platforms')
     def testCanFindPathToDartAnalyzer(self):
-        sdk = SDK('/foo/bar')
-        self.assertEqual(sdk.path_to_analyzer, '/foo/bar/bin/dartanalyzer')
+        with mock.patch('os.path.exists', lambda x: True):
+            sdk = SDK('/foo/bar')
+            self.assertEqual(sdk.path_to_analyzer, '/foo/bar/bin/dartanalyzer')
 
     def tearDown(self):
         self.view.close()
