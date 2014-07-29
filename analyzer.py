@@ -50,8 +50,9 @@ def init():
     resh.daemon = True
     resh.start()
 
-    g_server = AnalysisServer()
-    g_server.start()
+    with g_server_ready:
+        g_server = AnalysisServer()
+        g_server.start()
 
 
 def plugin_loaded():
