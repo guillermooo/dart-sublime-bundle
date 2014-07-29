@@ -24,7 +24,6 @@ def display_error(errors):
     errors_pattern = r'^\w+\|\w+\|(.+)\|(\d+)\|(\d+)\|(.+)'
     panel.set('result_file_regex', errors_pattern)
     panel.write('\n'.join(list(errors.to_compact_text())))
-    # panel.show()
 
 
 def erase_errors():
