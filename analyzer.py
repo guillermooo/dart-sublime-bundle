@@ -17,9 +17,15 @@ from .lib.plat import supress_window
 from .lib.path import is_view_dart_script
 from .lib.path import find_pubspec
 from .lib.analyzer import requests
+from .lib.analyzer import actions
+from .lib.analyzer.response import Response
 
 
 _logger = PluginLogger(__name__)
+
+
+SERVER_START_DELAY = 2500
+_STOP_SIGNAL = object()
 
 
 g_shut_down_event = threading.Event()
@@ -28,6 +34,7 @@ g_requests = queue.Queue()
 g_responses = queue.Queue()
 g_edits_lock = threading.Lock()
 g_server = None
+g_server_ready = threading.RLock()
 
 
 def init():
@@ -48,9 +55,14 @@ def init():
 
 
 def plugin_loaded():
-    # TODO(guillermooo): Enable graceful shutdown of threads.
     # Make ST more responsive on startup --- also helps the logger get ready.
-    sublime.set_timeout(init, 2000)
+    sublime.set_timeout(init, SERVER_START_DELAY)
+
+
+def plugin_unloaded():
+    g_requests.put({"_internal": _STOP_SIGNAL})
+    g_responses.put({"_internal": _STOP_SIGNAL})
+    g_server.stop()
 
 
 class ActivityTracker(sublime_plugin.EventListener):
@@ -60,11 +72,10 @@ class ActivityTracker(sublime_plugin.EventListener):
     edits = defaultdict(lambda: 0)
 
     def on_idle(self, view):
-        _logger.debug("active view was idle; sending requests")
+        _logger.debug("active view was idle; could send requests")
         now = datetime.now()
         token = "{0}:{1}".format(view.buffer_id(),
                                  str(now.minute * 60 + now.second))
-        g_requests.put({'id': token, 'method': 'server.getVersion'})
 
     def check_idle(self, view):
         # TODO(guillermooo): we need to send requests too if the buffer is
@@ -92,7 +103,13 @@ class ActivityTracker(sublime_plugin.EventListener):
                           view.file_name())
             return
 
-        g_server.add_root(view.file_name())
+        with g_server_ready:
+            if g_server:
+                g_server.add_root(view.file_name())
+            else:
+                sublime.set_timeout(
+                    lambda: g_server.add_root(view.file_name()),
+                                              SERVER_START_DELAY + 1000)
 
 
 class StdoutWatcher(threading.Thread):
@@ -106,8 +123,13 @@ class StdoutWatcher(threading.Thread):
         while True:
             data = self.proc.stdout.readline().decode('utf-8')
             _logger.debug('data read from server: %s', repr(data))
+
             if not data:
-                _logger.info("StdoutWatcher - no data")
+                if self.proc.stdin.closed:
+                    _logger.info('StdoutWatcher is exiting by internal request')
+                    return
+
+                _logger.debug("StdoutWatcher - no data")
                 time.sleep(.25)
                 continue
 
@@ -175,6 +197,8 @@ class AnalysisServer(object):
         sublime.set_timeout_async(t.start, 0)
 
     def stop(self):
+        self.proc.stdin.close()
+        self.proc.stdout.close()
         self.proc.kill()
 
     def send(self, data):
@@ -203,6 +227,23 @@ class ResponseHandler(threading.Thread):
             try:
                 item = g_responses.get(0.1)
                 _logger.info("processing response")
+
+                if item.get('_internal') == _STOP_SIGNAL:
+                    _logger.info('ResponseHandler is exiting by internal request')
+                    break
+
+                resp = Response(item)
+                if resp.type == 'analysis.errors':
+                    if resp.has_errors:
+                        sublime.set_timeout(lambda: actions.display_error(resp.errors), 0)
+                    else:
+                        sublime.set_timeout(actions.erase_errors, 0)
+                elif resp.type == 'server.status':
+                    info = resp.status
+                    sublime.set_timeout(lambda: sublime.status_message(
+                                        "Dart: " + info.message))
+                else:
+                    pass
             except queue.Empty:
                 pass
 
@@ -219,6 +260,11 @@ class RequestHandler(threading.Thread):
             time.sleep(.25)
             try:
                 item = g_requests.get(0.1)
+
+                if item.get('_internal') == _STOP_SIGNAL:
+                    _logger.info('RequestHandler is exiting by internal request')
+                    break
+
                 g_server.send(item)
             except queue.Empty:
                 pass
