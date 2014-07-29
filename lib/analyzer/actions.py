@@ -33,9 +33,9 @@ def display_error(errors):
 
     _logger.debug('displaying errors to the user')
 
-    v.add_regions('dart.errors', list(errors.errors_to_regions(v)),
-        scope='dartlint.mark.error',
-        icon='Packages/Dart/gutter/dartlint-simple-error.png',
+    v.add_regions('dart.infos', list(errors.infos_to_regions(v)),
+        scope='dartlint.mark.info',
+        icon="Packages/Dart/gutter/dartlint-simple-info.png",
         flags=_flags)
 
     v.add_regions('dart.warnings', list(errors.warnings_to_regions(v)),
@@ -43,9 +43,9 @@ def display_error(errors):
         icon="Packages/Dart/gutter/dartlint-simple-warning.png",
         flags=_flags)
 
-    v.add_regions('dart.infos', list(errors.infos_to_regions(v)),
-        scope='dartlint.mark.info',
-        icon="Packages/Dart/gutter/dartlint-simple-info.png",
+    v.add_regions('dart.errors', list(errors.errors_to_regions(v)),
+        scope='dartlint.mark.error',
+        icon='Packages/Dart/gutter/dartlint-simple-error.png',
         flags=_flags)
 
     # TODO(guillermooo): Add a logger attrib to the OutputPanel.
