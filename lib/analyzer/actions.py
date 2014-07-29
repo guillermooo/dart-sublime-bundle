@@ -24,13 +24,13 @@ def display_error(errors):
 
     _logger.debug('displaying errors to the user')
 
-    v.add_regions('dart.errors', list(errors.errors_to_regions()),
+    v.add_regions('dart.errors', list(errors.errors_to_regions(v)),
         scope='dartlint.mark.error',
         flags=sublime.DRAW_SQUIGGLY_UNDERLINE |
               sublime.DRAW_NO_FILL |
               sublime.DRAW_NO_OUTLINE)
 
-    v.add_regions('dart.warnings', list(errors.warnings_to_regions()),
+    v.add_regions('dart.warnings', list(errors.warnings_to_regions(v)),
         scope='dartlint.mark.warning',
         flags=sublime.DRAW_SQUIGGLY_UNDERLINE |
               sublime.DRAW_NO_FILL |

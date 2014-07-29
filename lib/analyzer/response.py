@@ -32,13 +32,13 @@ class ErrorInfoCollection(object):
     def file(self):
         return self.data['params']['file']
 
-    def errors_to_regions(self):
+    def errors_to_regions(self, view):
         for ei in self.errors:
-            yield ei.to_region()
+            yield ei.to_region(view)
 
-    def warnings_to_regions(self):
+    def warnings_to_regions(self, view):
         for ei in self.warnings:
-            yield ei.to_region()
+            yield ei.to_region(view)
 
     @property
     def errors(self):
@@ -78,7 +78,7 @@ class ErrorInfo(object):
         self.data = data
 
     def __str__(self):
-        return "{self.severity}|{self.type}|{self.file}|{self.start_line}|{self.start_column}".format(self=self)
+        return "{self.severity}|{self.type}|{self.file}|{self.row}|{self.column}".format(self=self)
 
     @property
     def location(self):
@@ -105,22 +105,23 @@ class ErrorInfo(object):
         return self.data['location']['length']
 
     @property
-    def start_line(self):
+    def row(self):
         return self.data['location']['startLine']
 
     @property
-    def start_column(self):
+    def column(self):
         return self.data['location']['startColumn']
 
     @property
     def message(self):
         return self.data['message']
 
-    def to_region(self):
-        return sublime.Region(self.offset, self.offset + self.length)
+    def to_region(self, view):
+        pt = view.text_point(self.row - 1, self.column - 1)
+        return sublime.Region(pt, pt + self.length)
 
     def to_compact_text(self):
-        return "{self.severity}|{self.type}|{self.file}|{self.start_line}|{self.start_column}|{self.message}".format(self=self)
+        return "{self.severity}|{self.type}|{self.file}|{self.row}|{self.column}|{self.message}".format(self=self)
 
 
 class Response(object):
