@@ -1,0 +1,20 @@
+install:
+  - ps: write-host "installing 7zip"
+  # - cinst "7zip"
+  - ps: write-host "installing sublime text 3"
+  - ps: start-filedownload "http://c758482.r82.cf2.rackcdn.com/Sublime%20Text%20Build%203059%20x64.zip"
+  - ps: gci 
+  - ps: write-output "installing Sublime%20Text%20Build%203059%20x64.zip"
+  - ps: 7z.exe x "Sublime%20Text%20Build%203059%20x64.zip" -o"C:\st"
+  - ps: get-location
+  - ps: mkdir "C:\st\Data\Packages" -force
+  - ps: git clone -q --branch=master https://github.com/dart-lang/dart-sublime-bundle.git "C:\st\Data\Packages\Dart"
+  - ps: git clone -q --branch=master https://github.com/my-personal-forks/UnitTesting.git "C:\st\Data\Packages\UnitTesting"
+  - ps: start-process "C:\st\sublime_text.exe"
+  - ps: get-process sublime_text
+  - ps: test-path "C:\st\Data\Packages\UnitTesting\sbin\run.ps1"
+
+build: false
+
+test_script:
+  - ps: C:\st\Data\Packages\UnitTesting\sbin\run.ps1 "Dart"

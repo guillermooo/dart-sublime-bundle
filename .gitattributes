@@ -6,3 +6,4 @@ text=auto
 *.tmLanguage text eol=lf
 messages.json text eol=lf
 *.py text eol=lf
+*.yaml text eol=lf
