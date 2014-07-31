@@ -17,7 +17,7 @@
 						[
 							{
 								"command": "open_file",
-								"args": {"file": "${packages}/Dart/Dart.sublime-settings"},
+								"args": {"file": "${packages}/Dart/Support/Dart.sublime-settings"},
 								"caption": "Settings – Default"
 							},
 							{
@@ -29,7 +29,7 @@
 							{
 							    "command": "open_file",
 							    "args": {
-							        "file": "${packages}/Dart/Default (OSX).sublime-keymap",
+							        "file": "${packages}/Dart/Support/Default (OSX).sublime-keymap",
 							        "platform": "OSX"
 							    },
 							    "caption": "Key Bindings – Default"
@@ -37,7 +37,7 @@
 							{
 							    "command": "open_file",
 							    "args": {
-							        "file": "${packages}/Dart/Default (Linux).sublime-keymap",
+							        "file": "${packages}/Dart/Support/Default (Linux).sublime-keymap",
 							        "platform": "Linux"
 							    },
 							    "caption": "Key Bindings – Default"
@@ -45,7 +45,7 @@
 							{
 							    "command": "open_file",
 							    "args": {
-							        "file": "${packages}/Dart/Default (Windows).sublime-keymap",
+							        "file": "${packages}/Dart/Support/Default (Windows).sublime-keymap",
 							        "platform": "Windows"
 							    },
 							    "caption": "Key Bindings – Default"
