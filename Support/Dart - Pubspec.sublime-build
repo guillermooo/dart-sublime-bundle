@@ -29,17 +29,17 @@
             }
         },
         {
-            "cmd": ["pub", "update"],
-            "name": "Dart: Pub Update",
+            "cmd": ["pub", "upgrade"],
+            "name": "Dart: Pub Upgrade",
 
             "windows":
             {
-                "cmd": ["pub.bat", "update"]
+                "cmd": ["pub.bat", "upgrade"]
             },
 
             "osx":
             {
-                "cmd": ["/bin/bash", "--login", "-c", "pub update"]
+                "cmd": ["/bin/bash", "--login", "-c", "pub upgrade"]
             }
         },
 
