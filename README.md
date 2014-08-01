@@ -2,21 +2,22 @@
 
  Works on **OS X**, **Linux** and **Windows**
 
-- **Linux:** [![Build Status](https://travis-ci.org/dart-lang/dart-sublime-bundle.svg?branch=master)](https://travis-ci.org/dart-lang/dart-sublime-bundle)
-- **Windows:** [![Build status](https://ci.appveyor.com/api/projects/status/a54udvh1c2c2xah1)](https://ci.appveyor.com/project/guillermooo/dart-sublime-bundle)
+ #### Status
 
-## Overview
+------------------ | -------------------
+**Linux** | [![Build Status](https://travis-ci.org/dart-lang/dart-sublime-bundle.svg?branch=master)](https://travis-ci.org/dart-lang/dart-sublime-bundle)
+**Windows** | [![Build status](https://ci.appveyor.com/api/projects/status/a54udvh1c2c2xah1)](https://ci.appveyor.com/project/guillermooo/dart-sublime-bundle)
 
-Basic Dart support for Sublime Text 3. These are the current features at a
-glance:
+
+## Features
 
 * Syntax highlighting
-* Comment/uncomment lines and text blocks
+* Syntax error checking using `dartanalyzer`
+* Package management with `pub`
 * Snippets
-* JavaScript translation through `dart2js` using ST3's build system
-* Pub support to manage Dart packages
-* Code linting using `dartanalyzer`
-* Basic symbol navigation using ST3's built-in symbol indexing
+* Comment/uncomment lines and text blocks
+* Build systems: translation to JavaScript through `dart2js`, etc.
+* Basic symbol navigation
 
 Most features are only active in files with a `.dart` extension.
 
