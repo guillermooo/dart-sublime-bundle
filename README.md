@@ -2,10 +2,10 @@
 
  Works on **OS X**, **Linux** and **Windows**
 
-                   | 
+Platform           | Status
 ------------------ | -------------------
-**Linux** | [![Build Status](https://travis-ci.org/dart-lang/dart-sublime-bundle.svg?branch=master)](https://travis-ci.org/dart-lang/dart-sublime-bundle)
-**Windows** | [![Build status](https://ci.appveyor.com/api/projects/status/a54udvh1c2c2xah1)](https://ci.appveyor.com/project/guillermooo/dart-sublime-bundle)
+Linux | [![Build Status](https://travis-ci.org/dart-lang/dart-sublime-bundle.svg?branch=master)](https://travis-ci.org/dart-lang/dart-sublime-bundle)
+Windows | [![Build status](https://ci.appveyor.com/api/projects/status/a54udvh1c2c2xah1)](https://ci.appveyor.com/project/guillermooo/dart-sublime-bundle)
 
 
 ## Features
