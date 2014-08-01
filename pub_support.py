@@ -74,8 +74,8 @@ class PubThread(threading.Thread):
         if is_windows():
             pub_path += '.bat'
 
-        print('pub install %s' % self.file_name)
-        proc = subprocess.Popen([pub_path, 'install'],
+        print('pub get %s' % self.file_name)
+        proc = subprocess.Popen([pub_path, 'get'],
                                 cwd=working_directory,
                                 stdout=subprocess.PIPE,
                                 stderr=subprocess.STDOUT,

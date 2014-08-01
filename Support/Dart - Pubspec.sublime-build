@@ -1,31 +1,31 @@
 {
-    "cmd": ["pub", "install"],
+    "cmd": ["pub", "get"],
     "file_regex": "(\\S*):(\\d*):(\\d*): (.*)",
     "selector": "source.pubspec",
     "working_dir": "${project_path}",
 
     "windows":
     {
-        "cmd": ["pub.bat", "install"]
+        "cmd": ["pub.bat", "get"]
     },
 
     "osx":
     {
-        "cmd": ["/bin/bash", "--login", "-c", "pub install"]
+        "cmd": ["/bin/bash", "--login", "-c", "pub get"]
     },
 
     "variants": [
         {
-            "cmd": ["pub", "install"],
-            "name": "Dart: Pub Install",
+            "cmd": ["pub", "get"],
+            "name": "Dart: Pub Get",
 
             "windows":
             {
-                "cmd": ["pub.bat", "install"]
+                "cmd": ["pub.bat", "get"]
             },
             "osx":
             {
-                "cmd": ["/bin/bash", "--login", "-c", "pub install"]
+                "cmd": ["/bin/bash", "--login", "-c", "pub get"]
             }
         },
         {
