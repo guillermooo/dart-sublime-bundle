@@ -19,7 +19,7 @@
     "variants": [
         {
             "cmd": ["dart2js", "--minify", "-o$file.js", "$file"],
-            "name": "Dart dart2js",
+            "name": "Dart: dart2js",
 
             "windows":
             {
@@ -33,7 +33,7 @@
         {
             "cmd": ["dartanalyzer",
                     "$file"],
-            "name": "Dart Analyzer",
+            "name": "Dart: Analyzer",
 
             "windows":
             {
@@ -49,7 +49,7 @@
 
         {
             "cmd": ["pub", "install"],
-            "name": "Dart Pub Install",
+            "name": "Dart: Pub Install",
             "shell" : true,
 
             "windows":
@@ -63,7 +63,7 @@
         },
         {
             "cmd": ["pub", "update"],
-            "name": "Dart Pub Update",
+            "name": "Dart: Pub Update",
 
             "windows":
             {
@@ -75,7 +75,7 @@
             }
         },
         {
-            "name": "Dart Run",
+            "name": "Dart: Run",
             "cmd": ["dart", "--checked", "$file"],
             "file_regex": "'file:///(.+)': error: line (\\d+) pos (\\d+): (.*)$",
 
