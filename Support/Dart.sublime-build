@@ -48,6 +48,37 @@
         },
 
         {
+            "cmd": ["docgen", "--no-include-sdk", "$project_path"],
+            "name": "Dart: Generate Documentation",
+
+            "windows":
+            {
+                "cmd": ["docgen.bat", "--no-include-sdk", "$project_path"]
+            },
+            "osx":
+            {
+                "cmd": ["/bin/bash", "--login", "-c",
+                        "docgen --no-include-sdk $project_path"]
+            }
+        },
+
+        {
+            "cmd": ["docgen", "--no-include-sdk", "--serve", "$project_path"],
+            "name": "Dart: Serve Documentation",
+
+            "windows":
+            {
+                "cmd": ["docgen.bat", "--no-include-sdk", "--serve",
+                    "$project_path"]
+            },
+            "osx":
+            {
+                "cmd": ["/bin/bash", "--login", "-c",
+                        "docgen --no-include-sdk --serve $project_path"]
+            }
+        },
+
+        {
             "cmd": ["pub", "install"],
             "name": "Dart: Pub Install",
             "shell" : true,
