@@ -3,19 +3,18 @@ import os
 from Dart.lib.plat import to_platform_path
 
 
-def view_extension_equals(view, extension):
-    """Compares @view's extensions with @extension.
+def extension_equals(path_or_view, extension):
+    """Compares @path_or_view's extensions with @extension.
 
-    Returns `True` if they are the same.
-    Returns `False` if @view isn't saved on disk.
+    Returns `True` if they are the same, `False` otherwise.
+    Returns `False` if @path_or_view isn't saved on disk.
     """
-    if view.file_name() is None:
-        return False
-    return extension_equals(view.file_name(), extension)
-
-
-def extension_equals(path, extension):
-    return os.path.splitext(path)[1] == extension
+    try:
+        if path_or_view.file_name() is None:
+            return False
+        return extension_equals(path_or_view.file_name(), extension)
+    except AttributeError:
+        return os.path.splitext(path_or_view)[1] == extension
 
 
 def is_view_dart_script(view):
