@@ -28,9 +28,15 @@ class SDK(object):
                                   to_platform_path('dart', '.exe'))):
                 del self.path_to_sdk
 
-    @cached_property
-    def path_to_sdk(self):
-        return os.path.dirname(find_in_path('dart', '.exe'))
+    def get_tool_path(self, name, win_ext=''):
+        """Returns the full path to the @name tool in the SDK's bin dir.
+        """
+        if not self.path_to_sdk:
+            _logger.info('could not locate dart sdk')
+            return
+
+        name = to_platform_path(name, win_ext)
+        return os.path.realpath(os.path.join(self.path_to_bin_dir, name))
 
     def start_editor(self, file_name=None, row=None, col=None):
         """Launches the Dart Editor.
@@ -69,24 +75,28 @@ class SDK(object):
             if proc.returncode != 0:
                 _logger.error('Dart Editor exited with error code %d', proc.returncode)
 
+    @cached_property
+    def path_to_sdk(self):
+        return os.path.dirname(find_in_path('dart', '.exe'))
+
+    @property
+    def path_to_bin_dir(self):
+        return os.path.join(self.path_to_sdk, 'bin')
+
     @property
     def path_to_dart(self):
         """Returns the full path to the dart interpreter.
         """
-        if not self.path_to_sdk:
-            _logger.info('could not locate dart sdk')
-            return
-
-        bin_name = to_platform_path('dart', '.exe')
-        return realpath(join(self.path_to_sdk, 'bin', bin_name))
+        return self.get_tool_path('dart', '.exe')
 
     @property
     def path_to_analyzer(self):
         """Returns the full path to the dart analyzer.
         """
-        if not self.path_to_sdk:
-            _logger.info('could not locate dart sdk')
-            return
+        return self.get_tool_path('dartanalyzer', '.bat')
 
-        bin_name = to_platform_path('dartanalyzer', '.exe')
-        return realpath(join(self.path_to_sdk, 'bin', bin_name))
+    @property
+    def path_to_docgen(self):
+        """Returns the full path to the dart analyzer.
+        """
+        return self.get_tool_path('docgen', '.bat')
