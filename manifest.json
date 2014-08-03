@@ -18,8 +18,11 @@
 			["./lib/*.py", []],
 
 			["./tests/*.py", []],
-			["./tests/lib/*.py", []]
+			["./tests/lib/*.py", []],
 
+			["./gutter/*.*", []],
+			["./Snippets/*.*", []],
+			["./Support/*.*", []]
 
 		],
 		"release": [
@@ -37,7 +40,11 @@
 					"test_runner.py"]
 			],
 
-			["./lib/*.py", []]
+			["./lib/*.py", []],
+
+			["./gutter/*.*", []],
+			["./Snippets/*.*", []],
+			["./Support/*.*", []]
 		]
 	}
 }
