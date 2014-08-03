@@ -48,33 +48,6 @@
         },
 
         {
-            "cmd": ["pub", "install"],
-            "name": "Dart Pub Install",
-            "shell" : true,
-
-            "windows":
-            {
-                "cmd": ["pub.bat", "install"]
-            },
-            "osx":
-            {
-                "cmd": ["/bin/bash", "--login", "-c", "pub install"]
-            }
-        },
-        {
-            "cmd": ["pub", "update"],
-            "name": "Dart Pub Update",
-
-            "windows":
-            {
-                "cmd": ["pub.bat", "update"]
-            },
-            "osx":
-            {
-                "cmd": ["/bin/bash", "--login", "-c", "pub update"]
-            }
-        },
-        {
             "name": "Dart Run",
             "cmd": ["dart", "--checked", "$file"],
             "file_regex": "'file:///(.+)': error: line (\\d+) pos (\\d+): (.*)$",
