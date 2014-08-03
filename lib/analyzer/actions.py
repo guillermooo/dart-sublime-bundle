@@ -55,7 +55,7 @@ def display_error(errors):
     panel.write('\n'.join(set(errors.to_compact_text())))
 
 
-def wipe_ui():
+def clear_ui():
     '''Remove UI decoration.
     '''
     _logger.debug('erasing errors from view')
