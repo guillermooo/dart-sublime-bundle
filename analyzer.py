@@ -255,7 +255,9 @@ class ResponseHandler(threading.Thread):
                             sublime.set_timeout(
                                 lambda: actions.display_error(resp.errors), 0)
                         else:
-                            sublime.set_timeout(actions.wipe_ui, 0)
+                            v = sublime.active_window().active_view()
+                            if resp.file and (resp.file == v.file_name()):
+                                sublime.set_timeout(actions.wipe_ui, 0)
                     elif resp.type == 'server.status':
                         info = resp.status
                         sublime.set_timeout(lambda: sublime.status_message(

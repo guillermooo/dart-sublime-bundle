@@ -160,6 +160,10 @@ class Response(object):
         return self.data.get('event', '<unknown>')
 
     @property
+    def file(self):
+        return self.data.get('file', None)
+
+    @property
     def has_errors(self):
         return (self.data.get('event') == 'analysis.errors' and
             len(self.data['params']['errors']) > 0)
