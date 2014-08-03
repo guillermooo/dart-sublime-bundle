@@ -11,6 +11,8 @@ from .lib.plat import supress_window
 from .lib.panels import OutputPanel
 from . import PluginLogger
 from .lib.sdk import SDK
+from .lib.path import is_pubspec
+from .lib.path import is_view_dart_script
 
 
 _logger = PluginLogger(__name__)
@@ -20,12 +22,29 @@ class PubspecListener(sublime_plugin.EventListener):
     def __init__(self, *args, **kwargs):
         sublime_plugin.EventListener.__init__(self, *args, **kwargs)
 
-    def on_post_save(self, view):
-        name = view.file_name()
+    def on_activated(self, view):
+        if not (is_pubspec(view) or is_view_dart_script(view)):
+            return
 
-        if os.path.basename(name) == 'pubspec.yaml':
-            _logger.debug("running pub with %s", name)
-            RunPub(view, name)
+        # TODO(guillermooo): I cannot get automatic detection of build sys
+        # working. This code will make build systems change even if the user
+        # has not enabled automatic detection of builds systems.
+        if is_pubspec(view):
+            _logger.debug('changing build system to "pubspec"')
+            view.window().run_command('set_build_system', {
+                "file": "Packages/Dart/Support/Dart - Pubspec.sublime-build"})
+            return
+
+        _logger.debug('changing build system to "dart"')
+        view.window().run_command('set_build_system', {
+            "file": "Packages/Dart/Support/Dart.sublime-build"})
+
+    def on_post_save(self, view):
+        if not is_pubspec(view):
+            return
+
+        _logger.debug("running pub with %s", name)
+        RunPub(view, name)
 
 
 def RunPub(view, file_name):
@@ -55,8 +74,8 @@ class PubThread(threading.Thread):
         if is_windows():
             pub_path += '.bat'
 
-        print('pub install %s' % self.file_name)
-        proc = subprocess.Popen([pub_path, 'install'],
+        print('pub get %s' % self.file_name)
+        proc = subprocess.Popen([pub_path, 'get'],
                                 cwd=working_directory,
                                 stdout=subprocess.PIPE,
                                 stderr=subprocess.STDOUT,

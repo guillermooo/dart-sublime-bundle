@@ -1,10 +1,12 @@
 import sublime
 
 import unittest
+from unittest import mock
 import os
 from subprocess import check_output
 
 from Dart.lib.path import find_in_path
+from Dart.lib.path import is_pubspec
 
 
 class Test_find_in_path(unittest.TestCase):
@@ -21,6 +23,26 @@ class Test_find_in_path(unittest.TestCase):
         expected = check_output(['which', 'grep']).decode('utf-8')
         actual = find_in_path('grep')
         self.assertEqual(os.path.dirname(expected), actual)
+
+
+    def tearDown(self):
+        self.view.close()
+
+
+class Test_is_pubspec(unittest.TestCase):
+    def setUp(self):
+        self.view = sublime.active_window().new_file()
+
+    def testCanDetectPubspecFile(self):
+        view = mock.Mock()
+        view.file_name = mock.Mock(return_value='xxx/pubspec.yaml')
+        self.assertTrue(is_pubspec(view))
+
+    def testCanDetectPubspecFileAsPath(self):
+        self.assertTrue(is_pubspec('xxx/pubspec.yaml'))
+
+    def testFailsIfNotAPubspecFile(self):
+        self.assertFalse(is_pubspec(self.view))
 
     def tearDown(self):
         self.view.close()

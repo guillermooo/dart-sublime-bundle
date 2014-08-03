@@ -29,6 +29,17 @@ def is_view_dart_script(view):
     return is_dart_script(view.file_name())
 
 
+def is_pubspec(path_or_view):
+    """Returns `True` if @path_or_view is 'pubspec.yaml'.
+    """
+    try:
+        if path_or_view.file_name() is None:
+            return
+        return path_or_view.file_name().endswith('pubspec.yaml')
+    except AttributeError:
+        return path_or_view.endswith('pubspec.yaml')
+
+
 def is_dart_script(path):
     return extension_equals(path, '.dart')
 
