@@ -43,8 +43,8 @@ class PubspecListener(sublime_plugin.EventListener):
         if not is_pubspec(view):
             return
 
-        _logger.debug("running pub with %s", name)
-        RunPub(view, name)
+        _logger.debug("running pub with %s", view.file_name())
+        RunPub(view, view.file_name())
 
 
 def RunPub(view, file_name):
