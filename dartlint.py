@@ -22,7 +22,6 @@ from . import PluginLogger
 from .lib.path import extension_equals
 from .lib.path import is_dart_script
 from .lib.path import is_view_dart_script
-from .lib.path import view_extension_equals
 from .lib.plat import is_windows
 from .lib.plat import supress_window
 from .lib.panels import OutputPanel
