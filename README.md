@@ -20,8 +20,6 @@ Windows | [![Build status](https://ci.appveyor.com/api/projects/status/a54udvh1c
 
 Most features are only active in files with a `.dart` extension.
 
-Check out our [introductory video][1] for a short tutorial on using this package.
-
 
 ## Documentation
 
