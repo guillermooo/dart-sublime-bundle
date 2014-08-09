@@ -353,7 +353,7 @@ class DartLintThread(threading.Thread):
         try:
             outs, errs = proc.communicate(timeout=15)
         except TimeoutExpired as e:
-            _logger.debug("error running DartLintThread: ", e.message)
+            _logger.debug("error running DartLintThread: %s", e)
             proc.kill()
             outs, errs = proc.communicate()
 
