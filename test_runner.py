@@ -26,13 +26,13 @@ class RunDartTests(sublime_plugin.WindowCommand):
       @loader_pattern.
 
     To use this runner conveniently, open the command palette and select one
-    of the `Build: Vintageous - Test *` commands.
+    of the `Build: Dart - Test *` commands.
     '''
     @contextlib.contextmanager
     def chdir(self, path=None):
         old_path = os.getcwd()
         if path is not None:
-            assert os.path.exists(path), "'path' is invalid"
+            assert os.path.exists(path), "'path' is invalid {}".format(path)
             os.chdir(path)
         yield
         if path is not None:
@@ -50,16 +50,12 @@ class RunDartTests(sublime_plugin.WindowCommand):
             suite = unittest.TestLoader().discover(p, pattern=patt)
 
             file_regex = r'^\s*File\s*"([^.].*?)",\s*line\s*(\d+),.*$'
-            display = OutputPanel('dart.tests')
-            display.set('result_file_regex', file_regex)
+            display = OutputPanel('dart.tests', file_regex=file_regex)
             display.show()
             runner = unittest.TextTestRunner(stream=display, verbosity=1)
 
             def run_and_display():
                 runner.run(suite)
+                display.show()
 
-            # XXX: It seems that the StdoutWatcher thread blocks the
-            # .set_timeout_async() BG thread and we cannot use it here. This
-            # seems to be the case, because in Vintageous I can run tests
-            # asynchronously with it if the Dart package is disabled.
             threading.Thread(target=run_and_display).start()
