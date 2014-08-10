@@ -108,5 +108,14 @@ def to_platform_path(original, append):
 
 def find_pubspec_path(path, original=None):
     """Locates the directory containing a pubspec.yaml file.
+    Returns (str, bool): A path, and whether a pubspec.yaml was found. If no
+    pubspec.yaml was found, the path will be passed-in path.
     """
-    raise TypeError('missing function here')
+    if os.path.exists(os.path.join(path, 'pubspec.yaml')):
+        return (path, True)
+
+    # Reached drive unit; stop.
+    if p == os.path.dirname(path):
+        if not os.path.isdir(original):
+            p = os.path.dirname(original)
+        return (p, False)
