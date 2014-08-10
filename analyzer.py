@@ -68,6 +68,7 @@ def plugin_loaded():
     # FIXME(guillermooo): Ignoring, then de-ignoring this package throws
     # errors.
     # Make ST more responsive on startup --- also helps the logger get ready.
+    return
     sublime.set_timeout(init, _SERVER_START_DELAY)
 
 
@@ -241,7 +242,6 @@ class ResponseHandler(threading.Thread):
             time.sleep(.25)
             try:
                 item = g_responses.get(0.1)
-                _logger.info("processing response")
 
                 if item.get('_internal') == _SIGNAL_STOP:
                     _logger.info(
@@ -252,6 +252,7 @@ class ResponseHandler(threading.Thread):
                     resp = Response(item)
                     if resp.type == 'analysis.errors':
                         if resp.has_errors:
+                            _logger.info('error data received from server')
                             sublime.set_timeout(
                                 lambda: actions.display_error(resp.errors), 0)
                         else:
