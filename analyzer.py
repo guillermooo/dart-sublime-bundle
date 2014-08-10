@@ -68,7 +68,6 @@ def plugin_loaded():
     # FIXME(guillermooo): Ignoring, then de-ignoring this package throws
     # errors.
     # Make ST more responsive on startup --- also helps the logger get ready.
-    return
     sublime.set_timeout(init, _SERVER_START_DELAY)
 
 
