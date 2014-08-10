@@ -25,14 +25,13 @@
 
 			"variants": [
 				{
-					"name": "Dart - Test (All)",
+					"name": "Dart: Test (All)",
 					"target": "run_dart_tests",
 				},
 
 				{
-					"name": "Dart - Test (This File Only)",
-					"target": "run_dart_tests",
-					"active_file_only": true
+					"name": "Dart: Test (This File Only)",
+					"target": "run_tests_for_active_view"
 				}
 			]
 		}
