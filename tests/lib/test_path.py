@@ -10,7 +10,6 @@ from Dart.lib.path import find_in_path
 from Dart.lib.path import is_dart_script
 from Dart.lib.path import is_pubspec
 from Dart.lib.path import is_view_dart_script
-from Dart.lib.path import view_extension_equals
 
 
 class Test_find_in_path(unittest.TestCase):
@@ -46,6 +45,9 @@ class Test_is_pubspec(unittest.TestCase):
 
     def testFailsIfNotAPubspecFile(self):
         self.assertFalse(is_pubspec(self.view))
+
+    def tearDown(self):
+        self.view.close()
 
 
 class Test_is_dart_script(unittest.TestCase):
