@@ -25,7 +25,6 @@ class Test_find_in_path(unittest.TestCase):
         actual = find_in_path('grep')
         self.assertEqual(os.path.dirname(expected), actual)
 
-
     def tearDown(self):
         self.view.close()
 
