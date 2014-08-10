@@ -43,19 +43,19 @@ def is_dart_script(path):
     return extension_equals(path, '.dart')
 
 
-def find_in_path(what, win_ext=''):
-    '''Searches PATH for @what.
+def find_in_path(name, win_ext=''):
+    '''Searches PATH for @name.
 
-    Returns the path containing @what or `None` if not found.
+    Returns the path containing @name or `None` if not found.
 
-    @what
+    @name
       Binary to search for.
 
     @win_ext
-      An extension that will be added to @what on Windows.
+      An extension that will be added to @name on Windows.
     '''
-    bin_name = to_platform_path(what, win_ext)
+    bin_name = to_platform_path(name, win_ext)
     for path in os.environ['PATH'].split(os.path.pathsep):
+        path = os.path.expandvars(os.path.expanduser(path))
         if os.path.exists(os.path.join(path, bin_name)):
             return os.path.realpath(path)
-
