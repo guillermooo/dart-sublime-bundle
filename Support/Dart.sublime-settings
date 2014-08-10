@@ -14,6 +14,6 @@
 	"dartlint_underline_color_info" : "0000FC",
 
 	// Log level (for debugging).
-	// Can be one of: debug > info > warning > error > critical
+	//Can be one of: debug < info < warning < error < critical
 	"dart_log_level": "error"
 }
