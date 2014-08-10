@@ -2,6 +2,7 @@ import os
 from os.path import join
 
 from Dart.lib.plat import is_windows
+from Dart.lib.plat import join_on_win
 
 
 def extension_equals(path_or_view, extension):
@@ -55,7 +56,7 @@ def find_in_path(name, win_ext=''):
     @win_ext
       An extension that will be added to @name on Windows.
     '''
-    bin_name = to_platform_path(name, win_ext)
+    bin_name = join_on_win(name, win_ext)
     for path in os.environ['PATH'].split(os.path.pathsep):
         path = os.path.expandvars(os.path.expanduser(path))
         if os.path.exists(os.path.join(path, bin_name)):

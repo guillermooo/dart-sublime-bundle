@@ -5,6 +5,10 @@ from os.path import join
 from os.path import realpath
 from subprocess import check_output
 from subprocess import PIPE
+
+from Dart.lib.plat import join_on_win
+from Dart.lib.internal import cached_property
+
 from subprocess import Popen
 from subprocess import STDOUT
 from subprocess import TimeoutExpired
@@ -53,7 +57,7 @@ class SDK(object):
         @win_ext
           Extension to append to @name in Windows.
         """
-        name = to_platform_path(name, win_ext)
+        name = join_on_win(name, win_ext)
         return os.path.realpath(os.path.join(self.path_to_bin_dir, name))
 
     def start_editor(self, file_name=None, row=None, col=None):
@@ -71,7 +75,7 @@ class SDK(object):
             return
 
         assert not any((file_name, row, col)), 'not implemented'
-        bin_name = to_platform_path('DartEditor', '.exe')
+        bin_name = join_on_win('DartEditor', '.exe')
 
         # TODO: Add path_to_editor property.
         path = realpath(join(self.path, '../{0}'.format(bin_name)))
