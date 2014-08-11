@@ -186,7 +186,9 @@ class DartLint(sublime_plugin.EventListener):
         # TODO(guillermooo): Disable quick list error navigation, since we are
         # enabling output panel-based error navigation (via F4). We should
         # choose one of the two and remove the other.
-        RunDartanalyzer(view, file_name, self.settings, show_popup=False)
+        if view.id() == sublime.active_window().active_view().id():
+            RunDartanalyzer(view, file_name, self.settings, show_popup=False,
+                            force=True)
 
     def on_post_save(self, view):
         if not is_view_dart_script(view):
@@ -310,18 +312,20 @@ def FormRelativePath(path):
 
 
 # TODO(guillermooo): We can probably get rid of this.
-def RunDartanalyzer(view, fileName, our_settings, show_popup=True):
+def RunDartanalyzer(view, fileName, our_settings, show_popup=True,
+    force=False):
     # FIXME: Inefficient. We should store the SDK away and reuse it.
     dartsdk_path = SDK().path_to_sdk
 
     if dartsdk_path:
-        DartLintThread(view, fileName, our_settings, show_popup).start()
+        DartLintThread(view, fileName, our_settings, show_popup,
+            force=force).start()
 
 
 class DartLintThread(threading.Thread):
     """Runs the Dart sdk analyzer in the background.
     """
-    def __init__(self, view, fileName, our_settings, show_popup):
+    def __init__(self, view, fileName, our_settings, show_popup, force=False):
         # TODO(guillermooo): In Python 3k, we should be able to simplify this.
         super(DartLintThread, self).__init__()
         self.settings = our_settings
@@ -331,6 +335,7 @@ class DartLintThread(threading.Thread):
         self.window = view.window()
         self.dartsdk_path = SDK().path_to_sdk
         self.fileName = fileName
+        self.force = force
 
     def clear_all(self):
         for region_name in \
@@ -370,8 +375,9 @@ class DartLintThread(threading.Thread):
 
         # Don't bother if the buffer hasn't changed since the last analysis.
         with g_edits_lock:
-            if DartLint.edits[self.view.buffer_id()] == 0:
-                return
+            if ((not self.force) and
+                DartLint.edits[self.view.buffer_id()] == 0):
+                    return
 
         # We've got a new linter result.
         with g_tokens_lock:
