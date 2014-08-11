@@ -1,0 +1,66 @@
+Version 0.2500.1
+
+The Sublime Text Dart Package has been updated!
+
+Improvements to the linter, simplified settings, more docs in the wiki and
+more build system tasks!
+
+Wiki: https://github.com/dart-lang/dart-sublime-bundle/wiki
+
+ Bug reports and feature requests welcome!
+
+ Issue Tracker: https://github.com/dart-lang/dart-sublime-bundle/issues
+
+
+MAIN CHANGES
+------------
+
+	- Improve I/O scheduling for linter
+
+	   You should now experience better responsiveness when using the linter.
+
+	- If linter is active, check active file 'on_activated'
+
+	  Better experience using the code linter.
+
+	- Add basic docgen tasks to build system
+
+	  We've added basic tasks to generate and serve your Dart project's
+	  documentation
+
+	- [Pub] update --> upgrade
+	- Fix #161 - Add ability to run pub commands from pubspec.yaml
+
+	  The package is now a bit smarter about pubspec.yaml files. See details
+	  in the wiki.
+
+  	  https://github.com/dart-lang/dart-sublime-bundle/wiki
+
+	- CI Server for Windows
+
+	  For developers of this package: We are now using CI servers to test this
+	  package on Linux and Windows.
+
+	- Remove dartsdk_path from .py and .sublime-settings files
+
+	  The `darsdk_path` setting has been obsoleted and isn't used any longer.
+
+	- Infer sdk path from dart binary location
+
+	  Put the Dart sdk bin directory on your path and the Dart package for
+	  Sublime Text will find everything it needs without needing further
+	  settings.
+
+	- Fix #115 - Fix paths for settings files in menu items
+	- Add ability to open default settings for viewing
+	- Add command to open User/Dart.sublime-settings
+
+	  Open your settings files from the command palette or main menu.
+
+
+Reporting Bugs
+--------------
+
+Please report any bugs here:
+
+* https://github.com/dart-lang/dart-sublime-bundle/issues

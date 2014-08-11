@@ -1,3 +1,37 @@
+0.2500.1 - 20140811
+
+	- If linter is active, check active file 'on_activated'
+	- Improve testing tools
+	- Expand env variables before checking path
+	- Fix build script: Vintageous ==> Dart
+	- Remove old video
+	- Refactor lib\path.py
+	- Remove pubspec tasks from 'Dart' buid system
+	- Discard output from 7z.exe in the CI server
+	- Add basic docgen tasks to build system
+	- Add ':' after Dart in build system names
+	- Add .path_to_docgen to SDK class
+	- [Pub] update --> upgrade
+	- Fix #161 - Add ability to run pub commands from pubspec.yaml
+	- Add helpers
+	- Add appveyor badge
+	- CI Server for Windows
+	- Fix #115 - Fix paths for settings files in menu items
+	- Use characters that are easy to type in commands
+	- Add tools to run the tests locally
+	- Edit comments; improve path detection in sdk.SDK
+	- Remove dartsdk_path from .py and .sublime-settings files
+	- Fix SDK paths; add path_to_analyzer propertyx
+	- Fix tests on Linux
+	- Infer sdk path from dart binary location
+	- Hook up build scripts to ST build system
+	- Add Windows tools for developers.
+	- Add build.sh for Linux/OSX
+	- Add scripts to build versions
+	- Add ability to open default settings for viewing
+	- Add command to open User/Dart.sublime-settings
+	- Improve I/O scheduling for linter
+
 0.2500.0 - 20140715
 
 	- Fix analyzer build task.
