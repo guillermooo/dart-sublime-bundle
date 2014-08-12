@@ -1,5 +1,6 @@
 import os
 from os.path import join
+from contextlib import contextmanager
 
 from Dart.lib.plat import is_windows
 from Dart.lib.plat import join_on_win
@@ -130,3 +131,11 @@ def is_active(view):
     group_id = view.window().active_group()
     group_view = view.window().active_view_in_group(group_id)
     return group_view.id() == view.id()
+
+
+@contextmanager
+def pushd(to):
+    old = os.getcwd()
+    os.chdir(to)
+    yield to
+    os.chdir(old)
