@@ -29,7 +29,7 @@ _SERVER_START_DELAY = 2500
 _SIGNAL_STOP = object()
 
 
-g_requests = queue.Queue()
+# g_requests = queue.Queue()
 # Responses from server.
 g_responses = queue.Queue()
 g_edits_lock = threading.Lock()
@@ -82,7 +82,7 @@ def plugin_loaded():
 def plugin_unloaded():
     # The worker threads handling requests/responses block when reading their
     # queue, so give them something.
-    g_requests.put({'_internal': _SIGNAL_STOP})
+    g_server.requests.put({'_internal': _SIGNAL_STOP})
     g_responses.put({'_internal': _SIGNAL_STOP})
     g_server.stop()
 
@@ -189,6 +189,7 @@ class AnalysisServer(object):
         self.path = path
         self.proc = None
         self.roots = []
+        self.requests = queue.Queue()
 
     def new_token(self):
         w = sublime.active_window()
@@ -242,6 +243,7 @@ class AnalysisServer(object):
         sublime.set_timeout_async(t.start, 0)
 
     def stop(self):
+        # TODO(guillermooo): Use the server's own shutdown mechanism.
         self.proc.stdin.close()
         self.proc.stdout.close()
         self.proc.kill()
@@ -256,7 +258,7 @@ class AnalysisServer(object):
         _, _, token = self.new_token()
         req = requests.set_roots(token, included, excluded)
         _logger.info('sending set_roots request')
-        g_requests.put(req)
+        self.requests.put(req)
 
     def send_find_top_level_decls(self, pattern):
         w_id, v_id, token = self.new_token()
@@ -264,7 +266,7 @@ class AnalysisServer(object):
         _logger.info('sending top level decls request')
         # track this type of req as it may expire
         g_req_to_resp['search']["{}:{}".format(w_id, v_id)] = token
-        g_requests.put(req)
+        self.requests.put(req)
 
     def send_update_content(self, view, data):
         w_id, v_id, token = self.new_token()
@@ -272,7 +274,7 @@ class AnalysisServer(object):
         req = requests.update_content(token, files)
         _logger.info('sending update content request')
         # track this type of req as it may expire
-        g_requests.put(req)
+        self.requests.put(req)
 
 
 class ResponseHandler(threading.Thread):
@@ -348,7 +350,7 @@ class RequestHandler(threading.Thread):
         while True:
             time.sleep(.25)
             try:
-                item = g_requests.get(0.1)
+                item = g_server.requests.get(0.1)
 
                 if item.get('_internal') == _SIGNAL_STOP:
                     _logger.info(
