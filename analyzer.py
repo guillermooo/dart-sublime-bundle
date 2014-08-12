@@ -81,8 +81,6 @@ class ActivityTracker(sublime_plugin.EventListener):
 
     def on_idle(self, view):
         _logger.debug("active view was idle; could send requests")
-        # FIXME(guillermooo): This does not correctly detect the active view
-        # when there are multiple view groups open.
         if view.is_dirty() and is_active(view):
             _logger.debug('sending overlay data for %s', view.file_name())
             data = {'type': 'add', 'content': view.substr(sublime.Region(0,
