@@ -19,6 +19,18 @@ class StatusInfo(object):
         return "Analysis finished"
 
 
+class NewId(object):
+    def __init__(self, data):
+        self.data = data
+
+    def __str__(self):
+        return self.data['result']['id']
+
+    @property
+    def id(self):
+        return self.data['result']['id']
+
+
 class ErrorInfoCollection(object):
     def __init__(self, data):
         self.data = data
@@ -156,6 +168,10 @@ class Response(object):
         self.data = data
 
     @property
+    def id(self):
+        return self.data['id']
+
+    @property
     def type(self):
         return self.data.get('event', '<unknown>')
 
@@ -165,8 +181,7 @@ class Response(object):
 
     @property
     def has_errors(self):
-        return (self.data.get('event') == 'analysis.errors' and
-            len(self.data['params']['errors']) > 0)
+        return (self.data.get('event') == 'analysis.errors')
 
     @property
     def errors(self):
@@ -182,3 +197,45 @@ class Response(object):
     def status(self):
          if self.has_status:
             return StatusInfo(self.data)
+
+    @property
+    def has_new_id(self):
+        return 'id' in self.data.get('result', {})
+
+    @property
+    def new_id(self):
+        return NewId(self.data)
+
+    @property
+    def search_results(self):
+        if self.type != "search.results":
+            raise TypeError('not search results: %s', self.type)
+        return SearchResults(self.data)
+
+
+class SearchResults(object):
+    #     notification: {
+    #   "event": "search.results"
+    #   "params": {
+    #     "id": SearchId
+    #     "results": List<SearchResult>
+    #     "last": bool
+    #   }
+    # }
+    def __init__(self, data):
+        self.data = data
+
+    def __str__(self):
+        return str(self.data)
+
+    @property
+    def id(self):
+        return self.data['params']['id']
+
+    @property
+    def results(self):
+        return self.data['params']['results']
+
+    @property
+    def last(self):
+        return self.data['params']['last']

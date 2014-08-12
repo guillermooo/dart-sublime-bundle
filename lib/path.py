@@ -116,7 +116,7 @@ def find_pubspec_path(path, original=None):
         return (path, True)
 
     # Reached drive unit; stop.
-    if p == os.path.dirname(path):
+    if p == os.path.dirname(p):
         if not os.path.isdir(original):
             p = os.path.dirname(original)
         return (p, False)

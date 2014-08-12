@@ -35,6 +35,13 @@ g_edits_lock = threading.Lock()
 g_server = None
 g_server_ready = threading.RLock()
 
+# maps:
+#   req_type => view_id
+#   view_id => valid token for this type of request
+g_req_to_resp = {
+    "search": {},
+}
+
 
 def init():
     '''Start up core components of the analyzer plugin.
@@ -87,9 +94,28 @@ class ActivityTracker(sublime_plugin.EventListener):
 
     def on_idle(self, view):
         _logger.debug("active view was idle; could send requests")
-        now = datetime.now()
-        token = "{0}:{1}".format(view.buffer_id(),
-                                 str(now.minute * 60 + now.second))
+        if view.is_dirty() and (view.id() ==
+                                view.window().active_view().id()):
+
+            _logger.debug('sending overlay data for %s', view.file_name())
+            data = {'type': 'add', 'content': view.substr(sublime.Region(0,
+                                                                view.size()))}
+            g_server.send_update_content(view, data)
+
+
+    def on_modified(self, view):
+        if not is_view_dart_script(view):
+            return
+
+        if not view.file_name():
+            _logger.debug(
+                'aborting because file does not exist on disk: %s',
+                view.file_name())
+            return
+
+        with g_edits_lock:
+            ActivityTracker.edits[view.buffer_id()] += 1
+            sublime.set_timeout(lambda: self.check_idle(view), 1000)
 
     def check_idle(self, view):
         # TODO(guillermooo): we need to send requests too if the buffer is
@@ -110,6 +136,10 @@ class ActivityTracker(sublime_plugin.EventListener):
             # across windows?
             ActivityTracker.edits[view.buffer_id()] += 1
             sublime.set_timeout(lambda: self.check_idle(view), 1000)
+
+        # The file has been saved, so force use of filesystem content.
+        data = {"type": "remove"}
+        g_server.send_update_content(view, data)
 
     def on_activated(self, view):
         if not is_view_dart_script(view):
@@ -163,16 +193,18 @@ class AnalysisServer(object):
         self.tokens_lock = threading.Lock()
 
     def new_token(self):
-        v = sublime.active_window().active_view()
+        w = sublime.active_window()
+        v = w.active_view()
         now = datetime.now()
-        token = '{}:{}'.format(v.buffer_id(), now.minute * 60 + now.second)
+        token = w.id(), v.id(), '{}:{}:{}'.format(w.id(), v.id(),
+                                  now.minute * 60 + now.second)
         return token
 
     def add_root(self, path):
         """Adds `path` to the monitored roots if it is unknown.
 
         If a `pubspec.yaml` is found in the path, its parent is monitored.
-        Otherwise the passed in path is monitored as is.
+        Otherwise the passed-in directory name is monitored.
 
         @path
           Can be a directory or a file path.
@@ -223,9 +255,25 @@ class AnalysisServer(object):
         self.proc.stdin.flush()
 
     def send_set_roots(self, included=[], excluded=[]):
-        token = self.new_token()
+        _, _, token = self.new_token()
         req = requests.set_roots(token, included, excluded)
         _logger.info('sending set_roots request')
+        g_requests.put(req)
+
+    def send_find_top_level_decls(self, pattern):
+        w_id, v_id, token = self.new_token()
+        req = requests.find_top_level_decls(token, pattern)
+        _logger.info('sending top level decls request')
+        # track this type of req as it may expire
+        g_req_to_resp['search']["{}:{}".format(w_id, v_id)] = token
+        g_requests.put(req)
+
+    def send_update_content(self, view, data):
+        w_id, v_id, token = self.new_token()
+        files = {view.file_name(): data}
+        req = requests.update_content(token, files)
+        _logger.info('sending update content request')
+        # track this type of req as it may expire
         g_requests.put(req)
 
 
@@ -245,19 +293,37 @@ class ResponseHandler(threading.Thread):
                 if item.get('_internal') == _SIGNAL_STOP:
                     _logger.info(
                         'ResponseHandler is exiting by internal request')
-                    return
+                    continue
 
                 try:
                     resp = Response(item)
+                    if resp.type == '<unknown>':
+                        _logger.info('received unknown type of response')
+                        if resp.has_new_id:
+                            _logger.debug('received new id for request: %s -> %s', resp.id, resp.new_id)
+                            win_view = resp.id.index(":", resp.id.index(":") + 1)
+                            g_req_to_resp["search"][resp.id[:win_view]] = \
+                                                                resp.new_id
+
+                        continue
+
+                    if resp.type == 'search.results':
+                        _logger.info('received search results')
+                        _logger.debug('results: %s', resp.search_results)
+                        continue
+
                     if resp.type == 'analysis.errors':
-                        if resp.has_errors:
+                        if resp.has_errors and len(resp.errors) > 0:
                             _logger.info('error data received from server')
                             sublime.set_timeout(
                                 lambda: actions.display_error(resp.errors), 0)
+                            continue
                         else:
                             v = sublime.active_window().active_view()
-                            if resp.file and (resp.file == v.file_name()):
+                            if resp.errors.file and (resp.errors.file == v.file_name()):
                                 sublime.set_timeout(actions.clear_ui, 0)
+                                continue
+
                     elif resp.type == 'server.status':
                         info = resp.status
                         sublime.set_timeout(lambda: sublime.status_message(

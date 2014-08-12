@@ -59,5 +59,7 @@
 			{ "key": "dart_can_show_observatory" },
 			{ "key": "setting.command_mode", "operand": false }
 		]
-	}
+	},
+	
+	{ "keys": ["ctrl+.", "ctrl+t"], "command": "dart_find_top_level_decls" }
 ]
