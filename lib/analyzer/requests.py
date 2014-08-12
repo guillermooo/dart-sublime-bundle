@@ -1,6 +1,16 @@
 """Requests for the anlyzer server.
 """
 
+class TaskPriority:
+    '''Levels of priority for requests.
+    '''
+    HIGHEST = 0
+    HIGH = 100
+    DEFAULT = 200
+    LOW = 300
+    LOWEST = 400
+
+
 def set_roots(id_, included=[], excluded=[]):
     return {"id": id_,
         "method": "analysis.setAnalysisRoots",
