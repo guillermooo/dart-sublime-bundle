@@ -20,6 +20,7 @@ from .lib.path import is_view_dart_script
 from .lib.path import is_active
 from .lib.plat import supress_window
 from .lib.sdk import SDK
+from .lib.analyzer.pipe_server import PipeServer
 
 
 _logger = PluginLogger(__name__)
@@ -152,11 +153,11 @@ class StdoutWatcher(threading.Thread):
     def start(self):
         _logger.info("starting StdoutWatcher")
         while True:
-            data = self.server.proc.stdout.readline().decode('utf-8')
+            data = self.server.stdout.readline().decode('utf-8')
             _logger.debug('data read from server: %s', repr(data))
 
             if not data:
-                if self.server.proc.stdin.closed:
+                if self.server.stdin.closed:
                     _logger.info(
                         'StdoutWatcher is exiting by internal request')
                     return
@@ -169,22 +170,26 @@ class StdoutWatcher(threading.Thread):
         _logger.error('StdoutWatcher exited unexpectedly')
 
 
-class AnalysisServer(object)
+class AnalysisServer(object):
     START_DELAY = 2500
-    ping_lock = threading.Lock()
-    proc = None
+    server = None
+
+    @property
+    def stdout(self):
+        return AnalysisServer.server.proc.stdout
+
+    @property
+    def stdin(self):
+        return AnalysisServer.server.proc.stdin
 
     @staticmethod
     def ping():
         try:
-            with AnalysisServer.ping_lock:
-                return not AnalysisServer.proc.stdin.closed
+            return not AnalysisServer.server.is_running
         except AttributeError:
             return
 
-    def __init__(self, path=None):
-        super().__init__()
-        self.path = path
+    def __init__(self):
         self.roots = []
         # TODO(guillermooo): Use priority queues.
         self.requests = queue.Queue()
@@ -200,7 +205,7 @@ class AnalysisServer(object)
 
     @property
     def proc(self):
-        return AnalysisServer.proc
+        return AnalysisServer.server
 
     def new_token(self):
         w = sublime.active_window()
@@ -239,35 +244,30 @@ class AnalysisServer(object)
         if AnalysisServer.ping():
             return
 
-        # TODO(guillermooo): create pushcd context manager in lib/path.py.
-        old = os.curdir
-        # TODO(guillermooo): catch errors
         sdk = SDK()
-        with AnalysisServer.ping_lock:
-            os.chdir(sdk.path_to_sdk)
-            _logger.info('starting AnalysisServer')
-            AnalysisServer.proc = Popen(['dart',
-                               sdk.path_to_analysis_snapshot,
-                               '--sdk={0}'.format(sdk.path_to_sdk)],
-                               stdout=PIPE, stdin=PIPE, stderr=PIPE,
-                               startupinfo=supress_window())
-            os.chdir(old)
+
+        _logger.info('starting AnalysisServer')
+        AnalysisServer.server = PipeServer(['dart',
+                            sdk.path_to_analysis_snapshot,
+                           '--sdk={0}'.format(sdk.path_to_sdk)])
+        AnalysisServer.server.start(working_dir=sdk.path_to_sdk)
+
         t = StdoutWatcher(self, sdk.path_to_sdk)
         # Thread dies with the main thread.
         t.daemon = True
+        # TODO(guillermooo): do we need timeout async here?
         sublime.set_timeout_async(t.start, 0)
 
     def stop(self):
         # TODO(guillermooo): Use the server's own shutdown mechanism.
-        self.proc.stdin.close()
-        self.proc.stdout.close()
-        self.proc.kill()
+        self.server.stop()
 
     def send(self, data):
+        # TODO(guillermooo): should be a request via queue?
         data = (json.dumps(data) + '\n').encode('utf-8')
         _logger.debug('sending %s', data)
-        self.proc.stdin.write(data)
-        self.proc.stdin.flush()
+        self.stdin.write(data)
+        self.stdin.flush()
 
     def send_set_roots(self, included=[], excluded=[]):
         _, _, token = self.new_token()
