@@ -25,13 +25,11 @@ from .lib.sdk import SDK
 _logger = PluginLogger(__name__)
 
 
-_SERVER_START_DELAY = 2500
 _SIGNAL_STOP = object()
 
 
 g_edits_lock = threading.Lock()
 g_server = None
-g_server_ready = threading.RLock()
 
 # maps:
 #   req_type => view_id
@@ -48,9 +46,8 @@ def init():
     _logger.debug('starting dart analyzer')
 
     try:
-        with g_server_ready:
-            g_server = AnalysisServer()
-            g_server.start()
+        g_server = AnalysisServer()
+        g_server.start()
     except Exception as e:
         print('Dart: Exception occurred during init. Aborting')
         print('==============================================')
@@ -65,7 +62,7 @@ def plugin_loaded():
     # FIXME(guillermooo): Ignoring, then de-ignoring this package throws
     # errors.
     # Make ST more responsive on startup --- also helps the logger get ready.
-    sublime.set_timeout(init, _SERVER_START_DELAY)
+    sublime.set_timeout(init, AnalysisServer.START_DELAY)
 
 
 def plugin_unloaded():
@@ -139,13 +136,13 @@ class ActivityTracker(sublime_plugin.EventListener):
                           view.file_name())
             return
 
-        with g_server_ready:
-            if g_server:
-                g_server.add_root(view.file_name())
-            else:
-                sublime.set_timeout(
-                    lambda: g_server.add_root(view.file_name()),
-                                              _SERVER_START_DELAY + 1000)
+        if AnalysisServer.ping():
+            g_server.add_root(view.file_name())
+        else:
+            # TODO(guillermooo): enqueue request
+            sublime.set_timeout(
+                lambda: g_server.add_root(view.file_name()),
+                                          AnalysisServer.START_DELAY + 1000)
 
 
 class StdoutWatcher(threading.Thread):
@@ -174,20 +171,24 @@ class StdoutWatcher(threading.Thread):
         _logger.error('StdoutWatcher exited unexpectedly')
 
 
-class AnalysisServer(object):
+class AnalysisServer(object)
+    START_DELAY = 2500
     ping_lock = threading.Lock()
-    server = None
+    proc = None
 
     @staticmethod
-    def ping(self):
-        with AnalysisServer.ping_lock:
-            return not self.proc.stdin.closed
+    def ping():
+        try:
+            with AnalysisServer.ping_lock:
+                return not AnalysisServer.proc.stdin.closed
+        except AttributeError:
+            return
 
     def __init__(self, path=None):
         super().__init__()
         self.path = path
-        self.proc = None
         self.roots = []
+        # TODO(guillermooo): Use priority queues.
         self.requests = queue.Queue()
         self.responses = queue.Queue()
 
@@ -198,6 +199,10 @@ class AnalysisServer(object):
         resh = ResponseHandler(self)
         resh.daemon = True
         resh.start()
+
+    @property
+    def proc(self):
+        return AnalysisServer.proc
 
     def new_token(self):
         w = sublime.active_window()
@@ -233,6 +238,9 @@ class AnalysisServer(object):
         _logger.debug('root already known: %s', p)
 
     def start(self):
+        if AnalysisServer.ping():
+            return
+
         # TODO(guillermooo): create pushcd context manager in lib/path.py.
         old = os.curdir
         # TODO(guillermooo): catch errors
@@ -240,7 +248,7 @@ class AnalysisServer(object):
         with AnalysisServer.ping_lock:
             os.chdir(sdk.path_to_sdk)
             _logger.info('starting AnalysisServer')
-            self.proc = Popen(['dart',
+            AnalysisServer.proc = Popen(['dart',
                                sdk.path_to_analysis_snapshot,
                                '--sdk={0}'.format(sdk.path_to_sdk)],
                                stdout=PIPE, stdin=PIPE, stderr=PIPE,
