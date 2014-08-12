@@ -17,6 +17,7 @@ from .lib.analyzer import requests
 from .lib.analyzer.response import Response
 from .lib.path import find_pubspec_path
 from .lib.path import is_view_dart_script
+from .lib.path import is_active
 from .lib.plat import supress_window
 from .lib.sdk import SDK
 
@@ -94,9 +95,9 @@ class ActivityTracker(sublime_plugin.EventListener):
 
     def on_idle(self, view):
         _logger.debug("active view was idle; could send requests")
-        if view.is_dirty() and (view.id() ==
-                                view.window().active_view().id()):
-
+        # FIXME(guillermooo): This does not correctly detect the active view
+        # when there are multiple view groups open.
+        if view.is_dirty() and is_active(view):
             _logger.debug('sending overlay data for %s', view.file_name())
             data = {'type': 'add', 'content': view.substr(sublime.Region(0,
                                                                 view.size()))}
@@ -188,9 +189,6 @@ class AnalysisServer(object):
         self.path = path
         self.proc = None
         self.roots = []
-        # buffer id -> token
-        self.tokens = {}
-        self.tokens_lock = threading.Lock()
 
     def new_token(self):
         w = sublime.active_window()

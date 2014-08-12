@@ -120,3 +120,13 @@ def find_pubspec_path(path, original=None):
         if not os.path.isdir(original):
             p = os.path.dirname(original)
         return (p, False)
+
+    return find_pubspec_path(p, original)
+
+
+def is_active(view):
+    """Returns `True` if @view is the view being currently edited.
+    """
+    group_id = view.window().active_group()
+    group_view = view.window().active_view_in_group(group_id)
+    return group_view.id() == view.id()
