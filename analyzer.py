@@ -29,9 +29,6 @@ _SERVER_START_DELAY = 2500
 _SIGNAL_STOP = object()
 
 
-# g_requests = queue.Queue()
-# Responses from server.
-g_responses = queue.Queue()
 g_edits_lock = threading.Lock()
 g_server = None
 g_server_ready = threading.RLock()
@@ -51,14 +48,6 @@ def init():
     _logger.debug('starting dart analyzer')
 
     try:
-        reqh = RequestHandler()
-        reqh.daemon = True
-        reqh.start()
-
-        resh = ResponseHandler()
-        resh.daemon = True
-        resh.start()
-
         with g_server_ready:
             g_server = AnalysisServer()
             g_server.start()
@@ -83,7 +72,7 @@ def plugin_unloaded():
     # The worker threads handling requests/responses block when reading their
     # queue, so give them something.
     g_server.requests.put({'_internal': _SIGNAL_STOP})
-    g_responses.put({'_internal': _SIGNAL_STOP})
+    g_server.responses.put({'_internal': _SIGNAL_STOP})
     g_server.stop()
 
 
@@ -143,6 +132,8 @@ class ActivityTracker(sublime_plugin.EventListener):
         g_server.send_update_content(view, data)
 
     def on_activated(self, view):
+        # TODO(guillermooo): We need to updateContent here if the file is
+        # dirty on_activated.
         if not is_view_dart_script(view):
             _logger.debug('on_activated - not a dart file %s',
                           view.file_name())
@@ -158,19 +149,19 @@ class ActivityTracker(sublime_plugin.EventListener):
 
 
 class StdoutWatcher(threading.Thread):
-    def __init__(self, proc, path):
+    def __init__(self, server, path):
         super().__init__()
-        self.proc = proc
         self.path = path
+        self.server = server
 
     def start(self):
         _logger.info("starting StdoutWatcher")
         while True:
-            data = self.proc.stdout.readline().decode('utf-8')
+            data = self.server.proc.stdout.readline().decode('utf-8')
             _logger.debug('data read from server: %s', repr(data))
 
             if not data:
-                if self.proc.stdin.closed:
+                if self.server.proc.stdin.closed:
                     _logger.info(
                         'StdoutWatcher is exiting by internal request')
                     return
@@ -179,17 +170,34 @@ class StdoutWatcher(threading.Thread):
                 time.sleep(.25)
                 continue
 
-            g_responses.put(json.loads(data))
+            self.server.responses.put(json.loads(data))
         _logger.error('StdoutWatcher exited unexpectedly')
 
 
 class AnalysisServer(object):
+    ping_lock = threading.Lock()
+    server = None
+
+    @staticmethod
+    def ping(self):
+        with AnalysisServer.ping_lock:
+            return not self.proc.stdin.closed
+
     def __init__(self, path=None):
         super().__init__()
         self.path = path
         self.proc = None
         self.roots = []
         self.requests = queue.Queue()
+        self.responses = queue.Queue()
+
+        reqh = RequestHandler(self)
+        reqh.daemon = True
+        reqh.start()
+
+        resh = ResponseHandler(self)
+        resh.daemon = True
+        resh.start()
 
     def new_token(self):
         w = sublime.active_window()
@@ -229,15 +237,16 @@ class AnalysisServer(object):
         old = os.curdir
         # TODO(guillermooo): catch errors
         sdk = SDK()
-        os.chdir(sdk.path_to_sdk)
-        _logger.info('starting AnalysisServer')
-        self.proc = Popen(['dart',
-                           sdk.path_to_analysis_snapshot,
-                           '--sdk={0}'.format(sdk.path_to_sdk)],
-                           stdout=PIPE, stdin=PIPE, stderr=PIPE,
-                           startupinfo=supress_window())
-        os.chdir(old)
-        t = StdoutWatcher(self.proc, sdk.path_to_sdk)
+        with AnalysisServer.ping_lock:
+            os.chdir(sdk.path_to_sdk)
+            _logger.info('starting AnalysisServer')
+            self.proc = Popen(['dart',
+                               sdk.path_to_analysis_snapshot,
+                               '--sdk={0}'.format(sdk.path_to_sdk)],
+                               stdout=PIPE, stdin=PIPE, stderr=PIPE,
+                               startupinfo=supress_window())
+            os.chdir(old)
+        t = StdoutWatcher(self, sdk.path_to_sdk)
         # Thread dies with the main thread.
         t.daemon = True
         sublime.set_timeout_async(t.start, 0)
@@ -280,15 +289,16 @@ class AnalysisServer(object):
 class ResponseHandler(threading.Thread):
     """ Handles responses from the analysis server.
     """
-    def __init__(self):
+    def __init__(self, server):
         super().__init__()
+        self.server = server
 
     def run(self):
         _logger.info('starting ResponseHandler')
         while True:
             time.sleep(.25)
             try:
-                item = g_responses.get(0.1)
+                item = self.server.responses.get(0.1)
 
                 if item.get('_internal') == _SIGNAL_STOP:
                     _logger.info(
@@ -342,21 +352,22 @@ class ResponseHandler(threading.Thread):
 class RequestHandler(threading.Thread):
     """ Handles requests to the analysis server.
     """
-    def __init__(self):
+    def __init__(self, server):
         super().__init__()
+        self.server = server
 
     def run(self):
         _logger.info('starting RequestHandler')
         while True:
             time.sleep(.25)
             try:
-                item = g_server.requests.get(0.1)
+                item = self.server.requests.get(0.1)
 
                 if item.get('_internal') == _SIGNAL_STOP:
                     _logger.info(
                         'RequestHandler is exiting by internal request')
                     return
 
-                g_server.send(item)
+                self.server.send(item)
             except queue.Empty:
                 pass
