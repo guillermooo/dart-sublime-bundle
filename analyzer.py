@@ -14,6 +14,7 @@ import time
 from . import PluginLogger
 from .lib.analyzer import actions
 from .lib.analyzer import requests
+from .lib.analyzer.requests import TaskPriority
 from .lib.analyzer.response import Response
 from .lib.path import find_pubspec_path
 from .lib.path import is_view_dart_script
@@ -69,7 +70,7 @@ def plugin_loaded():
 def plugin_unloaded():
     # The worker threads handling requests/responses block when reading their
     # queue, so give them something.
-    g_server.requests.put((TaskPriorty.HIGHEST, {'_internal': _SIGNAL_STOP}))
+    g_server.requests.put({'_internal': _SIGNAL_STOP})
     g_server.responses.put({'_internal': _SIGNAL_STOP})
     g_server.stop()
 
@@ -191,8 +192,8 @@ class AnalysisServer(object):
 
     def __init__(self):
         self.roots = []
-        self.requests = queue.PriorityQueue()
-        # TODO(guillermooo): use priority queue here too?
+        # TODO(guillermooo): use priority queues?
+        self.requests = queue.Queue()
         self.responses = queue.Queue()
 
         reqh = RequestHandler(self)
@@ -273,7 +274,7 @@ class AnalysisServer(object):
         _, _, token = self.new_token()
         req = requests.set_roots(token, included, excluded)
         _logger.info('sending set_roots request')
-        self.requests.put((TaskPriorty.HIGH, req))
+        self.requests.put(req)
 
     def send_find_top_level_decls(self, pattern):
         w_id, v_id, token = self.new_token()
@@ -281,7 +282,7 @@ class AnalysisServer(object):
         _logger.info('sending top level decls request')
         # track this type of req as it may expire
         g_req_to_resp['search']["{}:{}".format(w_id, v_id)] = token
-        self.requests.put((TaskPriorty.HIGHEST, req))
+        self.requests.put(req)
 
     def send_update_content(self, view, data):
         w_id, v_id, token = self.new_token()
@@ -289,7 +290,7 @@ class AnalysisServer(object):
         req = requests.update_content(token, files)
         _logger.info('sending update content request')
         # track this type of req as it may expire
-        self.requests.put((TaskPriorty.HIGH, req))
+        self.requests.put(req)
 
 
 class ResponseHandler(threading.Thread):
@@ -365,7 +366,6 @@ class RequestHandler(threading.Thread):
     def run(self):
         _logger.info('starting RequestHandler')
         while True:
-            time.sleep(.25)
             try:
                 item = self.server.requests.get(0.1)
 
