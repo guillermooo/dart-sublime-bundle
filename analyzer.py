@@ -11,21 +11,22 @@ import queue
 import threading
 import time
 
-from . import PluginLogger
-from .lib.analyzer import actions
-from .lib.analyzer import requests
-from .lib.analyzer.response import Response
-from .lib.path import find_pubspec_path
-from .lib.path import is_view_dart_script
-from .lib.path import is_active
-from .lib.plat import supress_window
-from .lib.sdk import SDK
-from .lib.analyzer.pipe_server import PipeServer
+from Dart import PluginLogger
+from Dart.lib.analyzer import actions
+from Dart.lib.analyzer import requests
+from Dart.lib.analyzer.pipe_server import PipeServer
+from Dart.lib.analyzer.response import Response
+from Dart.lib.path import find_pubspec_path
+from Dart.lib.path import is_active
+from Dart.lib.path import is_view_dart_script
+from Dart.lib.plat import supress_window
+from Dart.lib.sdk import SDK
 
 
 _logger = PluginLogger(__name__)
 
 
+START_DELAY = 2500
 _SIGNAL_STOP = object()
 
 
@@ -40,8 +41,6 @@ g_req_to_resp = {
 
 
 def init():
-    '''Start up core components of the analyzer plugin.
-    '''
     global g_server
     _logger.debug('starting dart analyzer')
 
@@ -62,7 +61,7 @@ def plugin_loaded():
     # FIXME(guillermooo): Ignoring, then de-ignoring this package throws
     # errors.
     # Make ST more responsive on startup --- also helps the logger get ready.
-    sublime.set_timeout(init, AnalysisServer.START_DELAY)
+    sublime.set_timeout(init, START_DELAY)
 
 
 def plugin_unloaded():
@@ -171,7 +170,7 @@ class StdoutWatcher(threading.Thread):
                     return
 
                 _logger.debug("StdoutWatcher - no data")
-                time.sleep(.25)
+                time.sleep(.1)
                 continue
 
             self.server.responses.put(json.loads(data))
@@ -179,7 +178,6 @@ class StdoutWatcher(threading.Thread):
 
 
 class AnalysisServer(object):
-    START_DELAY = 2500
     server = None
 
     @property
@@ -193,7 +191,7 @@ class AnalysisServer(object):
     @staticmethod
     def ping():
         try:
-            return not AnalysisServer.server.is_running
+            return AnalysisServer.server.is_running
         except AttributeError:
             return
 

@@ -4,7 +4,7 @@ import unittest
 import os
 
 from Dart.lib.path import to_platform_path
-from Dart.lib.plat import join_on_win
+from Dart.lib.path import join_on_win
 
 
 class Test_join_on_win(unittest.TestCase):

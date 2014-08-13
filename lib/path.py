@@ -1,3 +1,6 @@
+'''Helper functions for path management.
+'''
+
 import os
 from os.path import join
 from contextlib import contextmanager
@@ -10,14 +13,18 @@ def extension_equals(path_or_view, extension):
     """Compares @path_or_view's extensions with @extension.
 
     Returns `True` if they are the same, `False` otherwise.
-    Returns `False` if @path_or_view isn't saved on disk.
+    Returns `False` if @path_or_view is a view and isn't saved on disk.
     """
     try:
         if path_or_view.file_name() is None:
             return False
         return extension_equals(path_or_view.file_name(), extension)
     except AttributeError:
-        return os.path.splitext(path_or_view)[1] == extension
+        try:
+            return os.path.splitext(path_or_view)[1] == extension
+        except Exception:
+            raise TypeError('string or view required, got {}'
+                            .format(type(path_or_view)))
 
 
 def is_view_dart_script(view):
@@ -139,3 +146,22 @@ def pushd(to):
     os.chdir(to)
     yield to
     os.chdir(old)
+
+
+def join_on_win(original, append):
+    """
+    Useful to add .exe to @original, .bat, etc if ST is running on Windows.
+
+    @original
+      Original path.
+
+    @append
+      Fragment to append to @original on Windows. If it's an extension
+      (the fragment begins with '.'), it's tucked at the end of @original.
+      Otherwise, it's joined as a path.
+    """
+    if is_windows():
+        if append.startswith('.'):
+            return original + append
+        return join(original, append)
+    return original
