@@ -126,7 +126,7 @@ class ActivityTracker(sublime_plugin.EventListener):
             return
 
         with ActivityTracker.edits_lock:
-            # TODO(guillermooo): does .id() uniquely identify buffers
+            # TODO(guillermooo): does .id() uniquely identify views
             # across windows?
             ActivityTracker.edits[view.id()] += 1
             sublime.set_timeout(lambda: self.check_idle(view), 1000)
