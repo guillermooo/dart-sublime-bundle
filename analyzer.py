@@ -29,7 +29,6 @@ _logger = PluginLogger(__name__)
 _SIGNAL_STOP = object()
 
 
-g_edits_lock = threading.Lock()
 g_server = None
 
 # maps:
@@ -79,6 +78,16 @@ class ActivityTracker(sublime_plugin.EventListener):
     if the buffer has been saved or is dirty.
     """
     edits = defaultdict(lambda: 0)
+    edits_lock = threading.RLock()
+
+    def increment_edits(self, view):
+        with ActivityTracker.edits_lock:
+            ActivityTracker.edits[view.buffer_id()] += 1
+            sublime.set_timeout(lambda: self.check_idle(view), 1000)
+
+    def decrement_edits(self, view):
+        with ActivityTracker.edits_lock:
+            ActivityTracker.edits[view.buffer_id()] -= 1
 
     def on_idle(self, view):
         _logger.debug("active view was idle; could send requests")
@@ -101,15 +110,13 @@ class ActivityTracker(sublime_plugin.EventListener):
             #     view.file_name())
             return
 
-        with g_edits_lock:
-            ActivityTracker.edits[view.buffer_id()] += 1
-            sublime.set_timeout(lambda: self.check_idle(view), 1000)
+        self.increment_edits(view)
 
     def check_idle(self, view):
         # TODO(guillermooo): we need to send requests too if the buffer is
         # simply dirty but not yet saved.
-        with g_edits_lock:
-            self.edits[view.buffer_id()] -= 1
+        with ActivityTracker.edits_lock:
+            self.decrement_edits(view)
             if self.edits[view.buffer_id()] == 0:
                 self.on_idle(view)
 
@@ -119,7 +126,7 @@ class ActivityTracker(sublime_plugin.EventListener):
                           view.file_name())
             return
 
-        with g_edits_lock:
+        with ActivityTracker.edits_lock:
             # TODO(guillermooo): does .buffer_id() uniquely identify buffers
             # across windows?
             ActivityTracker.edits[view.buffer_id()] += 1
@@ -302,7 +309,7 @@ class AnalysisServer(object):
 
 
 class ResponseHandler(threading.Thread):
-    """ Handles responses from the analysis server.
+    """ Handles responses from the response queue.
     """
     def __init__(self, server):
         super().__init__()
@@ -365,7 +372,7 @@ class ResponseHandler(threading.Thread):
 
 
 class RequestHandler(threading.Thread):
-    """ Handles requests to the analysis server.
+    """ Watches the requests queue and forwards them to the pipe server.
     """
     def __init__(self, server):
         super().__init__()
