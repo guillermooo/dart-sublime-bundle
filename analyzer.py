@@ -81,15 +81,15 @@ class ActivityTracker(sublime_plugin.EventListener):
 
     def increment_edits(self, view):
         with ActivityTracker.edits_lock:
-            ActivityTracker.edits[view.buffer_id()] += 1
+            ActivityTracker.edits[view.id()] += 1
             sublime.set_timeout(lambda: self.check_idle(view), 1000)
 
     def decrement_edits(self, view):
         with ActivityTracker.edits_lock:
-            ActivityTracker.edits[view.buffer_id()] -= 1
+            ActivityTracker.edits[view.id()] -= 1
 
     def on_idle(self, view):
-        _logger.debug("active view was idle; could send requests")
+        # _logger.debug("active view was idle; could send requests")
         if view.is_dirty() and is_active(view):
             _logger.debug('sending overlay data for %s', view.file_name())
             g_server.send_add_content(view)
@@ -116,19 +116,19 @@ class ActivityTracker(sublime_plugin.EventListener):
         # simply dirty but not yet saved.
         with ActivityTracker.edits_lock:
             self.decrement_edits(view)
-            if self.edits[view.buffer_id()] == 0:
+            if self.edits[view.id()] == 0:
                 self.on_idle(view)
 
     def on_post_save(self, view):
         if not is_view_dart_script(view):
-            _logger.debug('on_post_save - not a dart file %s',
-                          view.file_name())
+            # _logger.debug('on_post_save - not a dart file %s',
+            #               view.file_name())
             return
 
         with ActivityTracker.edits_lock:
-            # TODO(guillermooo): does .buffer_id() uniquely identify buffers
+            # TODO(guillermooo): does .id() uniquely identify buffers
             # across windows?
-            ActivityTracker.edits[view.buffer_id()] += 1
+            ActivityTracker.edits[view.id()] += 1
             sublime.set_timeout(lambda: self.check_idle(view), 1000)
 
         # The file has been saved, so force use of filesystem content.
@@ -138,8 +138,8 @@ class ActivityTracker(sublime_plugin.EventListener):
         # TODO(guillermooo): We need to updateContent here if the file is
         # dirty on_activated.
         if not is_view_dart_script(view):
-            _logger.debug('on_activated - not a dart file %s',
-                          view.file_name())
+            # _logger.debug('on_activated - not a dart file %s',
+            #               view.file_name())
             return
 
         if AnalysisServer.ping():
