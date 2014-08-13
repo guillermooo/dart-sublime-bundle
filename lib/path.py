@@ -9,6 +9,7 @@ from Dart.lib.plat import is_windows
 from Dart.lib.plat import join_on_win
 
 
+
 def extension_equals(path_or_view, extension):
     """Compares @path_or_view's extensions with @extension.
 
@@ -149,8 +150,8 @@ def pushd(to):
 
 
 def join_on_win(original, append):
-    """
-    Useful to add .exe to @original, .bat, etc if ST is running on Windows.
+    """ Useful to add .exe, .bat, etc. to @original if ST is running on
+    Windows.
 
     @original
       Original path.
@@ -163,5 +164,5 @@ def join_on_win(original, append):
     if is_windows():
         if append.startswith('.'):
             return original + append
-        return join(original, append)
+        return os.path.join(original, append)
     return original
