@@ -14,7 +14,6 @@ import time
 from . import PluginLogger
 from .lib.analyzer import actions
 from .lib.analyzer import requests
-from .lib.analyzer.requests import TaskPriority
 from .lib.analyzer.response import Response
 from .lib.path import find_pubspec_path
 from .lib.path import is_view_dart_script
@@ -85,19 +84,21 @@ class ActivityTracker(sublime_plugin.EventListener):
         _logger.debug("active view was idle; could send requests")
         if view.is_dirty() and is_active(view):
             _logger.debug('sending overlay data for %s', view.file_name())
-            data = {'type': 'add', 'content': view.substr(sublime.Region(0,
-                                                                view.size()))}
-            g_server.send_update_content(view, data)
+            g_server.send_add_content(view)
 
-
+    # TODO(guillermooo): Use on_modified_async
     def on_modified(self, view):
         if not is_view_dart_script(view):
+            # Don't log here -- it'd impact performance.
+            # _logger.debug('on_modified - not a dart file; aborting: %s',
+            #     view.file_name())
             return
 
         if not view.file_name():
-            _logger.debug(
-                'aborting because file does not exist on disk: %s',
-                view.file_name())
+            # Don't log here -- it'd impact performance.
+            # _logger.debug(
+            #     'aborting because file does not exist on disk: %s',
+            #     view.file_name())
             return
 
         with g_edits_lock:
@@ -125,8 +126,7 @@ class ActivityTracker(sublime_plugin.EventListener):
             sublime.set_timeout(lambda: self.check_idle(view), 1000)
 
         # The file has been saved, so force use of filesystem content.
-        data = {"type": "remove"}
-        g_server.send_update_content(view, data)
+        g_server.send_remove_content(view)
 
     def on_activated(self, view):
         # TODO(guillermooo): We need to updateContent here if the file is
@@ -284,12 +284,20 @@ class AnalysisServer(object):
         g_req_to_resp['search']["{}:{}".format(w_id, v_id)] = token
         self.requests.put(req)
 
-    def send_update_content(self, view, data):
+    def send_add_content(self, view):
         w_id, v_id, token = self.new_token()
+        data = {'type': 'add', 'content': view.substr(sublime.Region(0,
+                                                            view.size()))}
         files = {view.file_name(): data}
         req = requests.update_content(token, files)
         _logger.info('sending update content request')
         # track this type of req as it may expire
+        self.requests.put(req)
+
+    def send_remove_content(self, view):
+        w_id, v_id, token = self.new_token()
+        files = {view.file_name(): {"type": "remove"}}
+        req = requests.update_content(token, files)
         self.requests.put(req)
 
 
