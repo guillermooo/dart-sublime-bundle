@@ -318,7 +318,7 @@ class ResponseHandler(threading.Thread):
     def run(self):
         _logger.info('starting ResponseHandler')
         while True:
-            time.sleep(.25)
+            time.sleep(0.05)
             try:
                 item = self.server.responses.get(0.1)
 
