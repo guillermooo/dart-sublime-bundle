@@ -5,8 +5,12 @@ import json
 
 import threading
 
+from Dart import PluginLogger
 from Dart.lib.path import is_active
 from Dart.lib.path import is_active_path
+
+
+_logger = PluginLogger(__name__)
 
 
 class TaskPriority:
@@ -59,12 +63,12 @@ class AnalyzerQueue(queue.PriorityQueue):
 
     def put(self, data, priority=TaskPriority.DEFAULT, view=None):
         with self.lock_put:
-            print("putting {}".format(repr(data)))
+            _logger.debug("putting %s", repr(data))
             priority = self.calculate_priority(view, priority)
             super().put((priority, json.dumps(data)))
 
     def get(self, timeout=0):
         with self.lock_get:
             prio, data = super().get(timeout)
-            # print("getting {}".format(repr(data)))
+            _logger.debug("getting %s", repr(data))
             return json.loads(data)

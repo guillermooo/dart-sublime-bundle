@@ -288,7 +288,7 @@ class AnalysisServer(object):
     def send(self, data):
         # TODO(guillermooo): should be a request via queue?
         data = (json.dumps(data) + '\n').encode('utf-8')
-        _logger.debug('sending %s', data)
+        _logger.debug('writing to stdin: %s', data)
         self.stdin.write(data)
         self.stdin.flush()
 
@@ -314,7 +314,7 @@ class AnalysisServer(object):
                                                             view.size()))}
         files = {view.file_name(): data}
         req = requests.update_content(token, files)
-        _logger.info('sending update content request')
+        _logger.info('sending update content request - add')
         # track this type of req as it may expire
         self.requests.put(req, view=view, priority=TaskPriority.HIGH)
 
@@ -322,6 +322,7 @@ class AnalysisServer(object):
         w_id, v_id, token = self.new_token()
         files = {view.file_name(): {"type": "remove"}}
         req = requests.update_content(token, files)
+        _logger.info('sending update content request - delete')
         self.requests.put(req, view=view, priority=TaskPriority.HIGH)
 
     def send_set_priority_files(self, files):
@@ -329,6 +330,7 @@ class AnalysisServer(object):
             return
 
         w_id, v_id, token = self.new_token()
+        _logger.info('sending set priority files request')
         req = requests.set_priority_files(token, files)
         self.requests.put(req, priority=TaskPriority.HIGH)
 
@@ -366,7 +368,7 @@ class ResponseHandler(threading.Thread):
 
                     if resp.type == 'search.results':
                         _logger.info('received search results')
-                        _logger.debug('results: %s', resp.search_results)
+                        _logger.debug('search results: %s', resp.search_results)
                         continue
 
                     if resp.type == 'analysis.errors':
