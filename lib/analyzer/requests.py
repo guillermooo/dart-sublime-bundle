@@ -21,15 +21,6 @@ def set_roots(id_, included=[], excluded=[]):
         }
 
 
-def set_priority_files(id_, files=[]):
-    return {"id": id_,
-        "method": "analysis.setPriorityFiles",
-        "params": {
-            "files": files
-            }
-        }
-
-
 def find_top_level_decls(id_, pattern):
     return {
       "id": id_,
@@ -41,10 +32,20 @@ def find_top_level_decls(id_, pattern):
 
 
 def update_content(id_, files={}):
-    return {
-      "id": id_,
-      "method": "analysis.updateContent",
-      "params": {
-        "files": files
-      }
+  return {
+    "id": id_,
+    "method": "analysis.updateContent",
+    "params": {
+      "files": files
     }
+  }
+
+
+def set_priority_files(id_, files=[]):
+  return {
+    "id": id_,
+    "method": "analysis.setPriorityFiles",
+    "params": {
+      "files": files
+    }
+  }
