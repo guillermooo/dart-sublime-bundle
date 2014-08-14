@@ -148,7 +148,7 @@ class ActivityTracker(sublime_plugin.EventListener):
             # TODO(guillermooo): enqueue request
             sublime.set_timeout(
                 lambda: g_server.add_root(view.file_name()),
-                                          AnalysisServer.START_DELAY + 1000)
+                                          START_DELAY + 1000)
 
 
 class StdoutWatcher(threading.Thread):
