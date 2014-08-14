@@ -184,6 +184,8 @@ class StdoutWatcher(threading.Thread):
 
 
 class AnalysisServer(object):
+    request_id_lock = threading.Lock()
+    request_id = -1
     server = None
 
     @property
@@ -193,6 +195,14 @@ class AnalysisServer(object):
     @property
     def stdin(self):
         return AnalysisServer.server.proc.stdin
+
+    @staticmethod
+    def get_request_id():
+        with AnalysisServer.request_id_lock:
+            if AnalysisServer.request_id >= 9999999:
+                AnalysisServer.request_id = -1
+            AnalysisServer.request_id += 1
+            return AnalysisServer.request_id
 
     @staticmethod
     def ping():
@@ -225,7 +235,7 @@ class AnalysisServer(object):
         v = w.active_view()
         now = datetime.now()
         token = w.id(), v.id(), '{}:{}:{}'.format(w.id(), v.id(),
-                                  now.minute * 60 + now.second)
+                                  AnalysisServer.get_request_id())
         return token
 
     def add_root(self, path):
