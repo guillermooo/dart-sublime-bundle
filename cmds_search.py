@@ -17,7 +17,7 @@ class DartFindTopLevelDeclsCommand(sublime_plugin.WindowCommand):
                 word = v.word(v.sel()[0].b)
                 word = v.substr(word).strip()
                 print("xxx", "finding top level decls")
-                analyzer.g_server.send_find_top_level_decls(word)
+                analyzer.g_server.send_find_top_level_decls(v, word)
                 return
 
         print("AAAA", "server not ready")

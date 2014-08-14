@@ -1,3 +1,5 @@
+import sublime
+
 import queue
 import json
 
@@ -50,11 +52,9 @@ class AnalyzerQueue(queue.PriorityQueue):
           The given `TaskPriority`.
         '''
         if (not view) or (given == TaskPriority.HIGHEST):
-            print("GIVING PRIO 11111111111111")
             return given
 
         if self.is_active(view):
-            print("GIVING PRIO")
             return max((given - 50), TaskPriority.HIGHEST)
 
     def put(self, data, priority=TaskPriority.DEFAULT, view=None):

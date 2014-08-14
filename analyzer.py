@@ -146,6 +146,9 @@ class ActivityTracker(sublime_plugin.EventListener):
 
         if AnalysisServer.ping():
             g_server.add_root(view.file_name())
+
+            if is_active(view):
+                g_server.send_set_priority_files([view.file_name()])
         else:
             # TODO(guillermooo): enqueue request
             sublime.set_timeout(
@@ -175,7 +178,8 @@ class StdoutWatcher(threading.Thread):
                 time.sleep(.1)
                 continue
 
-            self.server.responses.put(json.loads(data), view=data.get('file'))
+            decoded = json.loads(data)
+            self.server.responses.put(decoded, view=decoded.get('file'))
         _logger.error('StdoutWatcher exited unexpectedly')
 
 
@@ -199,6 +203,7 @@ class AnalysisServer(object):
 
     def __init__(self):
         self.roots = []
+        self.priority_files = []
         # TODO(guillermooo): use priority queues?
         self.requests = AnalyzerQueue()
         self.responses = AnalyzerQueue()
@@ -283,7 +288,7 @@ class AnalysisServer(object):
         _logger.info('sending set_roots request')
         self.requests.put(req)
 
-    def send_find_top_level_decls(self, pattern):
+    def send_find_top_level_decls(self, view, pattern):
         w_id, v_id, token = self.new_token()
         req = requests.find_top_level_decls(token, pattern)
         _logger.info('sending top level decls request')
@@ -308,6 +313,14 @@ class AnalysisServer(object):
         files = {view.file_name(): {"type": "remove"}}
         req = requests.update_content(token, files)
         self.requests.put(req, view=view, priority=TaskPriority.HIGH)
+
+    def send_set_priority_files(self, files):
+        if files == self.priority_files:
+            return
+
+        w_id, v_id, token = self.new_token()
+        req = requests.set_priority_files(token, files)
+        self.requests.put(req, priority=TaskPriority.HIGH)
 
 
 class ResponseHandler(threading.Thread):
