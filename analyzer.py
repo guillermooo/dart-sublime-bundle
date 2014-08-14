@@ -29,7 +29,7 @@ _logger = PluginLogger(__name__)
 
 
 START_DELAY = 2500
-_SIGNAL_STOP = object()
+_SIGNAL_STOP = '__SIGNAL_STOP'
 
 
 g_server = None
