@@ -84,7 +84,7 @@ class ActivityTracker(sublime_plugin.EventListener):
     def increment_edits(self, view):
         with ActivityTracker.edits_lock:
             ActivityTracker.edits[view.id()] += 1
-            sublime.set_timeout(lambda: self.check_idle(view), 1000)
+        sublime.set_timeout(lambda: self.check_idle(view), 1000)
 
     def decrement_edits(self, view):
         with ActivityTracker.edits_lock:
@@ -114,8 +114,6 @@ class ActivityTracker(sublime_plugin.EventListener):
         self.increment_edits(view)
 
     def check_idle(self, view):
-        # TODO(guillermooo): we need to send requests too if the buffer is
-        # simply dirty but not yet saved.
         with ActivityTracker.edits_lock:
             self.decrement_edits(view)
             if self.edits[view.id()] == 0:
@@ -131,14 +129,12 @@ class ActivityTracker(sublime_plugin.EventListener):
             # TODO(guillermooo): does .id() uniquely identify views
             # across windows?
             ActivityTracker.edits[view.id()] += 1
-            sublime.set_timeout(lambda: self.check_idle(view), 1000)
+        sublime.set_timeout(lambda: self.check_idle(view), 1000)
 
         # The file has been saved, so force use of filesystem content.
         g_server.send_remove_content(view)
 
     def on_activated(self, view):
-        # TODO(guillermooo): We need to updateContent here if the file is
-        # dirty on_activated.
         if not is_view_dart_script(view):
             # _logger.debug('on_activated - not a dart file %s',
             #               view.file_name())
@@ -149,8 +145,10 @@ class ActivityTracker(sublime_plugin.EventListener):
 
             if is_active(view):
                 g_server.send_set_priority_files([view.file_name()])
+
+                if view.is_dirty():
+                    g_server.send_add_content(view)
         else:
-            # TODO(guillermooo): enqueue request
             sublime.set_timeout(
                 lambda: g_server.add_root(view.file_name()),
                                           START_DELAY + 1000)
@@ -214,7 +212,6 @@ class AnalysisServer(object):
     def __init__(self):
         self.roots = []
         self.priority_files = []
-        # TODO(guillermooo): use priority queues?
         self.requests = AnalyzerQueue()
         self.responses = AnalyzerQueue()
 
@@ -286,7 +283,6 @@ class AnalysisServer(object):
         self.server.stop()
 
     def send(self, data):
-        # TODO(guillermooo): should be a request via queue?
         data = (json.dumps(data) + '\n').encode('utf-8')
         _logger.debug('writing to stdin: %s', data)
         self.stdin.write(data)
