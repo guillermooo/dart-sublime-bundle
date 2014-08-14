@@ -133,6 +133,14 @@ def find_pubspec_path(path, original=None):
     return find_pubspec_path(p, original)
 
 
+def is_active_path(path):
+    """Returns `True` if the current view's path equals @path.
+    """
+    group_id = view.window().active_group()
+    group_view = view.window().active_view_in_group(group_id)
+    return os.path.realpath(group_view.file_name()) == os.path.realpath(path)
+
+
 def is_active(view):
     """Returns `True` if @view is the view being currently edited.
     """

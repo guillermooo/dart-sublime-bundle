@@ -21,6 +21,8 @@ from Dart.lib.path import is_active
 from Dart.lib.path import is_view_dart_script
 from Dart.lib.plat import supress_window
 from Dart.lib.sdk import SDK
+from Dart.lib.analyzer.queue import AnalyzerQueue
+from Dart.lib.analyzer.queue import TaskPriority
 
 
 _logger = PluginLogger(__name__)
@@ -173,7 +175,7 @@ class StdoutWatcher(threading.Thread):
                 time.sleep(.1)
                 continue
 
-            self.server.responses.put(json.loads(data))
+            self.server.responses.put(json.loads(data), view=data.get('file'))
         _logger.error('StdoutWatcher exited unexpectedly')
 
 
@@ -198,8 +200,8 @@ class AnalysisServer(object):
     def __init__(self):
         self.roots = []
         # TODO(guillermooo): use priority queues?
-        self.requests = queue.Queue()
-        self.responses = queue.Queue()
+        self.requests = AnalyzerQueue()
+        self.responses = AnalyzerQueue()
 
         reqh = RequestHandler(self)
         reqh.daemon = True
@@ -287,7 +289,9 @@ class AnalysisServer(object):
         _logger.info('sending top level decls request')
         # track this type of req as it may expire
         g_req_to_resp['search']["{}:{}".format(w_id, v_id)] = token
-        self.requests.put(req)
+        self.requests.put(req,
+                          view=view,
+                          priority=TaskPriority.HIGHEST)
 
     def send_add_content(self, view):
         w_id, v_id, token = self.new_token()
@@ -297,13 +301,13 @@ class AnalysisServer(object):
         req = requests.update_content(token, files)
         _logger.info('sending update content request')
         # track this type of req as it may expire
-        self.requests.put(req)
+        self.requests.put(req, view=view, priority=TaskPriority.HIGH)
 
     def send_remove_content(self, view):
         w_id, v_id, token = self.new_token()
         files = {view.file_name(): {"type": "remove"}}
         req = requests.update_content(token, files)
-        self.requests.put(req)
+        self.requests.put(req, view=view, priority=TaskPriority.HIGH)
 
 
 class ResponseHandler(threading.Thread):
