@@ -84,7 +84,7 @@ class ActivityTracker(sublime_plugin.EventListener):
     def increment_edits(self, view):
         with ActivityTracker.edits_lock:
             ActivityTracker.edits[view.id()] += 1
-        sublime.set_timeout(lambda: self.check_idle(view), 1000)
+        sublime.set_timeout(lambda: self.check_idle(view), 750)
 
     def decrement_edits(self, view):
         with ActivityTracker.edits_lock:
