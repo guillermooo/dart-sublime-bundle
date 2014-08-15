@@ -162,6 +162,7 @@ class StdoutWatcher(threading.Thread):
 
     def start(self):
         _logger.info("starting StdoutWatcher")
+        time.sleep(1.5)
         while True:
             data = self.server.stdout.readline().decode('utf-8')
             _logger.debug('data read from server: %s', repr(data))
@@ -271,11 +272,14 @@ class AnalysisServer(object):
                             sdk.path_to_analysis_snapshot,
                            '--sdk={0}'.format(sdk.path_to_sdk)])
         AnalysisServer.server.start(working_dir=sdk.path_to_sdk)
+        self.start_stdout_watcher()
 
+    def start_stdout_watcher(self):
+        sdk = SDK()
         t = StdoutWatcher(self, sdk.path_to_sdk)
         # Thread dies with the main thread.
         t.daemon = True
-        # TODO(guillermooo): do we need timeout async here?
+        # XXX: This is necessary. If we call t.start() directly, ST hangs.
         sublime.set_timeout_async(t.start, 0)
 
     def stop(self):
