@@ -153,7 +153,8 @@ class ActivityTracker(sublime_plugin.EventListener):
         else:
             sublime.set_timeout(
                 lambda: g_server.add_root(view.file_name()),
-                                          START_DELAY + 1000)
+                START_DELAY + 1000)
+
             if is_active(view):
                 sublime.set_timeout(
                     lambda: g_server.send_set_priority_files(
