@@ -167,7 +167,7 @@ class StdoutWatcher(threading.Thread):
         try:
             # Awaiting other threads...
             self.server.ready_barrier.wait()
-        except threading.BrokenBarrier:
+        except threading.BrokenBarrierError:
             _logger.error('could not start StdoutWatcher properly')
             return
 
@@ -299,7 +299,7 @@ class AnalysisServer(object):
         try:
             # Server is ready.
             self.ready_barrier.wait()
-        except threading.BrokenBarrier:
+        except threading.BrokenBarrierError:
             _logger.error('could not start server properly')
             return
 
@@ -379,7 +379,7 @@ class ResponseHandler(threading.Thread):
         try:
             # Awaiting other threads...
             self.server.ready_barrier.wait()
-        except threading.BrokenBarrier:
+        except threading.BrokenBarrierError:
             _logger.error('could not start ResponseHandler properly')
             return
 
@@ -450,7 +450,7 @@ class RequestHandler(threading.Thread):
 
         try:
             self.server.ready_barrier.wait()
-        except threading.BrokenBarrier:
+        except threading.BrokenBarrierError:
             _logger.error('could not start RequestHandler properly')
             return
 
