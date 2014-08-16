@@ -9,7 +9,6 @@ from Dart.lib.plat import is_windows
 from Dart.lib.plat import join_on_win
 
 
-
 def extension_equals(path_or_view, extension):
     """Compares @path_or_view's extensions with @extension.
 

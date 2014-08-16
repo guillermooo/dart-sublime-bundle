@@ -186,6 +186,8 @@ class StdoutWatcher(threading.Thread):
                 continue
 
             decoded = json.loads(data)
+            # TODO(guillermooo): Some notifications need to have a HIGHEST
+            # prio. For example, if we're getting a new search id.
             self.server.responses.put(decoded, view=decoded.get('file'))
         _logger.error('StdoutWatcher exited unexpectedly')
 
@@ -338,6 +340,17 @@ class AnalysisServer(object):
         self.requests.put(req,
                           view=view,
                           priority=TaskPriority.HIGHEST)
+
+    def send_find_element_refs(self, view, potential=False):
+        if not view:
+            return
+
+        _, _, token = self.new_token()
+        fname = view.file_name()
+        offset = view.sel()[0].b
+        req = requests.find_element_refs(token, fname, offset, potential)
+        _logger.info('sending find_element_refs request')
+        self.requests.put(req, view=view, priority=TaskPriority.HIGHEST)
 
     def send_add_content(self, view):
         w_id, v_id, token = self.new_token()

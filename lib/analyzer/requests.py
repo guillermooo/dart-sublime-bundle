@@ -49,3 +49,15 @@ def set_priority_files(id_, files=[]):
       "files": files
     }
   }
+
+
+def find_element_refs(id_, fname, offset, potential=False):
+  return {
+    "id": id_,
+    "method": "search.findElementReferences",
+    "params": {
+      "file": fname,
+      "offset": offset,
+      "includePotential": potential
+    }
+  }
