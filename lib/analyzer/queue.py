@@ -65,14 +65,15 @@ class AnalyzerQueue(queue.PriorityQueue):
         if self.is_active(view):
             return max((given - 50), TaskPriority.HIGHEST)
 
-    def put(self, data, priority=TaskPriority.DEFAULT, view=None):
-        with self.lock_put:
-            _logger.debug("putting in %s: %s", self.name, repr(data))
-            priority = self.calculate_priority(view, priority)
-            super().put((priority, json.dumps(data)))
+    def put(self, data, priority=TaskPriority.DEFAULT, view=None, block=True,
+            timeout=None):
+                with self.lock_put:
+                    _logger.debug("putting in %s: %s", self.name, repr(data))
+                    priority = self.calculate_priority(view, priority)
+                    super().put((priority, json.dumps(data)), block, timeout)
 
     def get(self, block=True, timeout=None):
         with self.lock_get:
-            prio, data = super().get(timeout)
+            prio, data = super().get(block, timeout)
             _logger.debug("getting in %s: %s", self.name, repr(data))
             return json.loads(data)

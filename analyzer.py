@@ -17,6 +17,7 @@ from Dart.lib.analyzer import requests
 from Dart.lib.analyzer.pipe_server import PipeServer
 from Dart.lib.analyzer.response import Response
 from Dart.lib.analyzer.response import ResponseMaker
+from Dart.lib.analyzer.response import ResponseType
 from Dart.lib.path import find_pubspec_path
 from Dart.lib.path import is_active
 from Dart.lib.path import is_view_dart_script
@@ -95,9 +96,6 @@ class ActivityTracker(sublime_plugin.EventListener):
 
     def on_idle(self, view):
         # _logger.debug("active view was idle; could send requests")
-        print("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX")
-        print("RRR", view.is_dirty())
-        print("RRR", is_active(view))
         if view.is_dirty() and is_active(view):
             _logger.debug('sending overlay data for %s', view.file_name())
             g_server.send_add_content(view)
@@ -204,7 +202,8 @@ class StdoutWatcher(threading.Thread):
             decoded = json.loads(data)
             # TODO(guillermooo): Some notifications need to have a HIGHEST
             # prio. For example, if we're getting a new search id.
-            self.server.responses.put(decoded, view=decoded.get('file'))
+            self.server.responses.put(decoded, view=decoded.get('file'),
+                block=False)
         _logger.error('StdoutWatcher exited unexpectedly')
 
 
@@ -332,9 +331,9 @@ class AnalysisServer(object):
 
     def stop(self):
         req = requests.shut_down(AnalysisServer.MAX_ID + 100)
-        self.requests.put(req, priority=TaskPriority.HIGHEST)
-        self.requests.put({'_internal': _SIGNAL_STOP})
-        self.responses.put({'_internal': _SIGNAL_STOP})
+        self.requests.put(req, priority=TaskPriority.HIGHEST, block=False)
+        self.requests.put({'_internal': _SIGNAL_STOP}, block=False)
+        self.responses.put({'_internal': _SIGNAL_STOP}, block=False)
         # self.server.stop()
 
     def write(self, data):
@@ -348,7 +347,7 @@ class AnalysisServer(object):
         _, _, token = self.new_token()
         req = requests.set_roots(token, included, excluded)
         _logger.info('sending set_roots request')
-        self.requests.put(req)
+        self.requests.put(req, block=False)
 
     def send_find_top_level_decls(self, view, pattern):
         w_id, v_id, token = self.new_token()
@@ -359,7 +358,8 @@ class AnalysisServer(object):
         g_req_to_resp['search']["{}:{}".format(w_id, v_id)] = token
         self.requests.put(req,
                           view=view,
-                          priority=TaskPriority.HIGHEST)
+                          priority=TaskPriority.HIGHEST,
+                          block=False)
 
     def send_find_element_refs(self, view, potential=False):
         if not view:
@@ -370,7 +370,8 @@ class AnalysisServer(object):
         offset = view.sel()[0].b
         req = requests.find_element_refs(token, fname, offset, potential)
         _logger.info('sending find_element_refs request')
-        self.requests.put(req, view=view, priority=TaskPriority.HIGHEST)
+        self.requests.put(req, view=view, priority=TaskPriority.HIGHEST,
+                          block=False)
 
     def send_add_content(self, view):
         w_id, v_id, token = self.new_token()
@@ -380,14 +381,16 @@ class AnalysisServer(object):
         req = requests.update_content(token, files)
         _logger.info('sending update content request - add')
         # track this type of req as it may expire
-        self.requests.put(req, view=view, priority=TaskPriority.HIGH)
+        self.requests.put(req, view=view, priority=TaskPriority.HIGH,
+                          block=False)
 
     def send_remove_content(self, view):
         w_id, v_id, token = self.new_token()
         files = {view.file_name(): {"type": "remove"}}
         req = requests.update_content(token, files)
         _logger.info('sending update content request - delete')
-        self.requests.put(req, view=view, priority=TaskPriority.HIGH)
+        self.requests.put(req, view=view, priority=TaskPriority.HIGH,
+                          block=False)
 
     def send_set_priority_files(self, files):
         if files == self.priority_files:
@@ -396,7 +399,7 @@ class AnalysisServer(object):
         w_id, v_id, token = self.new_token()
         _logger.info('sending set priority files request')
         req = requests.set_priority_files(token, files)
-        self.requests.put(req, priority=TaskPriority.HIGH)
+        self.requests.put(req, priority=TaskPriority.HIGH, block=False)
 
 
 class ResponseHandler(threading.Thread):
@@ -416,62 +419,62 @@ class ResponseHandler(threading.Thread):
             _logger.error('could not start ResponseHandler properly')
             return
 
-        while True:
+        time.sleep(0.05)
 
-            time.sleep(0.05)
-            response_maker = ResponseMaker(self.server.responses)
-            try:
-                for resp in response_maker.make():
+        response_maker = ResponseMaker(self.server.responses)
 
-                    if resp is None:
-                        # Give ST a breath (GIL? or saturated process?).
-                        time.sleep(0.15)
+        try:
+            for resp in response_maker.make():
+
+                if resp is None:
+                    # Give ST a breath (GIL? or saturated process?).
+                    time.sleep(0.5)
+                    continue
+
+                if (resp.type == ResponseType.INTERNAL and
+                    resp.internal_request == _SIGNAL_STOP):
+                        _logger.info(
+                            'ResponseHandler is exiting by internal request')
+                        return
+
+                # resp = Response(item)
+                if resp.type == ResponseType.RESULT_ID:
+                    _logger.debug('received new id for request: %s -> %s', resp.id, resp.result_id)
+                    win_view = resp.id.index(":", resp.id.index(":") + 1)
+                    g_req_to_resp["search"][resp.id[:win_view]] = \
+                                                        resp.result_id
+
+                if resp.type == ResponseType.UNKNOWN:
+                    _logger.info('received unknown type of response')
+                    continue
+
+                if resp.type == 'search.results':
+                    _logger.info('received search results')
+                    _logger.debug('search results: %s', resp.search_results)
+                    continue
+
+                if resp.type == 'analysis.errors':
+                    if resp.has_errors and len(resp.errors) > 0:
+                        _logger.info('error data received from server')
+                        sublime.set_timeout(
+                            lambda: actions.display_error(resp.errors), 0)
                         continue
-
-                    if (isinstance(resp, dict) and
-                        item.get('_internal') == _SIGNAL_STOP):
-                            _logger.info(
-                                'ResponseHandler is exiting by internal request')
-                            return
-
-                    # resp = Response(item)
-                    if resp.type == '<unknown>':
-                        _logger.info('received unknown type of response')
-                        if resp.has_new_id:
-                            _logger.debug('received new id for request: %s -> %s', resp.id, resp.new_id)
-                            win_view = resp.id.index(":", resp.id.index(":") + 1)
-                            g_req_to_resp["search"][resp.id[:win_view]] = \
-                                                                resp.new_id
-
-                        continue
-
-                    if resp.type == 'search.results':
-                        _logger.info('received search results')
-                        _logger.debug('search results: %s', resp.search_results)
-                        continue
-
-                    if resp.type == 'analysis.errors':
-                        if resp.has_errors and len(resp.errors) > 0:
-                            _logger.info('error data received from server')
-                            sublime.set_timeout(
-                                lambda: actions.display_error(resp.errors), 0)
+                    else:
+                        v = sublime.active_window().active_view()
+                        if resp.errors.file and (resp.errors.file == v.file_name()):
+                            sublime.set_timeout(actions.clear_ui, 0)
                             continue
-                        else:
-                            v = sublime.active_window().active_view()
-                            if resp.errors.file and (resp.errors.file == v.file_name()):
-                                sublime.set_timeout(actions.clear_ui, 0)
-                                continue
 
-                    elif resp.type == 'server.status':
-                        info = resp.status
-                        sublime.set_timeout(lambda: sublime.status_message(
-                                            "Dart: " + info.message))
-            except Exception as e:
-                _logger.debug(e)
-                print('Dart: exception while handling response.')
-                print('========================================')
-                print(e.message)
-                print('========================================')
+                elif resp.type == 'server.status':
+                    info = resp.status
+                    sublime.set_timeout(lambda: sublime.status_message(
+                                        "Dart: " + info.message))
+        except Exception as e:
+            _logger.debug(e)
+            print('Dart: exception while handling response.')
+            print('========================================')
+            print(e.message)
+            print('========================================')
 
 
 class RequestHandler(threading.Thread):
@@ -492,7 +495,7 @@ class RequestHandler(threading.Thread):
 
         while True:
             try:
-                item = self.server.requests.get(0.1)
+                item = self.server.requests.get(timeout=0.1)
 
                 if item.get('_internal') == _SIGNAL_STOP:
                     _logger.info(

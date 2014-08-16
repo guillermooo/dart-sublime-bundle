@@ -11,6 +11,24 @@ from Dart import PluginLogger
 _logger = PluginLogger(__name__)
 
 
+class ResponseType:
+    UNKNOWN = '<unknown>'
+    INTERNAL = '_internal'
+    SEARCH_RESULTS = 'search.results'
+    RESULT_ID = '__result_id'
+
+    @staticmethod
+    def to_symbol(name):
+        if name == 'search.results':
+            return ResponseType.SEARCH_RESULTS
+
+        if name == '_internal':
+            return ResponseType.INTERNAL
+
+        if name == 'search.results':
+            return ResponseType.SEARCH_RESULTS
+
+
 class StatusInfo(object):
     def __init__(self, data):
         self.data = data
@@ -180,7 +198,22 @@ class Response(object):
 
     @property
     def type(self):
-        return self.data.get('event', '<unknown>')
+        if 'event' in self.data:
+            name =  self.data.get('event', '<unknown>')
+            symbol = ResponseType.to_symbol(name)
+            if symbol:
+                return symbol
+
+            return name
+
+        if '_internal' in self.data:
+            return ResponseType.INTERNAL
+
+        return ResponseType.UNKNOWN
+
+    @property
+    def internal_request(self):
+        return self.data['_internal']
 
     @property
     def file(self):
@@ -278,5 +311,61 @@ class ResponseMaker(object):
                 yield data
                 break
 
-            r = Response(data)
+            r = response_classifier(data)
+
             yield r
+
+
+def is_result_id_response(data):
+    return data.get('result', {}).get('id')
+
+
+def is_result_response(data):
+    return data.get('event') == 'search.results'
+
+
+def response_classifier(data):
+    if is_result_response(data):
+        return ResultsResponse(data)
+    if is_result_id_response(data):
+        return ResultIdResponse(data)
+    return Response(data)
+
+
+class ResultIdResponse(object):
+    '''Represents a response that provides a searchId from the analysis
+    server.
+    '''
+    def __init__(self, data):
+        self.data = data
+
+    @property
+    def type(self):
+        return ResponseType.RESULT_ID
+
+    @property
+    def result_id(self):
+        return self.data['result']['id']
+
+    @property
+    def id(self):
+        return self.data['id']
+
+
+class ResultsResponse(object):
+    '''Represents a bunch of results.
+    '''
+    def __init__(self, data):
+        self.data = data
+
+    @property
+    def type(self):
+        return ResponseType.SEARCH_RESULTS
+
+    @property
+    def result_id(self):
+        return self.data['result']['id']
+
+    @property
+    def id(self):
+        return self.data['id']
