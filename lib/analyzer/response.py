@@ -317,7 +317,8 @@ class ResponseMaker(object):
 
 
 def is_result_id_response(data):
-    return data.get('result', {}).get('id')
+    return (data.get('result', {}).get('id') and
+            not data.get('result').get('element'))
 
 
 def is_result_response(data):
@@ -369,3 +370,7 @@ class ResultsResponse(object):
     @property
     def id(self):
         return self.data['id']
+
+    @property
+    def search_results(self):
+        return SearchResults(self.data)
