@@ -247,8 +247,8 @@ class AnalysisServer(object):
     def __init__(self):
         self.roots = []
         self.priority_files = []
-        self.requests = AnalyzerQueue()
-        self.responses = AnalyzerQueue()
+        self.requests = AnalyzerQueue('requests')
+        self.responses = AnalyzerQueue('responses')
 
         reqh = RequestHandler(self)
         reqh.daemon = True

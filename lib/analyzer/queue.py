@@ -29,10 +29,14 @@ class AnalyzerQueue(queue.PriorityQueue):
     It automatically bumps up priority of requests/responses coming from or
     targeted at the current view.
     '''
-    def __init__(self, *args, **kwargs):
+    def __init__(self, name, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        self.name = name
         self.lock_put = threading.Lock()
         self.lock_get = threading.Lock()
+
+    def __str__(self):
+        return "{} [{}]".format(self.__class__.__name__, self.name)
 
     def is_active(self, view_or_path):
         assert (isinstance(view_or_path, sublime.View) or
@@ -63,12 +67,12 @@ class AnalyzerQueue(queue.PriorityQueue):
 
     def put(self, data, priority=TaskPriority.DEFAULT, view=None):
         with self.lock_put:
-            _logger.debug("putting %s", repr(data))
+            _logger.debug("putting in %s: %s", self.name, repr(data))
             priority = self.calculate_priority(view, priority)
             super().put((priority, json.dumps(data)))
 
     def get(self, timeout=0):
         with self.lock_get:
             prio, data = super().get(timeout)
-            _logger.debug("getting %s", repr(data))
+            _logger.debug("getting in %s: %s", self.name, repr(data))
             return json.loads(data)
