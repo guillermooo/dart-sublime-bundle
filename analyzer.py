@@ -37,6 +37,7 @@ g_server = None
 # maps:
 #   req_type => view_id
 #   view_id => valid token for this type of request
+# Abstract this out into a class that provides its own synchronization.
 g_req_to_resp = {
     "search": {},
 }
@@ -162,7 +163,8 @@ class StdoutWatcher(threading.Thread):
 
     def start(self):
         _logger.info("starting StdoutWatcher")
-        time.sleep(1.5)
+        # Awaiting other threads...
+        self.server.ready_barrier.wait()
         while True:
             data = self.server.stdout.readline().decode('utf-8')
             _logger.debug('data read from server: %s', repr(data))
@@ -183,9 +185,20 @@ class StdoutWatcher(threading.Thread):
 
 
 class AnalysisServer(object):
-    request_id_lock = threading.Lock()
-    request_id = -1
+    # Halts all worker threads until the server is ready.
+    _ready_barrier = threading.Barrier(4, timeout=5)
+
+    _request_id_lock = threading.Lock()
+    _op_lock = threading.Lock()
+    _write_lock = threading.Lock()
+
+    _request_id = -1
+
     server = None
+
+    @property
+    def ready_barrier(self):
+        return AnalysisServer._ready_barrier
 
     @property
     def stdout(self):
@@ -197,11 +210,11 @@ class AnalysisServer(object):
 
     @staticmethod
     def get_request_id():
-        with AnalysisServer.request_id_lock:
-            if AnalysisServer.request_id >= 9999999:
-                AnalysisServer.request_id = -1
-            AnalysisServer.request_id += 1
-            return AnalysisServer.request_id
+        with AnalysisServer._request_id_lock:
+            if AnalysisServer._request_id >= 9999999:
+                AnalysisServer._request_id = -1
+            AnalysisServer._request_id += 1
+            return AnalysisServer._request_id
 
     @staticmethod
     def ping():
@@ -253,11 +266,12 @@ class AnalysisServer(object):
         if not found:
             _logger.debug('did not found pubspec.yaml in path: %s', path)
 
-        if p not in self.roots:
-            _logger.debug('adding new root: %s', p)
-            self.roots.append(p)
-            self.send_set_roots(self.roots)
-            return
+        with AnalysisServer._op_lock:
+            if p not in self.roots:
+                _logger.debug('adding new root: %s', p)
+                self.roots.append(p)
+                self.send_set_roots(self.roots)
+                return
 
         _logger.debug('root already known: %s', p)
 
@@ -268,11 +282,16 @@ class AnalysisServer(object):
         sdk = SDK()
 
         _logger.info('starting AnalysisServer')
+
         AnalysisServer.server = PipeServer(['dart',
                             sdk.path_to_analysis_snapshot,
                            '--sdk={0}'.format(sdk.path_to_sdk)])
         AnalysisServer.server.start(working_dir=sdk.path_to_sdk)
+
         self.start_stdout_watcher()
+
+        # Server is ready.
+        self.ready_barrier.wait()
 
     def start_stdout_watcher(self):
         sdk = SDK()
@@ -286,11 +305,12 @@ class AnalysisServer(object):
         # TODO(guillermooo): Use the server's own shutdown mechanism.
         self.server.stop()
 
-    def send(self, data):
-        data = (json.dumps(data) + '\n').encode('utf-8')
-        _logger.debug('writing to stdin: %s', data)
-        self.stdin.write(data)
-        self.stdin.flush()
+    def write(self, data):
+        with AnalysisServer._write_lock:
+            data = (json.dumps(data) + '\n').encode('utf-8')
+            _logger.debug('writing to stdin: %s', data)
+            self.stdin.write(data)
+            self.stdin.flush()
 
     def send_set_roots(self, included=[], excluded=[]):
         _, _, token = self.new_token()
@@ -302,6 +322,7 @@ class AnalysisServer(object):
         w_id, v_id, token = self.new_token()
         req = requests.find_top_level_decls(token, pattern)
         _logger.info('sending top level decls request')
+        # TODO(guillermooo): Abstract this out.
         # track this type of req as it may expire
         g_req_to_resp['search']["{}:{}".format(w_id, v_id)] = token
         self.requests.put(req,
@@ -344,6 +365,8 @@ class ResponseHandler(threading.Thread):
 
     def run(self):
         _logger.info('starting ResponseHandler')
+        # Awaiting other threads...
+        self.server.ready_barrier.wait()
         while True:
             time.sleep(0.05)
             try:
@@ -407,6 +430,7 @@ class RequestHandler(threading.Thread):
 
     def run(self):
         _logger.info('starting RequestHandler')
+        self.server.ready_barrier.wait()
         while True:
             try:
                 item = self.server.requests.get(0.1)
@@ -416,6 +440,6 @@ class RequestHandler(threading.Thread):
                         'RequestHandler is exiting by internal request')
                     return
 
-                self.server.send(item)
+                self.server.write(item)
             except queue.Empty:
                 pass
