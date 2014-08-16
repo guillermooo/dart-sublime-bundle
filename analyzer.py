@@ -163,8 +163,14 @@ class StdoutWatcher(threading.Thread):
 
     def start(self):
         _logger.info("starting StdoutWatcher")
-        # Awaiting other threads...
-        self.server.ready_barrier.wait()
+
+        try:
+            # Awaiting other threads...
+            self.server.ready_barrier.wait()
+        except threading.BrokenBarrier:
+            _logger.error('could not start StdoutWatcher properly')
+            return
+
         while True:
             data = self.server.stdout.readline().decode('utf-8')
             _logger.debug('data read from server: %s', repr(data))
@@ -290,8 +296,12 @@ class AnalysisServer(object):
 
         self.start_stdout_watcher()
 
-        # Server is ready.
-        self.ready_barrier.wait()
+        try:
+            # Server is ready.
+            self.ready_barrier.wait()
+        except threading.BrokenBarrier:
+            _logger.error('could not start server properly')
+            return
 
     def start_stdout_watcher(self):
         sdk = SDK()
@@ -365,9 +375,16 @@ class ResponseHandler(threading.Thread):
 
     def run(self):
         _logger.info('starting ResponseHandler')
-        # Awaiting other threads...
-        self.server.ready_barrier.wait()
+
+        try:
+            # Awaiting other threads...
+            self.server.ready_barrier.wait()
+        except threading.BrokenBarrier:
+            _logger.error('could not start ResponseHandler properly')
+            return
+
         while True:
+
             time.sleep(0.05)
             try:
                 item = self.server.responses.get(0.1)
@@ -430,7 +447,13 @@ class RequestHandler(threading.Thread):
 
     def run(self):
         _logger.info('starting RequestHandler')
-        self.server.ready_barrier.wait()
+
+        try:
+            self.server.ready_barrier.wait()
+        except threading.BrokenBarrier:
+            _logger.error('could not start RequestHandler properly')
+            return
+
         while True:
             try:
                 item = self.server.requests.get(0.1)
