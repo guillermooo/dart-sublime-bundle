@@ -3,6 +3,13 @@
 
 import sublime
 
+import queue
+
+from Dart import PluginLogger
+
+
+_logger = PluginLogger(__name__)
+
 
 class StatusInfo(object):
     def __init__(self, data):
@@ -239,3 +246,37 @@ class SearchResults(object):
     @property
     def last(self):
         return self.data['params']['last']
+
+
+
+class ResponseMaker(object):
+    '''Transforms raw notification and responses into `ServerResponse`s.
+    '''
+
+    def __init__(self, source):
+        self.source = source
+
+    def is_notification(self, data):
+        return 'event' in data
+
+    def make(self):
+        '''Makes `ServerResponse`s forever.
+
+        Note: This will potentially saturate a process, so make sure to pause
+        if the yielded value is `None`.
+        '''
+        while True:
+            try:
+                data = self.source.get()
+            except queue.Empty:
+                # No request available. The client code should pause after
+                # this or handle it in some way.
+                yield
+                continue
+
+            if data.get('_internal') is not None:
+                yield data
+                break
+
+            r = Response(data)
+            yield r

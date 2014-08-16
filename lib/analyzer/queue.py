@@ -71,7 +71,7 @@ class AnalyzerQueue(queue.PriorityQueue):
             priority = self.calculate_priority(view, priority)
             super().put((priority, json.dumps(data)))
 
-    def get(self, timeout=0):
+    def get(self, block=True, timeout=None):
         with self.lock_get:
             prio, data = super().get(timeout)
             _logger.debug("getting in %s: %s", self.name, repr(data))

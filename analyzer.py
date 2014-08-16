@@ -16,6 +16,7 @@ from Dart.lib.analyzer import actions
 from Dart.lib.analyzer import requests
 from Dart.lib.analyzer.pipe_server import PipeServer
 from Dart.lib.analyzer.response import Response
+from Dart.lib.analyzer.response import ResponseMaker
 from Dart.lib.path import find_pubspec_path
 from Dart.lib.path import is_active
 from Dart.lib.path import is_view_dart_script
@@ -94,6 +95,9 @@ class ActivityTracker(sublime_plugin.EventListener):
 
     def on_idle(self, view):
         # _logger.debug("active view was idle; could send requests")
+        print("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX")
+        print("RRR", view.is_dirty())
+        print("RRR", is_active(view))
         if view.is_dirty() and is_active(view):
             _logger.debug('sending overlay data for %s', view.file_name())
             g_server.send_add_content(view)
@@ -415,16 +419,22 @@ class ResponseHandler(threading.Thread):
         while True:
 
             time.sleep(0.05)
+            response_maker = ResponseMaker(self.server.responses)
             try:
-                item = self.server.responses.get(0.1)
+                for resp in response_maker.make():
 
-                if item.get('_internal') == _SIGNAL_STOP:
-                    _logger.info(
-                        'ResponseHandler is exiting by internal request')
-                    return
+                    if resp is None:
+                        # Give ST a breath (GIL? or saturated process?).
+                        time.sleep(0.15)
+                        continue
 
-                try:
-                    resp = Response(item)
+                    if (isinstance(resp, dict) and
+                        item.get('_internal') == _SIGNAL_STOP):
+                            _logger.info(
+                                'ResponseHandler is exiting by internal request')
+                            return
+
+                    # resp = Response(item)
                     if resp.type == '<unknown>':
                         _logger.info('received unknown type of response')
                         if resp.has_new_id:
@@ -456,15 +466,12 @@ class ResponseHandler(threading.Thread):
                         info = resp.status
                         sublime.set_timeout(lambda: sublime.status_message(
                                             "Dart: " + info.message))
-                except Exception as e:
-                    _logger.debug(e)
-                    print('Dart: exception while handling response.')
-                    print('========================================')
-                    print(e.message)
-                    print('========================================')
-
-            except queue.Empty:
-                pass
+            except Exception as e:
+                _logger.debug(e)
+                print('Dart: exception while handling response.')
+                print('========================================')
+                print(e.message)
+                print('========================================')
 
 
 class RequestHandler(threading.Thread):
