@@ -421,7 +421,7 @@ class ResponseHandler(threading.Thread):
                 if item.get('_internal') == _SIGNAL_STOP:
                     _logger.info(
                         'ResponseHandler is exiting by internal request')
-                    continue
+                    return
 
                 try:
                     resp = Response(item)
