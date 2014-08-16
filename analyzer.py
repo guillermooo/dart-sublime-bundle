@@ -70,9 +70,10 @@ def plugin_loaded():
 def plugin_unloaded():
     # The worker threads handling requests/responses block when reading their
     # queue, so give them something.
-    g_server.requests.put({'_internal': _SIGNAL_STOP})
-    g_server.responses.put({'_internal': _SIGNAL_STOP})
-    g_server.stop()
+    # XXX: This handler loads at times I wouldn't expect it to and ends up
+    # killing the plugin. Disable this for now.
+    # g_server.stop()
+    pass
 
 
 class ActivityTracker(sublime_plugin.EventListener):
@@ -153,6 +154,16 @@ class ActivityTracker(sublime_plugin.EventListener):
             sublime.set_timeout(
                 lambda: g_server.add_root(view.file_name()),
                                           START_DELAY + 1000)
+            if is_active(view):
+                sublime.set_timeout(
+                    lambda: g_server.send_set_priority_files(
+                                                        [view.file_name()]),
+                    START_DELAY + 1000)
+
+                if view.is_dirty():
+                    sublime.set_timeout(
+                        lambda: g_server.send_add_content(view),
+                        START_DELAY + 1000)
 
 
 class StdoutWatcher(threading.Thread):
@@ -193,6 +204,7 @@ class StdoutWatcher(threading.Thread):
 
 
 class AnalysisServer(object):
+    MAX_ID = 9999999
     # Halts all worker threads until the server is ready.
     _ready_barrier = threading.Barrier(4, timeout=5)
 
@@ -219,7 +231,7 @@ class AnalysisServer(object):
     @staticmethod
     def get_request_id():
         with AnalysisServer._request_id_lock:
-            if AnalysisServer._request_id >= 9999999:
+            if AnalysisServer._request_id >= AnalysisServer.MAX_ID:
                 AnalysisServer._request_id = -1
             AnalysisServer._request_id += 1
             return AnalysisServer._request_id
@@ -314,8 +326,11 @@ class AnalysisServer(object):
         sublime.set_timeout_async(t.start, 0)
 
     def stop(self):
-        # TODO(guillermooo): Use the server's own shutdown mechanism.
-        self.server.stop()
+        req = requests.shut_down(AnalysisServer.MAX_ID + 100)
+        self.requests.put(req, priority=TaskPriority.HIGHEST)
+        self.requests.put({'_internal': _SIGNAL_STOP})
+        self.responses.put({'_internal': _SIGNAL_STOP})
+        # self.server.stop()
 
     def write(self, data):
         with AnalysisServer._write_lock:

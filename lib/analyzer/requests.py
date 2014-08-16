@@ -61,3 +61,10 @@ def find_element_refs(id_, fname, offset, potential=False):
       "includePotential": potential
     }
   }
+
+
+def shut_down(id_):
+  return {
+    "id": id_,
+    "method": "server.shutdown"
+  }
