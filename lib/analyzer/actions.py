@@ -14,7 +14,7 @@ _flags = (sublime.DRAW_SQUIGGLY_UNDERLINE | sublime.DRAW_NO_FILL |
           sublime.DRAW_NO_OUTLINE)
 
 
-def display_error(errors):
+def show_errors(errors):
     '''Show errors in the ui.
 
     @errors
@@ -22,8 +22,8 @@ def display_error(errors):
     '''
     v = sublime.active_window().active_view()
 
-    if len(errors) == 0:
-        _logger.debug('no errors - aborting')
+    if (len(errors) == 0) and (errors.file == v.file_name()):
+        clear_ui()
         return
 
     # TODO(guillermooo): Use tokens to identify requests:file.

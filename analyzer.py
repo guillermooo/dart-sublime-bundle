@@ -481,22 +481,22 @@ class ResponseHandler(threading.Thread):
 
                     continue
 
-                if resp.type == 'analysis.errors':
-                    if resp.has_errors and len(resp.errors) > 0:
-                        _logger.info('error data received from server')
-                        sublime.set_timeout(
-                            lambda: actions.display_error(resp.errors), 0)
-                        continue
-                    else:
-                        v = sublime.active_window().active_view()
-                        if resp.errors.file and (resp.errors.file == v.file_name()):
-                            sublime.set_timeout(actions.clear_ui, 0)
-                            continue
+                if resp.type == ResponseType.ERRORS:
+                    _logger.info('error data received from server')
+                    # Make sure the right type is passed to the async
+                    # code. `resp` may point to a different object when
+                    # the lambda func finally has a chance to run.
+                    errors = resp.copy()
+                    sublime.set_timeout(lambda: actions.show_errors(errors),
+                                        0)
+                    continue
 
                 elif resp.type == 'server.status':
                     info = resp.status
                     sublime.set_timeout(lambda: sublime.status_message(
-                                        "Dart: " + info.message))
+                                        "Dart: " + info.message), 0)
+                    continue
+
         except Exception as e:
             _logger.debug(e)
             print('Dart: exception while handling response.')

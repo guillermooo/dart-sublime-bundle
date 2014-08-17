@@ -16,6 +16,7 @@ class ResponseType:
     INTERNAL = '_internal'
     SEARCH_RESULTS = 'search.results'
     RESULT_ID = '__result_id'
+    ERRORS = 'analysis.errors'
 
     @staticmethod
     def to_symbol(name):
@@ -67,6 +68,10 @@ class ErrorInfoCollection(object):
         return len(self.data['params']['errors'])
 
     @property
+    def type(self):
+        return ResponseType.ERRORS
+
+    @property
     def file(self):
         return self.data['params']['file']
 
@@ -81,6 +86,9 @@ class ErrorInfoCollection(object):
     def infos_to_regions(self, view):
         for ei in self.infos:
             yield ei.to_region(view)
+
+    def copy(self):
+        return ErrorInfoCollection(self.data.copy())
 
     @property
     def errors(self):
@@ -372,7 +380,13 @@ def is_result_response(data):
     return data.get('event') == 'search.results'
 
 
+def is_errors_response(data):
+    return data.get('event') == 'analysis.errors'
+
+
 def response_classifier(data):
+    if is_errors_response(data):
+        return ErrorInfoCollection(data)
     if is_result_response(data):
         return ResultsResponse(data)
     if is_result_id_response(data):
