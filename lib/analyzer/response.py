@@ -358,8 +358,8 @@ class ResponseMaker(object):
             try:
                 data = self.source.get()
             except queue.Empty:
-                # No request available. The client code should pause after
-                # this or handle it in some way.
+                # unreachable?
+                _logger.error('unexpected empty queue in ResponseMaker')
                 yield
                 continue
 

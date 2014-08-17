@@ -440,12 +440,6 @@ class ResponseHandler(threading.Thread):
         try:
             for resp in response_maker.make():
 
-                if resp is None:
-                    # TODO(guillermooo): Is this necessary?
-                    # Give ST a breath.
-                    time.sleep(0.5)
-                    continue
-
                 if (resp.type == ResponseType.INTERNAL and
                     resp.internal_request == _SIGNAL_STOP):
                         _logger.info(
