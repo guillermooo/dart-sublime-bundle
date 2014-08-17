@@ -12,6 +12,7 @@ import threading
 import time
 
 from Dart import PluginLogger
+from Dart.lib.sublime import after
 from Dart.lib.editor_context import EditorContext
 from Dart.lib.analyzer import actions
 from Dart.lib.analyzer import requests
@@ -451,15 +452,14 @@ class ResponseHandler(threading.Thread):
                             'ResponseHandler is exiting by internal request')
                         return
 
-                # resp = Response(item)
+                elif resp.type == ResponseType.INTERNAL:
+                    _logger.debug('got internal response: %s', resp)
+                    continue
+
                 if resp.type == ResponseType.RESULT_ID:
                     _logger.debug('changing search id: %s -> %s', resp.id, resp.result_id)
                     g_editor_context.search_id = resp.result_id
                     if resp.result:
-                        # out = OutputPanel('dart.results')
-                        # g_editor_context.results_panel = out
-                        # out.write(str(resp.result.to_encoded_pos()))
-                        # out.show()
                         _logger.debug('^********************************************')
                         print("FOUND RESULT", resp.result.to_encoded_pos())
                         _logger.debug('^********************************************')
@@ -485,16 +485,13 @@ class ResponseHandler(threading.Thread):
                     _logger.info('error data received from server')
                     # Make sure the right type is passed to the async
                     # code. `resp` may point to a different object when
-                    # the lambda func finally has a chance to run.
-                    errors = resp.copy()
-                    sublime.set_timeout(lambda: actions.show_errors(errors),
-                                        0)
+                    # the async code finally has a chance to run.
+                    after(0, actions.show_errors, resp.copy())
                     continue
 
                 elif resp.type == 'server.status':
-                    info = resp.status
-                    sublime.set_timeout(lambda: sublime.status_message(
-                                        "Dart: " + info.message), 0)
+                    after(0, sublime.status_message,
+                          'Dart: {}'.format(resp.status.message))
                     continue
 
         except Exception as e:
