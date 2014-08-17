@@ -12,6 +12,7 @@ import threading
 import time
 
 from Dart import PluginLogger
+from Dart.lib.editor_context import EditorContext
 from Dart.lib.analyzer import actions
 from Dart.lib.analyzer import requests
 from Dart.lib.analyzer.pipe_server import PipeServer
@@ -25,6 +26,7 @@ from Dart.lib.plat import supress_window
 from Dart.lib.sdk import SDK
 from Dart.lib.analyzer.queue import AnalyzerQueue
 from Dart.lib.analyzer.queue import TaskPriority
+from Dart.lib.panels import OutputPanel
 
 
 _logger = PluginLogger(__name__)
@@ -35,6 +37,7 @@ _SIGNAL_STOP = '__SIGNAL_STOP'
 
 
 g_server = None
+g_editor_context = EditorContext()
 
 # maps:
 #   req_type => view_id
@@ -47,6 +50,7 @@ g_req_to_resp = {
 
 def init():
     global g_server
+    global g_editor_context
     _logger.debug('starting dart analyzer')
 
     try:
@@ -137,6 +141,14 @@ class ActivityTracker(sublime_plugin.EventListener):
 
         # The file has been saved, so force use of filesystem content.
         g_server.send_remove_content(view)
+
+    def on_deactivated(self, view):
+        # Any ongoing searches must be invalidated.
+        del g_editor_context.search_id
+
+        if not is_view_dart_script(view):
+            return
+
 
     def on_activated(self, view):
         if not is_view_dart_script(view):
@@ -269,7 +281,8 @@ class AnalysisServer(object):
         w = sublime.active_window()
         v = w.active_view()
         now = datetime.now()
-        token = w.id(), v.id(), '{}:{}:{}'.format(w.id(), v.id(),
+        # 'c' indicates that this id was created at the client-side.
+        token = w.id(), v.id(), '{}:{}:c{}'.format(w.id(), v.id(),
                                   AnalysisServer.get_request_id())
         return token
 
@@ -356,6 +369,7 @@ class AnalysisServer(object):
         # TODO(guillermooo): Abstract this out.
         # track this type of req as it may expire
         g_req_to_resp['search']["{}:{}".format(w_id, v_id)] = token
+        g_editor_context.search_id = token
         self.requests.put(req,
                           view=view,
                           priority=TaskPriority.HIGHEST,
@@ -370,6 +384,7 @@ class AnalysisServer(object):
         offset = view.sel()[0].b
         req = requests.find_element_refs(token, fname, offset, potential)
         _logger.info('sending find_element_refs request')
+        g_editor_context.search_id = token
         self.requests.put(req, view=view, priority=TaskPriority.HIGHEST,
                           block=False)
 
@@ -419,15 +434,14 @@ class ResponseHandler(threading.Thread):
             _logger.error('could not start ResponseHandler properly')
             return
 
-        time.sleep(0.05)
-
         response_maker = ResponseMaker(self.server.responses)
 
         try:
             for resp in response_maker.make():
 
                 if resp is None:
-                    # Give ST a breath (GIL? or saturated process?).
+                    # TODO(guillermooo): Is this necessary?
+                    # Give ST a breath.
                     time.sleep(0.5)
                     continue
 
@@ -439,18 +453,32 @@ class ResponseHandler(threading.Thread):
 
                 # resp = Response(item)
                 if resp.type == ResponseType.RESULT_ID:
-                    _logger.debug('received new id for request: %s -> %s', resp.id, resp.result_id)
-                    win_view = resp.id.index(":", resp.id.index(":") + 1)
-                    g_req_to_resp["search"][resp.id[:win_view]] = \
-                                                        resp.result_id
+                    _logger.debug('changing search id: %s -> %s', resp.id, resp.result_id)
+                    g_editor_context.search_id = resp.result_id
+                    if resp.result:
+                        # out = OutputPanel('dart.results')
+                        # g_editor_context.results_panel = out
+                        # out.write(str(resp.result.to_encoded_pos()))
+                        # out.show()
+                        _logger.debug('^********************************************')
+                        print("FOUND RESULT", resp.result.to_encoded_pos())
+                        _logger.debug('^********************************************')
+                    continue
 
                 if resp.type == ResponseType.UNKNOWN:
-                    _logger.info('received unknown type of response')
+                    _logger.debug('received unknown type of response: %s', resp)
                     continue
 
                 if resp.type == 'search.results':
                     _logger.info('received search results')
-                    _logger.debug('search results: %s', resp.search_results)
+                    # TODO(guillermooo): pass only result id.
+                    if g_editor_context.check_token('search', resp.result_id):
+                        _logger.debug('^********************************************')
+                        _logger.debug('search results: %s', resp.search_results.results)
+                        _logger.debug('^********************************************')
+                    else:
+                        _logger.debug('expired token')
+
                     continue
 
                 if resp.type == 'analysis.errors':
@@ -473,7 +501,7 @@ class ResponseHandler(threading.Thread):
             _logger.debug(e)
             print('Dart: exception while handling response.')
             print('========================================')
-            print(e.message)
+            print(e)
             print('========================================')
 
 

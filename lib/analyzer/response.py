@@ -192,6 +192,9 @@ class Response(object):
     def __init__(self, data):
         self.data = data
 
+    def __str__(self):
+        return str(self.data)
+
     @property
     def id(self):
         return self.data['id']
@@ -281,6 +284,51 @@ class SearchResults(object):
         return self.data['params']['last']
 
 
+class SearchResult(object):
+    # {"kind":"LOCAL_VARIABLE","name":"o","location":{"file":"XXX","offset":98,"length":1,"startLine":8,"startColumn":7},"flags":0}
+    def __init__(self, data):
+        self.data = data
+
+    def __str__(self):
+        return str(self.data)
+
+    @property
+    def file(self):
+        return self.data['location']['file']
+
+    @property
+    def offset(self):
+        return self.data['location']['offset']
+
+    @property
+    def length(self):
+        return self.data['location']['length']
+
+    @property
+    def start_line(self):
+        return self.data['location']['startLine']
+
+    @property
+    def start_column(self):
+        return self.data['location']['startColumn']
+
+    @property
+    def name(self):
+        return self.data['name']
+
+    @property
+    def kind(self):
+        return self.data['kind']
+
+    def to_encoded_pos(self):
+        return "{} - {}:{}:{}".format(self.kind, self.file,
+                                      self.start_line - 1,
+                                      self.start_column - 1)
+
+    def to_region(self, view):
+        a = view.text_point(self.start_line - 1, self.start_column - 1)
+        return sublime.Region(a, a + self.length)
+
 
 class ResponseMaker(object):
     '''Transforms raw notification and responses into `ServerResponse`s.
@@ -317,8 +365,7 @@ class ResponseMaker(object):
 
 
 def is_result_id_response(data):
-    return (data.get('result', {}).get('id') and
-            not data.get('result').get('element'))
+    return data.get('result', {}).get('id')
 
 
 def is_result_response(data):
@@ -349,6 +396,12 @@ class ResultIdResponse(object):
         return self.data['result']['id']
 
     @property
+    def result(self):
+        data =  self.data['result'].get('element', {})
+        if data:
+            return SearchResult(data)
+
+    @property
     def id(self):
         return self.data['id']
 
@@ -365,11 +418,7 @@ class ResultsResponse(object):
 
     @property
     def result_id(self):
-        return self.data['result']['id']
-
-    @property
-    def id(self):
-        return self.data['id']
+        return self.data['params']['id']
 
     @property
     def search_results(self):
