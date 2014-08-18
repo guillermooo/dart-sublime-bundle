@@ -3,6 +3,8 @@
 
 import threading
 
+from Dart.lib.panels import OutputPanel
+
 
 class EditorContext(object):
     search_id_lock = threading.Lock()
@@ -19,6 +21,10 @@ class EditorContext(object):
     @search_id.setter
     def search_id(self, value):
         with EditorContext.search_id_lock:
+            if self._search_id == value:
+                return
+            self.results_panel = OutputPanel('dart.search.results')
+            self.results_panel.set('result_file_regex', r'^\w+\s+-\s+(.*?):(\d+):(\d+)')
             self._search_id = value
 
     @search_id.deleter
@@ -32,3 +38,17 @@ class EditorContext(object):
                 return
             return (token == self.search_id)
 
+    def append_search_results(self, items):
+        items = list(items)
+        print("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA", list(items))
+        with EditorContext.search_id_lock:
+            print("UUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUU")
+            if not self.results_panel:
+                print("))))))))))))))))))))))))))))))))))))))))))")
+                return
+
+            for item in items:
+                print("IIIIIIIIIIIIIIIII", item)
+                self.results_panel.write(item.to_encoded_pos())
+
+            self.results_panel.show()

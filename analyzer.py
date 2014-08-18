@@ -166,20 +166,7 @@ class ActivityTracker(sublime_plugin.EventListener):
                 if view.is_dirty():
                     g_server.send_add_content(view)
         else:
-            sublime.set_timeout(
-                lambda: g_server.add_root(view.file_name()),
-                START_DELAY + 1000)
-
-            if is_active(view):
-                sublime.set_timeout(
-                    lambda: g_server.send_set_priority_files(
-                                                        [view.file_name()]),
-                    START_DELAY + 1000)
-
-                if view.is_dirty():
-                    sublime.set_timeout(
-                        lambda: g_server.send_add_content(view),
-                        START_DELAY + 1000)
+            after(250, self.on_activated, view)
 
 
 class StdoutWatcher(threading.Thread):
@@ -457,6 +444,7 @@ class ResponseHandler(threading.Thread):
                         _logger.debug('^********************************************')
                         print("FOUND RESULT", resp.result.to_encoded_pos())
                         _logger.debug('^********************************************')
+                        # g_editor_context.append_search_results([resp.result])
                     continue
 
                 if resp.type == ResponseType.UNKNOWN:
@@ -470,6 +458,14 @@ class ResponseHandler(threading.Thread):
                         _logger.debug('^********************************************')
                         _logger.debug('search results: %s', resp.search_results.results)
                         _logger.debug('^********************************************')
+
+                        rrr = [t.to_encoded_pos() for t in list(resp.search_results.results)]
+                        for r in rrr:
+                            print("//////////////////////////////////////", r)
+                        out = OutputPanel('foo.bar')
+                        out.write('\n'.join(rrr))
+                        out.show()
+                        # g_editor_context.append_search_results(resp.search_results.results)
                     else:
                         _logger.debug('expired token')
 

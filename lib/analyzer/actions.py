@@ -21,14 +21,13 @@ def show_errors(errors):
       An instance of `ErrorInfoCollection`.
     '''
     v = sublime.active_window().active_view()
-
-    if (len(errors) == 0) and (errors.file == v.file_name()):
-        clear_ui()
-        return
-
     # TODO(guillermooo): Use tokens to identify requests:file.
     if errors.file != v.file_name():
         _logger.debug('different view active - aborting')
+        return
+
+    if len(errors) == 0:
+        clear_ui()
         return
 
     _logger.debug('displaying errors to the user')

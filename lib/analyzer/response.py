@@ -285,7 +285,8 @@ class SearchResults(object):
 
     @property
     def results(self):
-        return self.data['params']['results']
+        for item in self.data['params']['results']:
+            yield SearchResult(item)
 
     @property
     def last(self):
