@@ -3,9 +3,9 @@
 
 Operating System   | Compatibility | Status
 ------------------ | ------------- | ------
-Linux | yes | [![Build Status](https://travis-ci.org/dart-lang/dart-sublime-bundle.svg?branch=master)](https://travis-ci.org/dart-lang/dart-sublime-bundle)
-OS X | yes | [![Build status](https://ci.appveyor.com/api/projects/status/a54udvh1c2c2xah1)](https://ci.appveyor.com/project/guillermooo/dart-sublime-bundle)
-Windows | yes | -/-
+Linux | yes (ST3 only) | [![Build Status](https://travis-ci.org/dart-lang/dart-sublime-bundle.svg?branch=master)](https://travis-ci.org/dart-lang/dart-sublime-bundle)
+OS X | yes (ST3 only) | -/-
+Windows | yes (ST3 only) | [![Build status](https://ci.appveyor.com/api/projects/status/a54udvh1c2c2xah1)](https://ci.appveyor.com/project/guillermooo/dart-sublime-bundle)
 
 Sublime Text Version | Compatibility
 ------------------ | ---------------
