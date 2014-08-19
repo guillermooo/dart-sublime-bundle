@@ -20,6 +20,7 @@ class DartFormatCommand(sublime_plugin.WindowCommand):
     def run(self, **kwargs):
         view = self.window.active_view()
 
+        # Reformat the whole file.
         if kwargs.get('full_file'):
             text = view.substr(sublime.Region(0, view.size()))
             formatted_text = DartFormat().format(text)
@@ -30,9 +31,9 @@ class DartFormatCommand(sublime_plugin.WindowCommand):
             return
 
 
+        # Reformat each selection.
         for r in reversed(list(view.sel())):
             formatted_text = DartFormat().format(view.substr(r))
-            # line_terminator = '\n' if text.endswith('\n') else ''
             view.run_command('dart_replace_region', {
                 'region': [r.a, r.b],
                 'text': formatted_text + '\n'
