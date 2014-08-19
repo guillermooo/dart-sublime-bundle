@@ -92,6 +92,17 @@
             {
                 "cmd": ["/bin/bash", "--login", "-c", "dart --checked $file"]
             }
+        },
+
+        {
+            "name": "Dart: Reformat (Selection)",
+            "target": "dart_format"
+        },
+
+        {
+            "name": "Dart: Reformat (All)",
+            "target": "dart_format",
+            "full_file": true
         }
     ]
 }
