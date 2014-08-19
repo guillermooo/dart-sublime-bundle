@@ -20,19 +20,27 @@ class DartFormatCommand(sublime_plugin.WindowCommand):
     def run(self, **kwargs):
         view = self.window.active_view()
 
+        if kwargs.get('full_file'):
+            text = view.substr(sublime.Region(0, view.size()))
+            formatted_text = DartFormat().format(text)
+            view.run_command('dart_replace_region', {
+                'region': [0, view.size()],
+                'text': formatted_text + '\n'
+                })
+            return
+
+
         for r in reversed(list(view.sel())):
             formatted_text = DartFormat().format(view.substr(r))
             # line_terminator = '\n' if text.endswith('\n') else ''
             view.run_command('dart_replace_region', {
                 'region': [r.a, r.b],
-                'text': formatted_text,
-                'line_terminator': '\n'
+                'text': formatted_text + '\n'
                 })
 
 
 class DartReplaceRegion(sublime_plugin.TextCommand):
-    def run(self, edit, region, text, line_terminator=''):
-        text += line_terminator
+    def run(self, edit, region, text):
         reg = sublime.Region(*region)
         self.view.replace(edit, reg, text)
         self.view.run_command('reindent')
