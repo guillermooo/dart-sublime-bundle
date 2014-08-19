@@ -1,17 +1,18 @@
 import sublime
 
-from Dart.lib.plat import is_windows
-from Dart.lib.plat import to_platform_path
-from Dart.lib.path import find_in_path
-from Dart.lib.internal import cached_property
-from Dart import PluginLogger
-
 from subprocess import Popen
 from subprocess import TimeoutExpired
 from os.path import join
 from os.path import realpath
 from os.path import exists
 import os
+
+from Dart import PluginLogger
+from Dart.lib.filter import TextFilter
+from Dart.lib.internal import cached_property
+from Dart.lib.path import find_in_path
+from Dart.lib.plat import is_windows
+from Dart.lib.plat import to_platform_path
 
 
 _logger = PluginLogger(__name__)
@@ -100,3 +101,18 @@ class SDK(object):
         """Returns the full path to the dart analyzer.
         """
         return self.get_tool_path('docgen', '.bat')
+
+
+class DartFormat(object):
+    '''Wraps the `dartfmt` tool.
+    '''
+    def __init__(self):
+        self.path = SDK().get_tool_path('dartfmt', '.bat')
+
+    def format(self, text):
+        dart_fmt = TextFilter([self.path])
+        text = dart_fmt.filter(text)
+        return text
+
+    def format_file(self, path):
+        raise NotImplementedError('not immplemented')
