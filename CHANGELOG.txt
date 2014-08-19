@@ -1,3 +1,9 @@
+0.2500.2 - 20140819
+
+	- Add `dartfmt` integration.
+	- Add Ctrl+Shift+., Ctrl+Shift+. key binding to display available build
+	  systems.
+
 0.2500.1 - 20140811
 
 	- If linter is active, check active file 'on_activated'

@@ -1,0 +1,30 @@
+Version 0.2500.2
+
+The Sublime Text Dart Package has been updated!
+
+This version adds initial integration with the dartfmt sdk tool.
+
+
+Full Documentation:
+
+Wiki: https://github.com/dart-lang/dart-sublime-bundle/wiki
+
+Bug reports and feature requests welcome!
+
+Issue Tracker: https://github.com/dart-lang/dart-sublime-bundle/issues
+
+
+MAIN CHANGES
+------------
+
+    - Add `dartfmt` integration via build systems.
+    - Add Ctrl+Shift+., Ctrl+Shift+. key binding to display available build
+      systems.
+
+
+Reporting Bugs and Requesting New Features
+------------------------------------------
+
+Please report any bugs and request features here:
+
+* https://github.com/dart-lang/dart-sublime-bundle/issues
