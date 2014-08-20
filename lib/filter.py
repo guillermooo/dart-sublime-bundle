@@ -50,8 +50,8 @@ class TextFilter(object):
             out_bytes, err_bytes = self._proc.communicate(in_bytes,
                                                           self.timeout)
             if err_bytes:
-                _logger.error('while formatting Dart code: %s',
-                    self.decode(err_bytes))
+                _logger.error('while filtering text: %s',
+                    self.clean(self.decode(err_bytes)))
                 return
 
             return self.clean(self.decode(out_bytes))
