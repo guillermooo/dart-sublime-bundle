@@ -1,3 +1,7 @@
+0.2500.3 - 20140820
+
+	- Fix bug where invalid Dart code would get erased when reformatting.
+
 0.2500.2 - 20140819
 
 	- Add `dartfmt` integration.
