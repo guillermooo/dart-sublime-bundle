@@ -49,10 +49,17 @@ class TextFilter(object):
             in_bytes = input_text.encode(self.in_encoding)
             out_bytes, err_bytes = self._proc.communicate(in_bytes,
                                                           self.timeout)
+            if err_bytes:
+                _logger.error('while formatting Dart code: %s',
+                    self.decode(err_bytes))
+                return
+
             return self.clean(self.decode(out_bytes))
+
         except TimeoutExpired:
             _logger.debug('text filter program response timed out')
-            return None
+            return
+
         except Exception as e:
             _logger.error('while running TextFilter: %s', e)
-            return None
+            return

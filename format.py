@@ -24,6 +24,11 @@ class DartFormatCommand(sublime_plugin.WindowCommand):
         if kwargs.get('full_file'):
             text = view.substr(sublime.Region(0, view.size()))
             formatted_text = DartFormat().format(text)
+
+            if not formatted_text:
+                sublime.status_message("Dart: Could not format anything.")
+                return
+
             view.run_command('dart_replace_region', {
                 'region': [0, view.size()],
                 'text': formatted_text + '\n'
@@ -34,6 +39,11 @@ class DartFormatCommand(sublime_plugin.WindowCommand):
         # Reformat each selection.
         for r in reversed(list(view.sel())):
             formatted_text = DartFormat().format(view.substr(r))
+
+            if not formatted_text:
+                sublime.status_message("Dart: Could not format anything.")
+                return
+
             view.run_command('dart_replace_region', {
                 'region': [r.a, r.b],
                 'text': formatted_text + '\n'
