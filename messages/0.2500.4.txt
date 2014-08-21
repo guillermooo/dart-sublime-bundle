@@ -1,0 +1,32 @@
+Version 0.2500.4
+
+The Sublime Text Dart Package has been updated!
+
+This version includes minor changes.
+
+
+Full Documentation:
+
+Wiki: https://github.com/dart-lang/dart-sublime-bundle/wiki
+
+
+MAIN CHANGES
+------------
+
+	- Add basic error report for common configuration errors.
+
+	An output panel containing error information will be displayed if the
+	dart binary can't be located by the Dart package for Sublime Text.
+
+	- Add file_regex to support error navigation using F4. (Thanks @zoechi)
+
+	It should now be possible to navigate errors if obtained by running the
+	analyzer from the command palette.
+
+
+Reporting Bugs and Requesting New Features
+------------------------------------------
+
+Please report any bugs and request features here:
+
+* https://github.com/dart-lang/dart-sublime-bundle/issues

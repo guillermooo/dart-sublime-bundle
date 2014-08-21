@@ -1,3 +1,8 @@
+0.2500.4 - 20140821
+
+	- Add basic error report for common configuration errors.
+	- Add file_regex to support error navigation using F4. (Thanks @zoechi)
+
 0.2500.3 - 20140820
 
 	- Fix bug where invalid Dart code would get erased when reformatting.
