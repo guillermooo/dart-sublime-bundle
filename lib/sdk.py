@@ -22,12 +22,23 @@ class SDK(object):
     """Wraps the Dart sdk.
     """
 
-    def __init__(self, path=None):
-        if path is not None:
-            self.__dict__['path_to_sdk'] = path
-            if not os.path.exists(os.path.join(path,
-                                  to_platform_path('dart', '.exe'))):
-                del self.path_to_sdk
+    def check(self):
+        '''Reports whether the Dart SDK can be located and used from Python.
+        '''
+        if self.can_find_dart():
+            return [{
+                    'message': 'cannot find dart binary',
+                    'configuration': {
+                        'PATH': os.environ['PATH'],
+                        'editor version': '{}-{}'.format(sublime.version(),
+                                                         sublime.channel()),
+                        'os': sublime.platform(),
+                        'arch': sublime.arch(),
+                    }
+                }]
+
+    def can_find_dart(self):
+        return find_in_path('dart', '.exe')
 
     def get_tool_path(self, name, win_ext=''):
         """Returns the full path to the @name tool in the SDK's bin dir.
