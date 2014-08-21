@@ -35,6 +35,7 @@
             "cmd": ["dartanalyzer",
                     "$file"],
             "name": "Dart: Analyzer",
+            "file_regex": "^(?:\\[(?:error|warning|hint)\\].*?)\\((.*?\\.dart), line (\\d*), col (\\d*)\\)$",
 
             "windows":
             {
