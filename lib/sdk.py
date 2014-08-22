@@ -1,6 +1,8 @@
 import sublime
 
 from subprocess import Popen
+from subprocess import STDOUT
+from subprocess import check_output
 from subprocess import TimeoutExpired
 from os.path import join
 from os.path import realpath
@@ -12,6 +14,7 @@ from Dart.lib.filter import TextFilter
 from Dart.lib.internal import cached_property
 from Dart.lib.path import find_in_path
 from Dart.lib.plat import is_windows
+from Dart.lib.plat import supress_window
 from Dart.lib.plat import to_platform_path
 
 
@@ -112,6 +115,14 @@ class SDK(object):
         """Returns the full path to the dart analyzer.
         """
         return self.get_tool_path('docgen', '.bat')
+
+    def check_version(self):
+        # TODO(guillermooo): robustify the SDK code. Especially if we cannot
+        # locate de dart binary.
+        return check_output([self.path_to_dart, '--version'],
+                            stderr=STDOUT,
+                            universal_newlines=True,
+                            startupinfo=supress_window())
 
 
 class DartFormat(object):
