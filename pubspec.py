@@ -11,7 +11,7 @@ version: ${2:0.1.0}
 '''
 
 
-class NewPubspecCommand(sublime_plugin.WindowCommand):
+class DartNewPubspecCommand(sublime_plugin.WindowCommand):
     '''Adds a pubspec file.
     '''
     def run(self):
