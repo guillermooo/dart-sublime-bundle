@@ -1,6 +1,8 @@
 [
+    { "caption": "Dart: Check Configuration", "command": "dart_check_config" },
     { "caption": "Dart: Browse API Reference", "command": "open_browser", "args": {"url": "https://api.dartlang.org/apidocs/channels/stable/dartdoc-viewer/home" } },
     { "caption": "Dart: Open Dart Editor", "command": "open_dart_editor" },
-    { "caption": "Preferences: Dart Settings - User", "command": "open_dart_settings", "args": {"kind": "user"} },
-    { "caption": "Preferences: Dart Settings - Default", "command": "open_dart_settings", "args": {"kind": "default"} }
+
+    { "caption": "Preferences: Dart Settings - Default", "command": "open_dart_settings", "args": {"kind": "default"} },
+    { "caption": "Preferences: Dart Settings - User", "command": "open_dart_settings", "args": {"kind": "user"} }
 ]
