@@ -13,37 +13,51 @@ class DartProject(object):
         if os.path.exists(p):
             return p
 
+    def make_top_level_dir(self, name):
+        os.mkdir(os.path.join(self.pubspec.parent, name))
+
+    def is_path_under(self, top_level, path):
+        prefix = os.path.realpath(top_level)
+        path = os.path.realpath(path)
+        return path.startswith(prefix)
+
     @property
     def path_to_web(self):
-        return _check_path('web')
+        return self._check_path('web')
 
     @property
     def path_to_bin(self):
-        return _check_path('bin')
+        return self._check_path('bin')
 
     @property
     def path_to_test(self):
-        return _check_path('test')
+        return self._check_path('test')
 
     @property
     def path_to_tool(self):
-        return _check_path('tool')
+        return self._check_path('tool')
 
     @property
     def path_to_benchmark(self):
-        return _check_path('benchmark')
+        return self._check_path('benchmark')
 
     @property
     def path_to_doc(self):
-        return _check_path('doc')
+        return self._check_path('doc')
 
     @property
     def path_to_example(self):
-        return _check_path('example')
+        return self._check_path('example')
 
     @property
     def path_to_lib(self):
-        return _check_path('lib')
+        return self._check_path('lib')
+
+    def has_dependency(self, name, version=None):
+        plock = self.pubspec.get_pubspec_lock()
+        if not plock:
+            return
+        return plock.has_dependency(name, version)
 
     @classmethod
     def from_path(self, path):
@@ -53,11 +67,11 @@ class DartProject(object):
         return DartProject(pubspec)
 
 
-class PubspecFile(object):
+class PubspecLockFile(object):
     '''Wraps a pubspec.yaml file.
     '''
-    def __init__(self, path):
-        self.path
+    def __init__(self, pubspec):
+        self.path = os.path.join(pubspec.parent, 'pubspec.lock')
         self._data = None
 
     @property
@@ -69,9 +83,38 @@ class PubspecFile(object):
             return
         self._data = load(open(self.path, 'rt'))
 
-    def contains_dependency(self, name, version=None):
+    def has_dependency(self, name, version=None):
         self._load()
         return name in self._data['packages']
+
+    @classmethod
+    def from_pubspec(cls, pubspec):
+        '''Returns a `PubspecFile` ready for use, or `None` if no pubspec
+        file was found.
+        '''
+        if os.path.exists(os.path.join(pubspec.parent, 'pubspec.lock')):
+            return cls(pubspec)
+
+
+class PubspecFile(object):
+    '''Wraps a pubspec.yaml file.
+    '''
+    def __init__(self, path):
+        self.path = path
+        self._data = None
+
+    @property
+    def parent(self):
+        return os.path.dirname(self.path)
+
+    def _load(self):
+        if self._data is not None:
+            return
+        self._data = load(open(self.path, 'rt'))
+
+    def get_pubspec_lock(self):
+        # TODO(guillermooo): cache this?
+        return PubspecLockFile.from_pubspec(self)
 
     @classmethod
     def from_path(cls, path):

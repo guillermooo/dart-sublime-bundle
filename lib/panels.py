@@ -79,3 +79,20 @@ class OutputPanel(object):
 
     def close(self):
         pass
+
+
+class ErrorPanel(object):
+    def __init__(self):
+        self.panel = OutputPanel('dart.info')
+        self.panel.write('=' * 80)
+        self.panel.write('\n')
+        self.panel.write("Dart - Something's not quite right\n")
+        self.panel.write('=' * 80)
+        self.panel.write('\n')
+        self.panel.write('\n')
+
+    def write(self, text):
+        self.panel.write(text)
+
+    def show(self):
+        self.panel.show()
