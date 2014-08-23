@@ -4,56 +4,21 @@ import sublime_plugin
 import os
 
 from Dart.lib.dart_project import DartProject
-from Dart.lib.panels import ErrorPanel
-from Dart.lib.sdk import SDK
+from Dart.lib.base_cmds import PolymerCommand
 
 
 # TODO(guillermooo): try adding is_active or whatever method returns
 # availability status.
-class GeneratePolymerElementCommand(sublime_plugin.WindowCommand):
+class DartGeneratePolymerElementCommand(PolymerCommand):
     '''
     pub run polymer:new_element
     '''
-    # TODO(guillermooo): generalize class so it can run any polymer command.
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
 
     def run(self):
-        v = self.window.active_view()
-
-        project = DartProject.from_path(v.file_name())
-        if not project:
-            # TODO(guillermooo): add logging.
-            info = ErrorPanel()
-            info.write('Could not locate pubspec.yaml file for: {}\n'
-                                                    .format(v.file_name()))
-            info.write('Cannot generate Polymer element.')
-            info.show()
-            return
-
-        if not project.has_dependency('polymer'):
-            # TODO(guillermooo): add logging.
-            info = ErrorPanel()
-            info.write("Polymer isn't a dependency in this project.")
-            info.write('Cannot generate Polymer element.')
-            info.show()
-            return
-
-        if not project.path_to_web:
-            # TODO(guillermooo): add logging
-            project.make_top_level_dir('web')
-
-        self.window.show_input_panel('Element Name:', '',
-                                     self.on_done, None, None)
-
-    def get_target_path(self, view):
-        '''Returns the path in which the generated files belong.
-        '''
-        project = DartProject.from_path(view.file_name())
-
-        target_path = project.path_to_web
-        if project.is_path_under(project.path_to_web, view.file_name()):
-            target_path = os.path.dirname(view.file_name())
-
-        return target_path
+        super().run('Element Name:')
 
     def on_done(self, name):
         view = self.window.active_view()
@@ -64,8 +29,30 @@ class GeneratePolymerElementCommand(sublime_plugin.WindowCommand):
         # This means we cannot print friendlier status output. Replace exec
         # with our own async process execution so that we can control its
         # output panel.
-        self.window.run_command('exec', {
-            'shell_cmd': cmd.format(name, self.get_target_path(view)),
-            'working_dir': project.pubspec.parent
-            })
+        self.execute(cmd.format(name, self.get_target_path(view)),
+                     project.pubspec.parent)
 
+
+# TODO(guillermooo): try adding is_active or whatever method returns
+# availability status.
+class DartAddPolymerEntryPointCommand(PolymerCommand):
+    '''
+    pub run polymer:new_element
+    '''
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+    def run(self):
+        super().run('Entry Point Name:')
+
+    def on_done(self, name):
+        view = self.window.active_view()
+        project = DartProject.from_path(view.file_name())
+        cmd = "pub run polymer:new_entry {}".format(name)
+
+        # TODO(guillermooo): we cannot access the ouput panel used by exec.
+        # This means we cannot print friendlier status output. Replace exec
+        # with our own async process execution so that we can control its
+        # output panel.
+        self.execute(cmd, project.pubspec.parent)

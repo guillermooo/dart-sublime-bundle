@@ -1,5 +1,7 @@
 [
-    { "caption": "Dart: Generate Polymer Element", "command": "generate_polymer_element" },
+    { "caption": "Dart: Polymer: Generate Element", "command": "dart_generate_polymer_element" },
+    { "caption": "Dart: Polymer: Add Entry Point", "command": "dart_add_polymer_entry_point" },
+
     { "caption": "Dart: Check Configuration", "command": "dart_check_config" },
     { "caption": "Dart: Browse API Reference", "command": "open_browser", "args": {"url": "https://api.dartlang.org/apidocs/channels/stable/dartdoc-viewer/home" } },
     { "caption": "Dart: Open Dart Editor", "command": "open_dart_editor" },
