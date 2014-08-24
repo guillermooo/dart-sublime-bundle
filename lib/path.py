@@ -59,3 +59,22 @@ def find_in_path(name, win_ext=''):
         path = os.path.expandvars(os.path.expanduser(path))
         if os.path.exists(os.path.join(path, bin_name)):
             return os.path.realpath(path)
+
+
+def find_file(start, fname):
+    '''Finds a file in a directory hierarchy starting from @start and
+    walking backwards.
+
+    @start
+      The directory to start from.
+
+    @fname
+      Sought file.
+    '''
+    if os.path.exists(os.path.join(start, fname)):
+        return os.path.join(start, fname)
+
+    if os.path.dirname(start) == start:
+        return
+
+    return find_file(os.path.dirname(start), fname)
