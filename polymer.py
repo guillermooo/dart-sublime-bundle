@@ -5,6 +5,10 @@ import os
 
 from Dart.lib.dart_project import DartProject
 from Dart.lib.base_cmds import PolymerCommand
+from Dart import PluginLogger
+
+
+_logger = PluginLogger(__name__)
 
 
 # TODO(guillermooo): try adding is_active or whatever method returns
@@ -37,7 +41,7 @@ class DartGeneratePolymerElementCommand(PolymerCommand):
 # availability status.
 class DartAddPolymerEntryPointCommand(PolymerCommand):
     '''
-    pub run polymer:new_element
+    pub run polymer:new_entry
     '''
 
     def __init__(self, *args, **kwargs):

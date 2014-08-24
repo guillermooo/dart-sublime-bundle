@@ -6,12 +6,17 @@ import os
 
 from Dart.lib.dart_project import DartProject
 from Dart.lib.panels import ErrorPanel
+from Dart import PluginLogger
+
+
+_logger = PluginLogger(__name__)
 
 
 # TODO(guillermooo): try adding is_active or whatever method returns
 # availability status.
 class PolymerCommand(sublime_plugin.WindowCommand):
-    # TODO(guillermooo): generalize class so it can run any polymer command.
+    '''Base class for commands in the `polymer` package.
+    '''
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -26,7 +31,7 @@ class PolymerCommand(sublime_plugin.WindowCommand):
 
         project = DartProject.from_path(v.file_name())
         if not project:
-            # TODO(guillermooo): add logging.
+            _logger('no pubspec.yaml found - aborting')
             info = ErrorPanel()
             info.write('Could not locate pubspec.yaml file for: {}\n'
                                                     .format(v.file_name()))
@@ -35,7 +40,7 @@ class PolymerCommand(sublime_plugin.WindowCommand):
             return
 
         if not project.has_dependency('polymer'):
-            # TODO(guillermooo): add logging.
+            _logger('no polymer dep found - aborting')
             info = ErrorPanel()
             info.write("Polymer isn't a dependency in this project.")
             info.write('Cannot run Polymer command.')
@@ -43,7 +48,7 @@ class PolymerCommand(sublime_plugin.WindowCommand):
             return
 
         if not project.path_to_web:
-            # TODO(guillermooo): add logging
+            _logger.debug('creating web directory')
             project.make_top_level_dir('web')
 
         self.window.show_input_panel(message, '',
@@ -65,6 +70,9 @@ class PolymerCommand(sublime_plugin.WindowCommand):
         # This means we cannot print friendlier status output. Replace exec
         # with our own async process execution so that we can control its
         # output panel.
+        _logger.debug(
+            'running command: %s (working dir: %s)' % (shell_cmd,
+                                                       working_dir))
         self.window.run_command('exec', {
             'shell_cmd': shell_cmd,
             'working_dir': working_dir
