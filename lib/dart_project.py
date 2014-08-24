@@ -8,8 +8,8 @@ class DartProject(object):
     def __init__(self, pubspec):
         self.pubspec = pubspec
 
-    def _check_path(self, path):
-        p = os.path.join(self.pubspec.parent, path)
+    def _get_top_level_dir(self, name):
+        p = os.path.join(self.pubspec.parent, name)
         if os.path.exists(p):
             return p
 
@@ -18,40 +18,40 @@ class DartProject(object):
 
     def is_path_under(self, top_level, path):
         prefix = os.path.realpath(top_level)
-        path = os.path.realpath(path)
-        return path.startswith(prefix)
+        target = os.path.realpath(path)
+        return target.startswith(prefix)
 
     @property
     def path_to_web(self):
-        return self._check_path('web')
+        return self._get_top_level_dir('web')
 
     @property
     def path_to_bin(self):
-        return self._check_path('bin')
+        return self._get_top_level_dir('bin')
 
     @property
     def path_to_test(self):
-        return self._check_path('test')
+        return self._get_top_level_dir('test')
 
     @property
     def path_to_tool(self):
-        return self._check_path('tool')
+        return self._get_top_level_dir('tool')
 
     @property
     def path_to_benchmark(self):
-        return self._check_path('benchmark')
+        return self._get_top_level_dir('benchmark')
 
     @property
     def path_to_doc(self):
-        return self._check_path('doc')
+        return self._get_top_level_dir('doc')
 
     @property
     def path_to_example(self):
-        return self._check_path('example')
+        return self._get_top_level_dir('example')
 
     @property
     def path_to_lib(self):
-        return self._check_path('lib')
+        return self._get_top_level_dir('lib')
 
     def has_dependency(self, name, version=None):
         plock = self.pubspec.get_pubspec_lock()
@@ -60,11 +60,11 @@ class DartProject(object):
         return plock.has_dependency(name, version)
 
     @classmethod
-    def from_path(self, path):
+    def from_path(cls, path):
         pubspec = PubspecFile.from_path(path)
         if pubspec is None:
             return
-        return DartProject(pubspec)
+        return cls(pubspec)
 
 
 class PubspecLockFile(object):
