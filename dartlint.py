@@ -219,20 +219,20 @@ class DartLint(sublime_plugin.EventListener):
 
     def load_settings(self, view):
         self.settings = view.settings()
-        self.do_lint = self.settings.get('dartlint_active')
-        self.do_save = self.settings.get('dartlint_on_save')
-        self.do_load = self.settings.get('dartlint_on_load')
+        self.do_lint = self.settings.get('dart_linter_active')
+        self.do_save = self.settings.get('dart_linter_on_save')
+        self.do_load = self.settings.get('dart_linter_on_load')
         self.do_modify = self.settings.get('dartlint_on_modify')
 
     def check_theme(self, view):
         # Get some settings
         self.settings = view.settings()
-        error_color = self.settings.get('dartlint_underline_color_error')
-        warn_color = self.settings.get('dartlint_underline_color_warning')
-        info_color = self.settings.get('dartlint_underline_color_info')
-        error_icon = self.settings.get('dartlint_gutter_icon_error')
-        warn_icon = self.settings.get('dartlint_gutter_icon_warning')
-        info_icon = self.settings.get('dartlint_gutter_icon_info')
+        error_color = self.settings.get('dart_linter_underline_color_error')
+        warn_color = self.settings.get('dart_linter_underline_color_warning')
+        info_color = self.settings.get('dart_linter_underline_color_info')
+        error_icon = self.settings.get('dart_linter_gutter_icon_error')
+        warn_icon = self.settings.get('dart_linter_gutter_icon_warning')
+        info_icon = self.settings.get('dart_linter_gutter_icon_info')
         # Set the icons and colors in the file scope
         GUTTER_Icon.update({
             'dartlint_ERROR': error_icon,
@@ -573,7 +573,7 @@ class UIUpdater(threading.Thread):
         window.focus_view(view)
         dd_list = []
         show_this = False
-        show_level = self.settings.get('dartlint_show_popup_level')
+        show_level = self.settings.get('dart_linter_show_popup_level')
         level_value = 1000
         if show_level in SHOW_Levels:
             level_value = SHOW_Levels[show_level]

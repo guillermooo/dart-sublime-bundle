@@ -16,6 +16,7 @@ from Dart.lib.path import find_in_path
 from Dart.lib.plat import is_windows
 from Dart.lib.plat import supress_window
 from Dart.lib.plat import to_platform_path
+from Dart.lib.error import FatalConfigError
 
 
 _logger = PluginLogger(__name__)
@@ -25,31 +26,22 @@ class SDK(object):
     """Wraps the Dart sdk.
     """
 
-    def check(self):
-        '''Reports whether the Dart SDK can be located and used from Python.
-        '''
-        if not self.can_find_dart():
-            return [{
-                    'message': 'cannot find dart binary',
-                    'configuration': {
-                        'PATH': os.environ['PATH'],
-                        'editor version': '{}-{}'.format(sublime.version(),
-                                                         sublime.channel()),
-                        'os': sublime.platform(),
-                        'arch': sublime.arch(),
-                    }
-                }]
+    def __init__(self):
+        fatal = FatalConfigError('cannot locate path to sdk')
 
-    def can_find_dart(self):
-        return find_in_path('dart', '.exe')
+        setts = sublime.load_settings('Preferences.sublime-settings')
+        p = setts.get('dart_sdk_path')
+
+        try:
+            if not os.path.exists(p):
+                raise fatal
+            self._path = p
+        except TypeError:
+            raise fatal
 
     def get_tool_path(self, name, win_ext=''):
         """Returns the full path to the @name tool in the SDK's bin dir.
         """
-        if not self.path_to_sdk:
-            _logger.info('could not locate dart sdk')
-            return
-
         name = to_platform_path(name, win_ext)
         return os.path.realpath(os.path.join(self.path_to_bin_dir, name))
 
@@ -92,7 +84,7 @@ class SDK(object):
 
     @cached_property
     def path_to_sdk(self):
-        return os.path.dirname(find_in_path('dart', '.exe'))
+        return self._path
 
     @property
     def path_to_bin_dir(self):
@@ -117,8 +109,6 @@ class SDK(object):
         return self.get_tool_path('docgen', '.bat')
 
     def check_version(self):
-        # TODO(guillermooo): robustify the SDK code. Especially if we cannot
-        # locate de dart binary.
         return check_output([self.path_to_dart, '--version'],
                             stderr=STDOUT,
                             universal_newlines=True,

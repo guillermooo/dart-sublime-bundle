@@ -9,6 +9,7 @@ import sublime_plugin
 
 from Dart.lib.sdk import SDK
 from Dart.lib.panels import OutputPanel
+from Dart.lib.error import FatalConfigError
 
 
 HEADING = '''
@@ -33,10 +34,11 @@ below.
 
 
 def check():
-    errs = SDK().check()
-    if errs:
+    try:
+        SDK()
+    except FatalConfigError as e:
         sublime.active_window().run_command('_dart_report_config_errors', {
-            'errors': errs
+            'message': str(e)
             })
 
 
@@ -45,22 +47,29 @@ def plugin_loaded():
 
 
 class _dart_report_config_errors(sublime_plugin.WindowCommand):
-    def run(self, errors):
+    def run(self, message):
         v = OutputPanel('dart.config.check')
         text = HEADING + '\n'
         text += ('=' * 80) + '\n'
-        for err in errors:
-            text += 'MESSAGE:\n'
-            text += err['message'] + '\n'
-            text += '\n'
+        text += 'MESSAGE:\n'
+        text += message + '\n'
+        text += '\n'
+        text += 'CONFIGURATION:\n'
+        text += ('-' * 80) + '\n'
+        text += "editor version: {} ({})".format(sublime.version(),
+                                               sublime.channel())
+        text += '\n'
+        text += ('-' * 80) + '\n'
+        text += "os: {} ({})".format(sublime.platform(),
+                                   sublime.arch())
+        text += '\n'
+        text += ('-' * 80) + '\n'
 
-            text += 'CONFIGURATION:\n'
-            text += ('-' * 80) + '\n'
-            for name, value in err['configuration'].items():
-                text += '{}: {}\n'.format(name, value)
-                text += ('-' * 80) + '\n'
+        setts = sublime.load_settings('Preferences.sublime-settings')
+        text += "dart_sdk_path: {}".format(setts.get('dart_sdk_path'))
+        text += '\n'
 
-            text += '=' * 80
+        text += '=' * 80
 
         v.write(text)
         v.show()
