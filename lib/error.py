@@ -7,7 +7,7 @@ class FatalError(Exception):
         super().__init__(*args, **kwargs)
 
 
-class FatalConfigError(Exception):
+class FatalConfigError(FatalError):
     '''Something with the configuration is really bad.
     '''
     def __init__(self, *args, **kwargs):
