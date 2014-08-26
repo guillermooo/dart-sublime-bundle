@@ -1,3 +1,6 @@
+// This file is not meant for editing. It will be overwritten.
+// Save your customizations to Packages/User/Preferences.sublime-settings instead.
+
 {
 	// Dartlint plugin settings
 	"dart_linter_active" : false,

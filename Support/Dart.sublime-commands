@@ -3,9 +3,9 @@
     { "caption": "Dart: Polymer: Add Entry Point", "command": "dart_add_polymer_entry_point" },
 
     { "caption": "Dart: Check Configuration", "command": "dart_check_config" },
-    { "caption": "Dart: Browse API Reference", "command": "open_browser", "args": {"url": "https://api.dartlang.org/apidocs/channels/stable/dartdoc-viewer/home" } },
-    { "caption": "Dart: Open Dart Editor", "command": "open_dart_editor" },
+    { "caption": "Dart: Browse API Reference", "command": "dart_open_browser", "args": {"url": "https://api.dartlang.org/apidocs/channels/stable/dartdoc-viewer/home" } },
+    { "caption": "Dart: Open Dart Editor", "command": "dart_open_dart_editor" },
 
-    { "caption": "Preferences: Dart Settings - Default", "command": "open_dart_settings", "args": {"kind": "default"} },
-    { "caption": "Preferences: Dart Settings - User", "command": "open_dart_settings", "args": {"kind": "user"} }
+    { "caption": "Preferences: Dart Settings - Default (Global)", "command": "dart_open_settings", "args": {"kind": "default"} },
+    { "caption": "Preferences: Dart Settings - Dart File Type", "command": "dart_open_settings", "args": {"kind": "user"} }
 ]
