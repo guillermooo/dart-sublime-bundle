@@ -38,7 +38,7 @@ class SDK(object):
             msg = 'invalid value of dart_sdk_path: {}'.format(p)
             raise FatalConfigError(msg)
 
-    def get_tool_path(self, name, win_ext=''):
+    def get_bin_tool(self, name, win_ext=''):
         """Returns the full path to the @name tool in the SDK's bin dir.
 
         @name
@@ -98,19 +98,19 @@ class SDK(object):
     def path_to_dart(self):
         """Returns the full path to the dart interpreter.
         """
-        return self.get_tool_path('dart', '.exe')
+        return self.get_bin_tool('dart', '.exe')
 
     @property
     def path_to_analyzer(self):
         """Returns the full path to the dart analyzer.
         """
-        return self.get_tool_path('dartanalyzer', '.bat')
+        return self.get_bin_tool('dartanalyzer', '.bat')
 
     @property
     def path_to_docgen(self):
         """Returns the full path to the dart analyzer.
         """
-        return self.get_tool_path('docgen', '.bat')
+        return self.get_bin_tool('docgen', '.bat')
 
     def check_version(self):
         return check_output([self.path_to_dart, '--version'],
@@ -123,7 +123,7 @@ class DartFormat(object):
     '''Wraps the `dartfmt` tool.
     '''
     def __init__(self):
-        self.path = SDK().get_tool_path('dartfmt', '.bat')
+        self.path = SDK().get_bin_tool('dartfmt', '.bat')
 
     def format(self, text):
         dart_fmt = TextFilter([self.path])
