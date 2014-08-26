@@ -39,7 +39,7 @@ class DartCheckConfigCommand(sublime_plugin.WindowCommand):
         self.append(report, dart_version)
 
         self.append(report, 'path: ')
-        self.append(report, sdk.path_to_sdk)
+        self.append(report, sdk.path)
         self.add_newline(report)
         self.add_newline(report)
 
