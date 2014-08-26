@@ -13,6 +13,8 @@ from Dart.lib.error import FatalConfigError
 
 
 HEADING = '''
+Dart Package for Sublime Text
+================================================================================
   ___                        _
  / _ \  ___   ___  _ __  ___| |
 | | | |/ _ \ / _ \| '_ \/ __| |
@@ -22,9 +24,9 @@ HEADING = '''
 
 Something went wrong... :-[
 
-This is an automatic report from the Sublime Text Dart package.
+This is an automatic report from the Dart package for Sublime Text.
 
-If you're having trouble to run this package, please open an issue in our
+If you're having trouble running this package, please open an issue in our
 issue tracker[1] and paste as much information as possible from the report
 below.
 
