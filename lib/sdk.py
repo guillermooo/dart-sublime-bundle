@@ -11,7 +11,6 @@ import os
 
 from Dart import PluginLogger
 from Dart.lib.filter import TextFilter
-from Dart.lib.internal import cached_property
 from Dart.lib.path import find_in_path
 from Dart.lib.plat import is_windows
 from Dart.lib.plat import supress_window
