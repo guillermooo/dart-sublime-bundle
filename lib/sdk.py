@@ -30,13 +30,10 @@ class SDK(object):
         p = setts.get('dart_sdk_path')
 
         try:
-            if not os.path.exists(os.path.join(
-                                             p,
-                                            'bin',
-                                            to_platform_path('dart', '.exe')
-                                            )):
-                msg = 'wrong path in dart_sdk_path: {}'.format(p)
-                raise FatalConfigError(msg)
+            if not os.path.exists(
+                os.path.join(p, 'bin', to_platform_path('dart', '.exe'))):
+                    msg = 'wrong path in dart_sdk_path: {}'.format(p)
+                    raise FatalConfigError(msg)
             self._path = p
         except TypeError:
             msg = 'invalid value of dart_sdk_path: {}'.format(p)
@@ -90,6 +87,7 @@ class SDK(object):
             if proc.returncode != 0:
                 _logger.error('Dart Editor exited with error code %d', proc.returncode)
 
+    @property
     def path(self):
         return self._path
 
@@ -130,8 +128,4 @@ class DartFormat(object):
 
     def format(self, text):
         dart_fmt = TextFilter([self.path])
-        text = dart_fmt.filter(text)
-        return text
-
-    def format_file(self, path):
-        raise NotImplementedError('not immplemented')
+        return dart_fmt.filter(text)
