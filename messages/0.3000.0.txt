@@ -1,0 +1,79 @@
+Version 0.3000.0
+
+The Sublime Text Dart Package has been updated!
+
+***************************************************************
+This version includes major and backwards-incompatible changes.
+***************************************************************
+
+In short: Please update your settings! :)
+
+Specifically:
+
+- Make sure to correctly set `dart_sdk_path` in your Packages/User/Preferences.sublime-settings
+- If needed, make sure to delete obsolete settings from Packages/User/Dart.sublime-settings
+
+
+Full Documentation:
+
+Wiki: https://github.com/dart-lang/dart-sublime-bundle/wiki
+
+
+MAIN CHANGES
+------------
+
+	- Reinstate `dart_sdk_path` setting.
+
+	Backwards-incompatible change.
+
+	It is now again required to specificy the path to the Dart SDK as a
+	Sublime Text setting. From now on, the Sublime Text Dart package will
+	ignore you PATH. This is to avoid PATH visibility issues between instances
+	of Sublime Text started from a command line vs instances started from the
+	OS GUI. The reinstated setting should provide a better experience in both
+	situations.
+
+	Apologies about the inconvenience!
+
+
+	- Make most settings global
+
+	Backwards-incompatible change.
+
+	Most settings controlling this package's behavior will now live in
+	Packages/User/Preferences.sublime-settings. You can open this file using
+	a built-in Sublime Text command from the command palette:
+	'Preferences: Settings - User'.
+
+	Additionally, all settings names have been unified to the form:
+
+		dart_*
+
+	Previously, there would be both dart_* and dartlint_* variants.
+
+	Please check the documentation for more details.
+
+
+	- Initial support for running polymer:new_element and polymer:new_entry
+
+	It is now possible to generate Polymer elements from the command palette,
+	and to add entry points to pubspec.yaml and generate the corresponding
+	file, all from within Sublime Text.
+
+	Note: At the moment, generated files will end up either under 'web' or
+	a directory under it, depending on the path of the active file at the time
+	of generating the Polymer files. This behavior will be made more flexible
+	in the future.
+
+
+	- Add basic configuration report
+
+	Added a command to print basic configuration information for easy checking.
+
+
+Reporting Bugs and Requesting New Features
+------------------------------------------
+
+Please report any bugs and request features here:
+
+* https://github.com/dart-lang/dart-sublime-bundle/issues
