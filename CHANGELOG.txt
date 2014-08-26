@@ -1,3 +1,9 @@
+0.3000.0 - 20140826
+
+	- Make package settings global (Preferences.sublime-settings)
+	- Initial support for running polymer:new_element and polymer:new_entry
+	- Add basic configuration report
+
 0.2500.4 - 20140821
 
 	- Add basic error report for common configuration errors.
