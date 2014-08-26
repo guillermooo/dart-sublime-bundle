@@ -315,7 +315,7 @@ def FormRelativePath(path):
 def RunDartanalyzer(view, fileName, our_settings, show_popup=True,
     force=False):
     # FIXME: Inefficient. We should store the SDK away and reuse it.
-    dartsdk_path = SDK().path_to_sdk
+    dartsdk_path = SDK().path
 
     if dartsdk_path:
         DartLintThread(view, fileName, our_settings, show_popup,
@@ -333,7 +333,7 @@ class DartLintThread(threading.Thread):
         self.daemon = True
         self.view = view
         self.window = view.window()
-        self.dartsdk_path = SDK().path_to_sdk
+        self.dartsdk_path = SDK().path
         self.fileName = fileName
         self.force = force
 
