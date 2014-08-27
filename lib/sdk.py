@@ -101,6 +101,18 @@ class SDK(object):
         return self.get_bin_tool('dart', '.exe')
 
     @property
+    def path_to_pub(self):
+        """Returns the full path to pub.
+        """
+        return self.get_bin_tool('pub', '.bat')
+
+    @property
+    def path_to_dart2js(self):
+        """Returns the full path to dartjs.
+        """
+        return self.get_bin_tool('dart2js', '.bat')
+
+    @property
     def path_to_analyzer(self):
         """Returns the full path to the dart analyzer.
         """
@@ -108,7 +120,7 @@ class SDK(object):
 
     @property
     def path_to_docgen(self):
-        """Returns the full path to the dart analyzer.
+        """Returns the full path to docgen.
         """
         return self.get_bin_tool('docgen', '.bat')
 

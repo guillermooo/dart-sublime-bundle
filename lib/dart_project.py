@@ -2,6 +2,7 @@ import os
 
 from Dart.lib.path import find_file
 from Dart.lib.out_there.yaml import load
+from Dart.lib.path import is_view_dart_script
 
 
 class DartProject(object):
@@ -128,3 +129,32 @@ class PubspecFile(object):
 
 def find_pubspec(start):
     return find_file(start, 'pubspec.yaml')
+
+
+class ViewInspector(object):
+    def __init__(self, view):
+        self.view = view
+
+    @property
+    def is_project_file(self):
+        return any((self.is_dart_file,
+                    self.is_pubspec))
+
+    @property
+    def is_dart_file(self):
+        return is_view_dart_script(self.view)
+
+    @property
+    def is_server_app(self):
+        # TODO(guillermooo): return an enum value?
+        # see if it imports dart:io
+        pass
+
+    @property
+    def is_web_app(self):
+        # see if it imports dart:html
+        pass
+
+    @property
+    def is_pubspec(self):
+        return os.path.basename(self.view.file_name()) == 'pubspec.yaml'
