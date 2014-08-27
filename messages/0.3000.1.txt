@@ -1,0 +1,41 @@
+Version 0.3000.1
+
+The Sublime Text Dart Package has been updated!
+
+This version includes changes to the build system for Dart projects and files.
+
+Full Documentation:
+
+Wiki: https://github.com/dart-lang/dart-sublime-bundle/wiki
+
+
+MAIN CHANGES
+------------
+
+	- New build system for Dart files
+
+	From the point of view of usage, you shouldn't notice much of a difference.
+
+	However, F7 and Ctrl+F7 are now bound to a smarter build system. It will
+	work on any pubspec.yaml file or .dart file. F7 will run the primary
+	build action for the file (e. g. `pub get` for pubspec.yaml), and
+	Ctrl+F7 will run the seondary action (e. g. show multiple actions in the
+	case of pubspec.yaml).
+
+	The existing build tasks to date will remain available through the
+	command palette.
+
+	Check the wiki for more information.
+
+	- Never change the current build system automatically
+
+	Should prevent annoyances if you're working with several programming
+	languages in the same Sublime Text instance.
+
+
+Reporting Bugs and Requesting New Features
+------------------------------------------
+
+Please report any bugs and request features here:
+
+* https://github.com/dart-lang/dart-sublime-bundle/issues

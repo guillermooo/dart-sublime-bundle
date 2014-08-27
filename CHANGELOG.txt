@@ -1,3 +1,8 @@
+0.3000.1 - 20140827
+
+	- Implement custom build system infrastructure
+	- Don't change build systems automatically
+
 0.3000.0 - 20140826
 
 	- Make package settings global (Preferences.sublime-settings)
