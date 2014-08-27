@@ -76,7 +76,8 @@ class DartRunCommand(sublime_plugin.WindowCommand, AsyncProcessExecutor):
                     'cmd' : [sdk.path_to_dart2js,
                                 '--minify', '-o', file_name + '.js',
                                 file_name],
-                    'working_dir': working_dir
+                    'working_dir': working_dir,
+                    'file_regex': "(\\S*):(\\d*):(\\d*): (.*)",
                     }
             self.execute(**args)
             return
@@ -85,10 +86,10 @@ class DartRunCommand(sublime_plugin.WindowCommand, AsyncProcessExecutor):
             _logger("unknown action: %s", action)
             return
 
-        # TODO(guillermooo): add regexes
         args = {
             'cmd': [sdk.path_to_dart, '--checked', file_name],
-            'working_dir': working_dir
+            'working_dir': working_dir,
+            'file_regex': "'file:///(.+)': error: line (\\d+) pos (\\d+): (.*)$"
         }
         self.execute(**args)
 
