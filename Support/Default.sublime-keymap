@@ -32,5 +32,24 @@
 		[
 			{ "key": "setting.command_mode", "operand": false }
 		]
+	},
+
+	// Build system keys.
+	{
+		"keys": ["f7"], "command": "dart_build_project",
+		"context": [
+			{ "key": "dart_is_project_file" },
+			{ "key": "setting.command_mode", "operand": false }
+		]
+	},
+
+	{
+		"keys": ["ctrl+f7"], "command": "dart_build_project", "args": {
+			"action": "secondary"
+		},
+		"context": [
+			{ "key": "dart_is_project_file" },
+			{ "key": "setting.command_mode", "operand": false }
+		]
 	}
 ]
