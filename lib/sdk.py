@@ -104,13 +104,13 @@ class SDK(object):
     def path_to_pub(self):
         """Returns the full path to pub.
         """
-        return self.get_tool_path('pub', '.bat')
+        return self.get_bin_tool('pub', '.bat')
 
     @property
     def path_to_dart2js(self):
         """Returns the full path to dartjs.
         """
-        return self.get_tool_path('dart2js', '.bat')
+        return self.get_bin_tool('dart2js', '.bat')
 
     @property
     def path_to_analyzer(self):

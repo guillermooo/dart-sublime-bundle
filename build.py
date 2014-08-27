@@ -49,8 +49,15 @@ class DartBuildProjectCommand(sublime_plugin.WindowCommand):
             })
 
 
-class DartRunCommand(sublime_plugin.WindowCommand):
+class AsyncProcessExecutor(object):
+    def execute(self, **kwargs):
+        self.window.run_command('exec', kwargs)
+
+
+class DartRunCommand(sublime_plugin.WindowCommand, AsyncProcessExecutor):
     '''Runs a file with the most appropriate action.
+
+    Intended for .dart and .html files.
     '''
     def run(self, file_name, action='primary'):
         '''
@@ -65,10 +72,13 @@ class DartRunCommand(sublime_plugin.WindowCommand):
 
         if action == 'primary':
             # TODO(guillermooo): add regexes
-            cmd = [sdk.path_to_dart2js,
-                        '--minify', '-o', file_name + '.js',
-                        file_name]
-            self.execute(cmd, working_dir)
+            args = {
+                    'cmd' : [sdk.path_to_dart2js,
+                                '--minify', '-o', file_name + '.js',
+                                file_name],
+                    'working_dir': working_dir
+                    }
+            self.execute(**args)
             return
 
         if action != 'secondary':
@@ -76,17 +86,15 @@ class DartRunCommand(sublime_plugin.WindowCommand):
             return
 
         # TODO(guillermooo): add regexes
-        cmd = [sdk.path_to_dart, '--checked', file_name]
-        self.execute(cmd, working_dir)
-
-    def execute(self, cmd, working_dir):
-        self.window.run_command('exec', {
-            'cmd': cmd,
+        args = {
+            'cmd': [sdk.path_to_dart, '--checked', file_name],
             'working_dir': working_dir
-            })
+        }
+        self.execute(**args)
 
 
-class DartBuildPubspecCommand(sublime_plugin.WindowCommand):
+class DartBuildPubspecCommand(sublime_plugin.WindowCommand,
+                              AsyncProcessExecutor):
     '''Build behavior for pubspec.yaml.
     '''
     PUB_CMDS = [
@@ -107,8 +115,11 @@ class DartBuildPubspecCommand(sublime_plugin.WindowCommand):
         working_dir = os.path.dirname(file_name)
 
         if action == 'primary':
-            cmd = [SDK().path_to_pub] + ['get']
-            self.execute(cmd, working_dir)
+            args = {
+                "cmd": [SDK().path_to_pub] + ['get'],
+                "working_dir": working_dir
+            }
+            self.execute(**args)
             return
 
         if action != 'secondary':
@@ -122,12 +133,8 @@ class DartBuildPubspecCommand(sublime_plugin.WindowCommand):
         if idx == -1:
             return
 
-        cmd = [SDK().path_to_pub] + [self.PUB_CMDS[idx]]
-        working_dir = os.path.dirname(file_name)
-        self.execute(cmd, working_dir)
-
-    def execute(self, cmd, working_dir):
-        self.window.run_command('exec', {
-            'cmd': cmd,
-            'working_dir': working_dir
-            })
+        args = {
+            'cmd': [SDK().path_to_pub] + [self.PUB_CMDS[idx]],
+            'working_dir': os.path.dirname(file_name)
+        }
+        self.execute(**args)
