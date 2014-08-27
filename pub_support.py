@@ -22,27 +22,6 @@ class PubspecListener(sublime_plugin.EventListener):
     def __init__(self, *args, **kwargs):
         sublime_plugin.EventListener.__init__(self, *args, **kwargs)
 
-    def on_activated(self, view):
-        if not (is_pubspec(view) or is_view_dart_script(view)):
-            return
-
-        # TODO(guillermooo): I cannot get automatic detection of build sys
-        # working. This code will make build systems change even if the user
-        # has not enabled automatic detection of builds systems.
-        active_view = sublime.active_window().active_view()
-        if is_pubspec(view) and (view.id() == active_view.id()):
-            _logger.debug('changing build system to "pubspec"')
-            view.window().run_command('set_build_system', {
-                "file": "Packages/Dart/Support/Dart - Pubspec.sublime-build"})
-            return
-
-    def on_deactivated(self, view):
-        if not (is_pubspec(view) or is_view_dart_script(view)):
-            return
-
-        # Activate 'automatic' build system detection.
-        view.window().run_command('set_build_system', {'file': ''})
-
     def on_post_save(self, view):
         if not is_pubspec(view):
             return
