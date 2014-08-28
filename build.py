@@ -11,6 +11,7 @@ from Dart import PluginLogger
 from Dart.lib.sdk import SDK
 from Dart.lib.dart_project import ViewInspector
 from Dart.lib.dart_project import find_pubspec
+from Dart.lib.build.base import DartBuildCommandBase
 
 
 _logger = PluginLogger(__name__)
@@ -49,16 +50,14 @@ class DartBuildProjectCommand(sublime_plugin.WindowCommand):
             })
 
 
-class AsyncProcessExecutor(object):
-    def execute(self, **kwargs):
-        self.window.run_command('dart_exec', kwargs)
-
-
-class DartRunCommand(sublime_plugin.WindowCommand, AsyncProcessExecutor):
+class DartRunCommand(DartBuildCommandBase):
     '''Runs a file with the most appropriate action.
 
     Intended for .dart and .html files.
     '''
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
     def run(self, file_name, action='primary'):
         '''
         @action
@@ -71,7 +70,6 @@ class DartRunCommand(sublime_plugin.WindowCommand, AsyncProcessExecutor):
         sdk = SDK()
 
         if action == 'primary':
-            # TODO(guillermooo): add regexes
             args = {
                     'cmd' : [sdk.path_to_dart2js,
                                 '--minify', '-o', file_name + '.js',
@@ -96,8 +94,10 @@ class DartRunCommand(sublime_plugin.WindowCommand, AsyncProcessExecutor):
         self.execute(**args)
 
 
-class DartBuildPubspecCommand(sublime_plugin.WindowCommand,
-                              AsyncProcessExecutor):
+class DartBuildPubspecCommand(DartBuildCommandBase):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
     '''Build behavior for pubspec.yaml.
     '''
     PUB_CMDS = [
