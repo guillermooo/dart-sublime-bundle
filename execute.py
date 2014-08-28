@@ -1,6 +1,6 @@
 '''Our own ST `exec` command.
 
-Mostly lifted from Default.exec
+Mostly lifted from Default.exec.py
 '''
 
 import sublime
@@ -46,9 +46,11 @@ class DartExecCommand(sublime_plugin.WindowCommand, ProcessListener):
             self.out_panel = OutpuPanel(panel_name)
 
         # Default to the current files directory if no working directory was given
-        if (working_dir == "" and self.window.active_view()
-                        and self.window.active_view().file_name()):
-            working_dir = os.path.dirname(self.window.active_view().file_name())
+        if (working_dir and
+            self.window.active_view() and
+            self.window.active_view().file_name()):
+                working_dir = os.path.dirname(
+                                        self.window.active_view().file_name())
 
         self.out_panel.set("result_file_regex", file_regex)
         self.out_panel.set("result_line_regex", line_regex)
@@ -58,10 +60,6 @@ class DartExecCommand(sublime_plugin.WindowCommand, ProcessListener):
         self.out_panel.set("gutter", False)
         self.out_panel.set("scroll_past_end", False)
         self.out_panel.view.assign_syntax(syntax)
-
-        # Call create_output_panel a second time after assigning the above
-        # settings, so that it'll be picked up as a result buffer
-        # self.window.create_output_panel(panel_name)
 
         self.encoding = encoding
         self.quiet = quiet
@@ -77,9 +75,10 @@ class DartExecCommand(sublime_plugin.WindowCommand, ProcessListener):
         if preamble:
             self.append_string(self.proc, preamble)
 
-        show_panel_on_build = sublime.load_settings("Preferences.sublime-settings").get("show_panel_on_build", True)
+        show_panel_on_build = sublime.load_settings(
+              "Preferences.sublime-settings").get("show_panel_on_build", True)
         if show_panel_on_build:
-            self.window.run_command("show_panel", {"panel": "output." + panel_name})
+            self.out_panel.show()
 
         merged_env = env.copy()
         if self.window.active_view():
@@ -89,7 +88,7 @@ class DartExecCommand(sublime_plugin.WindowCommand, ProcessListener):
 
         # Change to the working dir, rather than spawning the process with it,
         # so that emitted working dir relative path names make sense
-        if working_dir != "":
+        if working_dir:
             os.chdir(working_dir)
 
         self.debug_text = ""
@@ -105,14 +104,15 @@ class DartExecCommand(sublime_plugin.WindowCommand, ProcessListener):
 
         try:
             # Forward kwargs to AsyncProcess
-            self.proc = AsyncProcess(cmd, shell_cmd, merged_env, self, **kwargs)
+            self.proc = AsyncProcess(cmd, shell_cmd, merged_env, self,
+                                     **kwargs)
         except Exception as e:
             self.append_string(None, str(e) + "\n")
             self.append_string(None, self.debug_text + "\n")
             if not self.quiet:
                 self.append_string(None, "[Finished]")
 
-    def is_enabled(self, kill = False):
+    def is_enabled(self, kill=False):
         if kill:
             return hasattr(self, 'proc') and self.proc and self.proc.poll()
         else:
@@ -127,16 +127,17 @@ class DartExecCommand(sublime_plugin.WindowCommand, ProcessListener):
             return
 
         try:
-            str = data.decode(self.encoding)
-        except:
-            str = "[Decode error - output not " + self.encoding + "]\n"
+            str_ = data.decode(self.encoding)
+        except UnicodeEncodeError:
+            str_ = "[Decode error - output not " + self.encoding + "]\n"
             proc = None
+            return
 
         # Normalize newlines, Sublime Text always uses a single \n separator
         # in memory.
-        str = str.replace('\r\n', '\n').replace('\r', '\n')
+        str_ = str_.replace('\r\n', '\n').replace('\r', '\n')
 
-        self.out_panel.write(str)
+        self.out_panel.write(str_)
 
     def append_string(self, proc, str):
         self.append_data(proc, str.encode(self.encoding))
@@ -145,17 +146,18 @@ class DartExecCommand(sublime_plugin.WindowCommand, ProcessListener):
         if not self.quiet:
             elapsed = time.time() - proc.start_time
             exit_code = proc.exit_code()
-            if exit_code == 0 or exit_code == None:
-                self.append_string(proc,
-                    ("[Finished in %.1fs]" % (elapsed)))
+            if (exit_code == 0) or (exit_code == None):
+                self.append_string(proc, "[Finished in %.1fs]" % (elapsed))
             else:
-                self.append_string(proc, ("[Finished in %.1fs with exit code %d]\n"
-                    % (elapsed, exit_code)))
+                self.append_string(proc,
+                    "[Finished in %.1fs with exit code %d]\n" %
+                                                        (elapsed, exit_code))
                 self.append_string(proc, self.debug_text)
 
         if proc != self.proc:
             return
 
+        # XXX: What's this for?
         errs = self.out_panel.view.find_all_results()
         if len(errs) == 0:
             sublime.status_message("Build finished")
