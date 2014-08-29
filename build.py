@@ -69,6 +69,11 @@ class DartRunCommand(DartBuildCommandBase):
 
         sdk = SDK()
 
+        inspector = ViewInspector(self.window.active_view())
+        if inspector.is_server_app:
+            self.run_server_app(file_name, working_dir)
+            return
+
         if action == 'primary':
             args = {
                     'cmd' : [sdk.path_to_dart2js,
@@ -85,8 +90,11 @@ class DartRunCommand(DartBuildCommandBase):
             _logger("unknown action: %s", action)
             return
 
+        self.run_server_app(file_name, working_dir)
+
+    def run_server_app(self, file_name, working_dir):
         args = {
-            'cmd': [sdk.path_to_dart, '--checked', file_name],
+            'cmd': [SDK().path_to_dart, '--checked', file_name],
             'working_dir': working_dir,
             'file_regex': "'file:///(.+)': error: line (\\d+) pos (\\d+): (.*)$",
             'preamble': 'Running dart...\n',

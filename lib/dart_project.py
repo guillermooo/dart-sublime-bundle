@@ -1,3 +1,5 @@
+import sublime
+
 import os
 
 from Dart.lib.path import find_file
@@ -135,6 +137,20 @@ class ViewInspector(object):
     def __init__(self, view):
         self.view = view
 
+    def _get_top_lines(self):
+        end = 80 * 50
+        end = self.view.full_line(end).end()
+        region = sublime.Region(0, end)
+        assert isinstance(region, sublime.Region)
+        lines = self.view.lines(region)
+        yield from (self.view.substr(line) for line in lines)
+
+    def _find_at_top(self, *sought_terms):
+        for line in self._get_top_lines():
+            for term in  sought_terms:
+                if term in line:
+                    return True
+
     @property
     def is_project_file(self):
         return any((self.is_dart_file,
@@ -146,14 +162,11 @@ class ViewInspector(object):
 
     @property
     def is_server_app(self):
-        # TODO(guillermooo): return an enum value?
-        # see if it imports dart:io
-        pass
+        return self._find_at_top("import 'dart:io'", 'import "dart:io"')
 
     @property
     def is_web_app(self):
-        # see if it imports dart:html
-        pass
+        return self._find_at_top("import 'dart:html'", 'import "dart:html"')
 
     @property
     def is_pubspec(self):
