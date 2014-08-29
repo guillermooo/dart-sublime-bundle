@@ -13,7 +13,7 @@ import time
 from Default.exec import ProcessListener
 from Default.exec import AsyncProcess
 
-from Dart.lib.panels import OutpuPanel
+from Dart.lib.panels import OutputPanel
 
 
 class DartExecCommand(sublime_plugin.WindowCommand, ProcessListener):
@@ -43,7 +43,7 @@ class DartExecCommand(sublime_plugin.WindowCommand, ProcessListener):
 
         if not hasattr(self, 'out_panel'):
             # Try not to call get_output_panel until the regexes are assigned
-            self.out_panel = OutpuPanel(panel_name)
+            self.out_panel = OutputPanel(panel_name)
 
         # Default to the current files directory if no working directory was given
         if (working_dir and
