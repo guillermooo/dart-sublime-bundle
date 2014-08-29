@@ -6,12 +6,13 @@ import sublime_plugin
 
 import os
 from functools import partial
+import time
 
 from Dart import PluginLogger
-from Dart.lib.sdk import SDK
-from Dart.lib.dart_project import ViewInspector
-from Dart.lib.dart_project import find_pubspec
 from Dart.lib.build.base import DartBuildCommandBase
+from Dart.lib.dart_project import find_pubspec
+from Dart.lib.dart_project import ViewInspector
+from Dart.lib.sdk import SDK
 
 
 _logger = PluginLogger(__name__)
@@ -68,10 +69,14 @@ class DartRunCommand(DartBuildCommandBase):
             working_dir = os.path.dirname(file_name)
 
         sdk = SDK()
+        dart_view = ViewInspector(self.window.active_view())
 
-        inspector = ViewInspector(self.window.active_view())
-        if inspector.is_server_app:
+        if dart_view.is_server_app:
             self.run_server_app(file_name, working_dir)
+            return
+
+        if dart_view.is_web_app:
+            self.run_web_app(file_name, working_dir)
             return
 
         if action == 'primary':
@@ -100,6 +105,21 @@ class DartRunCommand(DartBuildCommandBase):
             'preamble': 'Running dart...\n',
         }
         self.execute(**args)
+
+    def run_web_app(self, file_name, working_dir):
+        args = {
+            'cmd': [SDK().path_to_pub, 'serve'],
+            'working_dir': working_dir,
+        }
+        self.execute(**args)
+
+        # TODO(guillermooo): run dartium in checked mode
+        # FIXME(guillermooo): this second call kills the pub serve process.
+        args = {
+            'cmd': [SDK().path_to_dartium, 'http://localhost:8080'],
+            'working_dir': working_dir,
+        }
+        sublime.set_timeout(lambda: self.execute(**args), 1500)
 
 
 class DartBuildPubspecCommand(DartBuildCommandBase):

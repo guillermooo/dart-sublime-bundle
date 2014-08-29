@@ -3,6 +3,7 @@ import sublime
 import os
 
 from Dart.lib.path import find_file
+from Dart.lib.path import to_platform_path
 from Dart.lib.out_there.yaml import load
 from Dart.lib.path import is_view_dart_script
 

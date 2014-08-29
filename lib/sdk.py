@@ -124,6 +124,12 @@ class SDK(object):
         """
         return self.get_bin_tool('docgen', '.bat')
 
+    @property
+    def path_to_dartium(self):
+        # TODO(guillermooo): path may not exist
+        p = os.path.realpath(os.path.join(self.path, '..', 'chromium', 'chrome'))
+        return to_platform_path(p, '.exe')
+
     def check_version(self):
         return check_output([self.path_to_dart, '--version'],
                             stderr=STDOUT,
