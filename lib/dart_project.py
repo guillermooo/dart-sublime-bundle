@@ -134,7 +134,7 @@ def find_pubspec(start):
     return find_file(start, 'pubspec.yaml')
 
 
-class ViewInspector(object):
+class DartView(object):
     def __init__(self, view):
         self.view = view
 

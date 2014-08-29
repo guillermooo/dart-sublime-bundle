@@ -11,7 +11,7 @@ import time
 from Dart import PluginLogger
 from Dart.lib.build.base import DartBuildCommandBase
 from Dart.lib.dart_project import find_pubspec
-from Dart.lib.dart_project import ViewInspector
+from Dart.lib.dart_project import DartView
 from Dart.lib.sdk import SDK
 
 
@@ -24,7 +24,7 @@ class ContextProvider(sublime_plugin.EventListener):
     '''
     def on_query_context(self, view, key, operator, operand, match_all):
         if key == 'dart_is_project_file':
-            return ViewInspector(view).is_project_file
+            return DartView(view).is_project_file
 
 
 class DartBuildProjectCommand(sublime_plugin.WindowCommand):
@@ -38,7 +38,7 @@ class DartBuildProjectCommand(sublime_plugin.WindowCommand):
           One of: 'primary', 'secondary'
         '''
         view = self.window.active_view()
-        if ViewInspector(view).is_pubspec:
+        if DartView(view).is_pubspec:
             self.window.run_command('dart_build_pubspec', {
                 'action': action,
                 'file_name': view.file_name()
@@ -69,7 +69,7 @@ class DartRunCommand(DartBuildCommandBase):
             working_dir = os.path.dirname(file_name)
 
         sdk = SDK()
-        dart_view = ViewInspector(self.window.active_view())
+        dart_view = DartView(self.window.active_view())
 
         if dart_view.is_server_app:
             self.run_server_app(file_name, working_dir)
