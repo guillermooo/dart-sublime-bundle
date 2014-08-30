@@ -24,7 +24,7 @@ class ContextProvider(sublime_plugin.EventListener):
     files.
     '''
     def on_query_context(self, view, key, operator, operand, match_all):
-        if key == 'dart_is_runnable':
+        if key == 'dart_file_is_runnable':
             return DartView(view).is_runnable
 
 

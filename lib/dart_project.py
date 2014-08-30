@@ -2,10 +2,15 @@ import sublime
 
 import os
 
-from Dart.lib.path import find_file
-from Dart.lib.path import to_platform_path
 from Dart.lib.out_there.yaml import load
+from Dart.lib.path import find_file
+from Dart.lib.path import is_prefix
 from Dart.lib.path import is_view_dart_script
+from Dart.lib.path import to_platform_path
+
+
+def find_pubspec(start):
+    return find_file(start, 'pubspec.yaml')
 
 
 class DartProject(object):
@@ -21,9 +26,7 @@ class DartProject(object):
         os.mkdir(os.path.join(self.pubspec.parent, name))
 
     def is_prefix(self, prefix, path):
-        prefix = os.path.realpath(prefix)
-        path = os.path.realpath(path)
-        return path.startswith(prefix)
+        return is_prefix(prefix, path)
 
     @property
     def path_to_web(self):
@@ -130,10 +133,6 @@ class PubspecFile(object):
             return cls(p)
 
 
-def find_pubspec(start):
-    return find_file(start, 'pubspec.yaml')
-
-
 class DartView(object):
     '''Wraps a regular ST view and provides convenience methods if it's
     a Dart project file.
@@ -153,13 +152,20 @@ class DartView(object):
                 if term in line:
                     return True
 
+    def has_prefix(self, prefix):
+        return is_prefix(prefix, self.view.file_name())
+
     @property
     def is_runnable(self):
-        '''Returns `True` if the file is a pubspec.yaml or a .dart file.
+        '''Returns `True` if the file is a pubspec.yaml or a .dart file, or if
+        the file is under the project's 'web' directory. If a file is under
+        'web', we consider it runnable as part of the web app.
         '''
-        # TODO(guillermooo): include html files?
+        project = DartProject.from_path(self.view.file_name())
         return any((self.is_dart_file,
-                    self.is_pubspec))
+                    self.is_pubspec,
+                    project and self.has_prefix(project.path_to_web),
+                    ))
 
     @property
     def is_dart_file(self):
@@ -170,16 +176,14 @@ class DartView(object):
         project = DartProject.from_path(self.view.file_name())
         if not project:
             return
-        return project.is_prefix(prefix=project.path_to_bin,
-                                 path=self.view.file_name())
+        return self.has_prefix(project.path_to_bin)
 
     @property
     def is_web_app(self):
         project = DartProject.from_path(self.view.file_name())
         if not project:
             return
-        return project.is_prefix(prefix=project.path_to_web,
-                                 path=self.view.file_name())
+        return self.has_prefix(project.path_to_web)
 
     @property
     def is_pubspec(self):
