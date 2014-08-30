@@ -127,7 +127,6 @@ class SDK(object):
     @property
     def path_to_dartium(self):
         try:
-            # TODO(guillermooo): path may not exist
             p = os.path.realpath(os.path.join(self.path, '..', 'chromium', 'chrome'))
             return to_platform_path(p, '.exe')
         except Exception as e:
@@ -159,10 +158,16 @@ class Dartium(object):
     def __init__(self):
         self.path = SDK().path_to_dartium
 
+    def get_env(self, new={}):
+        current = os.environ.copy()
+        current.update(new)
+        return current
+
     def start(self, *args):
+        env = self.get_env({'DART_FLAGS': '--checked'})
         try:
             cmd = (self.path,) + args
-            Popen(cmd, startupinfo=supress_window())
+            Popen(cmd, startupinfo=supress_window(), env=env)
         except Exception as e:
             _logger.error('=' * 80)
             _logger.error('could not start Dartium')
