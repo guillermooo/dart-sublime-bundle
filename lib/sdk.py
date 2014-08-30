@@ -126,9 +126,14 @@ class SDK(object):
 
     @property
     def path_to_dartium(self):
-        # TODO(guillermooo): path may not exist
-        p = os.path.realpath(os.path.join(self.path, '..', 'chromium', 'chrome'))
-        return to_platform_path(p, '.exe')
+        try:
+            # TODO(guillermooo): path may not exist
+            p = os.path.realpath(os.path.join(self.path, '..', 'chromium', 'chrome'))
+            return to_platform_path(p, '.exe')
+        except Exception as e:
+            _logger.error('could not find Dartium')
+            _logger.error(e)
+
 
     def check_version(self):
         return check_output([self.path_to_dart, '--version'],
