@@ -4,14 +4,15 @@
 import sublime
 import sublime_plugin
 
-import os
 from functools import partial
+import os
 import time
 
 from Dart import PluginLogger
 from Dart.lib.build.base import DartBuildCommandBase
-from Dart.lib.dart_project import find_pubspec
 from Dart.lib.dart_project import DartView
+from Dart.lib.dart_project import find_pubspec
+from Dart.lib.sdk import Dartium
 from Dart.lib.sdk import SDK
 
 
@@ -19,12 +20,12 @@ _logger = PluginLogger(__name__)
 
 
 class ContextProvider(sublime_plugin.EventListener):
-    '''Implements the 'dart_is_project_file' context for .sublime-keymap
+    '''Implements the 'dart_is_runnable' context for .sublime-keymap
     files.
     '''
     def on_query_context(self, view, key, operator, operand, match_all):
-        if key == 'dart_is_project_file':
-            return DartView(view).is_project_file
+        if key == 'dart_is_runnable':
+            return DartView(view).is_runnable
 
 
 class DartBuildProjectCommand(sublime_plugin.WindowCommand):
@@ -58,15 +59,22 @@ class DartRunCommand(DartBuildCommandBase):
     '''
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        self.server = False
 
     def run(self, file_name, action='primary'):
         '''
         @action
           On of: primary, secondary
         '''
-        working_dir = find_pubspec(file_name)
-        if not working_dir:
-            working_dir = os.path.dirname(file_name)
+        try:
+            working_dir = os.path.dirname(find_pubspec(file_name))
+        except:
+            try:
+                if not working_dir:
+                    working_dir = os.path.dirname(file_name)
+            except:
+                _logger.debug('cannot run an unsaved file')
+                return
 
         sdk = SDK()
         dart_view = DartView(self.window.active_view())
@@ -80,15 +88,14 @@ class DartRunCommand(DartBuildCommandBase):
             return
 
         if action == 'primary':
-            args = {
-                    'cmd' : [sdk.path_to_dart2js,
+            self.execute(
+                    cmd=[sdk.path_to_dart2js,
                                 '--minify', '-o', file_name + '.js',
                                 file_name],
-                    'working_dir': working_dir,
-                    'file_regex': "(\\S*):(\\d*):(\\d*): (.*)",
-                    'preamble': 'Running dart2js...\n',
-                    }
-            self.execute(**args)
+                    working_dir=working_dir,
+                    file_regex="(\\S*):(\\d*):(\\d*): (.*)",
+                    preamble='Running dart2js...\n',
+                    )
             return
 
         if action != 'secondary':
@@ -98,28 +105,27 @@ class DartRunCommand(DartBuildCommandBase):
         self.run_server_app(file_name, working_dir)
 
     def run_server_app(self, file_name, working_dir):
-        args = {
-            'cmd': [SDK().path_to_dart, '--checked', file_name],
-            'working_dir': working_dir,
-            'file_regex': "'file:///(.+)': error: line (\\d+) pos (\\d+): (.*)$",
-            'preamble': 'Running dart...\n',
-        }
-        self.execute(**args)
+        self.execute(
+            cmd=[SDK().path_to_dart, '--checked', file_name],
+            working_dir=working_dir,
+            file_regex="'file:///(.+)': error: line (\\d+) pos (\\d+): (.*)$",
+            preamble='Running dart...\n',
+            )
 
     def run_web_app(self, file_name, working_dir):
-        args = {
-            'cmd': [SDK().path_to_pub, 'serve'],
-            'working_dir': working_dir,
-        }
-        self.execute(**args)
+
+        if self.server:
+            self.execute(kill=True)
+
+        self.execute(
+            cmd=[SDK().path_to_pub, 'serve'],
+            working_dir=working_dir,
+            )
+        self.server = True
 
         # TODO(guillermooo): run dartium in checked mode
-        # FIXME(guillermooo): this second call kills the pub serve process.
-        args = {
-            'cmd': [SDK().path_to_dartium, 'http://localhost:8080'],
-            'working_dir': working_dir,
-        }
-        sublime.set_timeout(lambda: self.execute(**args), 1500)
+        sublime.set_timeout(lambda: Dartium().start('http:localhost:8080'),
+                            1000)
 
 
 class DartBuildPubspecCommand(DartBuildCommandBase):
@@ -146,12 +152,11 @@ class DartBuildPubspecCommand(DartBuildCommandBase):
         working_dir = os.path.dirname(file_name)
 
         if action == 'primary':
-            args = {
-                "cmd": [SDK().path_to_pub] + ['get'],
-                "working_dir": working_dir,
-                "preamble": "Running pub...\n",
-            }
-            self.execute(**args)
+            self.execute(
+                cmd=[SDK().path_to_pub] + ['get'],
+                working_dir=working_dir,
+                preamble="Running pub...\n",
+                )
             return
 
         if action != 'secondary':
@@ -165,9 +170,8 @@ class DartBuildPubspecCommand(DartBuildCommandBase):
         if idx == -1:
             return
 
-        args = {
-            'cmd': [SDK().path_to_pub] + [self.PUB_CMDS[idx]],
-            'working_dir': os.path.dirname(file_name),
-            "preamble": "Running pub...\n",
-        }
-        self.execute(**args)
+        self.execute(
+            cmd=[SDK().path_to_pub] + [self.PUB_CMDS[idx]],
+            working_dir=os.path.dirname(file_name),
+            preamble="Running pub...\n",
+            )

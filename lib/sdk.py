@@ -146,3 +146,21 @@ class DartFormat(object):
     def format(self, text):
         dart_fmt = TextFilter([self.path])
         return dart_fmt.filter(text)
+
+
+class Dartium(object):
+    '''Wraps Dartium.
+    '''
+    def __init__(self):
+        self.path = SDK().path_to_dartium
+
+    def start(self, *args):
+        try:
+            cmd = (self.path,) + args
+            Popen(cmd, startupinfo=supress_window())
+        except Exception as e:
+            _logger.error('=' * 80)
+            _logger.error('could not start Dartium')
+            _logger.error('-' * 80)
+            _logger.error(e)
+            _logger.error('=' * 80)

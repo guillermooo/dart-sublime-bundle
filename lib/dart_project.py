@@ -20,10 +20,10 @@ class DartProject(object):
     def make_top_level_dir(self, name):
         os.mkdir(os.path.join(self.pubspec.parent, name))
 
-    def is_path_under(self, top_level, path):
-        prefix = os.path.realpath(top_level)
-        target = os.path.realpath(path)
-        return target.startswith(prefix)
+    def is_prefix(self, prefix, path):
+        prefix = os.path.realpath(prefix)
+        path = os.path.realpath(path)
+        return path.startswith(prefix)
 
     @property
     def path_to_web(self):
@@ -135,14 +135,15 @@ def find_pubspec(start):
 
 
 class DartView(object):
+    '''Wraps a regular ST view and provides convenience methods if it's
+    a Dart project file.
+    '''
     def __init__(self, view):
         self.view = view
 
     def _get_top_lines(self):
-        end = 80 * 50
-        end = self.view.full_line(end).end()
+        end = self.view.full_line(80 * 50).end()
         region = sublime.Region(0, end)
-        assert isinstance(region, sublime.Region)
         lines = self.view.lines(region)
         yield from (self.view.substr(line) for line in lines)
 
@@ -153,7 +154,10 @@ class DartView(object):
                     return True
 
     @property
-    def is_project_file(self):
+    def is_runnable(self):
+        '''Returns `True` if the file is a pubspec.yaml or a .dart file.
+        '''
+        # TODO(guillermooo): include html files?
         return any((self.is_dart_file,
                     self.is_pubspec))
 
@@ -163,11 +167,19 @@ class DartView(object):
 
     @property
     def is_server_app(self):
-        return self._find_at_top("import 'dart:io'", 'import "dart:io"')
+        project = DartProject.from_path(self.view.file_name())
+        if not project:
+            return
+        return project.is_prefix(prefix=project.path_to_bin,
+                                 path=self.view.file_name())
 
     @property
     def is_web_app(self):
-        return self._find_at_top("import 'dart:html'", 'import "dart:html"')
+        project = DartProject.from_path(self.view.file_name())
+        if not project:
+            return
+        return project.is_prefix(prefix=project.path_to_web,
+                                 path=self.view.file_name())
 
     @property
     def is_pubspec(self):
