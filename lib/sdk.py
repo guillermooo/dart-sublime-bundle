@@ -1,21 +1,22 @@
 import sublime
 
-from subprocess import Popen
-from subprocess import STDOUT
-from subprocess import check_output
-from subprocess import TimeoutExpired
+from os.path import exists
 from os.path import join
 from os.path import realpath
-from os.path import exists
+from subprocess import check_output
+from subprocess import Popen
+from subprocess import STDOUT
+from subprocess import TimeoutExpired
 import os
 
 from Dart import PluginLogger
+from Dart.lib.error import ConfigError
+from Dart.lib.error import FatalConfigError
 from Dart.lib.filter import TextFilter
 from Dart.lib.path import find_in_path
 from Dart.lib.plat import is_windows
 from Dart.lib.plat import supress_window
 from Dart.lib.plat import to_platform_path
-from Dart.lib.error import FatalConfigError
 
 
 _logger = PluginLogger(__name__)
@@ -126,13 +127,18 @@ class SDK(object):
 
     @property
     def path_to_dartium(self):
+        '''Returns the path to the chrome.exe of the 'Dartium' Chrome build.
+
+        May throw a ConfigError that the caller must prepare for.
+        '''
+        # TODO(guillermooo): we need a better way to determine whether
+        # dartium is available.
         try:
             p = os.path.realpath(os.path.join(self.path, '..', 'chromium', 'chrome'))
             return to_platform_path(p, '.exe')
-        except Exception as e:
-            _logger.error('could not find Dartium')
-            _logger.error(e)
-
+        except:
+            # Dartium will not always be available on the user's machine.
+            raise ConfigError('could not find Dartium')
 
     def check_version(self):
         return check_output([self.path_to_dart, '--version'],
@@ -156,7 +162,10 @@ class Dartium(object):
     '''Wraps Dartium.
     '''
     def __init__(self):
-        self.path = SDK().path_to_dartium
+        try:
+            self.path = SDK().path_to_dartium
+        except ConfigError as e:
+            _logger.error(e)
 
     def get_env(self, new={}):
         current = os.environ.copy()
