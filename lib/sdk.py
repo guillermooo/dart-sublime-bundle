@@ -26,9 +26,9 @@ class SDK(object):
     """Wraps the Dart SDK.
     """
     def __init__(self):
-        setts = sublime.load_settings('Preferences.sublime-settings')
-        p = setts.get('dart_sdk_path')
+        self.setts = sublime.load_settings('Preferences.sublime-settings')
 
+        p = self.setts.get('dart_sdk_path')
         try:
             if not os.path.exists(
                 os.path.join(p, 'bin', to_platform_path('dart', '.exe'))):
@@ -131,15 +131,23 @@ class SDK(object):
 
         May throw a ConfigError that the caller must prepare for.
         '''
-        # TODO(guillermooo): we need a better way to determine whether
-        # dartium is available.
-        try:
-            p = os.path.realpath(os.path.join(self.path, '..', 'chromium', 'chrome'))
-            p = to_platform_path(p, '.exe')
-            if not os.path.exists(p):
-                # Dartium will not always be available on the user's machine.
-                raise ConfigError('could not find Dartium')
+        p = os.path.realpath(os.path.join(self.path, '..', 'chromium', 'chrome'))
+        p = to_platform_path(p, '.exe')
+        if os.path.exists(p):
             return p
+
+        # It seems the user didn't install the DartEditor package, so try
+        # a setting. Dartium will not always be available on the user's
+        # machine.
+        p = self.setts.get('dart_dartium_path')
+        try:
+            full_path = to_platform_path(os.path.join(p, 'chrome'), '.exe')
+            if not os.path.exists(full_path):
+                raise ConfigError()
+            return full_path
+        except Exception as e:
+            _logger.error(e)
+            raise ConfigError('could not find Dartium')
 
     def check_version(self):
         return check_output([self.path_to_dart, '--version'],
