@@ -193,6 +193,9 @@ class SDK(object):
         '''
         return self.setts.get('dart_user_browsers')
 
+    def path_to_analysis_snapshot(self):
+        return self.analysis_snapshot
+
     def check_version(self):
         return check_output([self.path_to_dart, '--version'],
                             stderr=STDOUT,
