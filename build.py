@@ -9,6 +9,8 @@ import os
 import time
 
 from Dart import PluginLogger
+from Dart.lib.sdk import SDK
+from Dart.lib.dart_project import find_pubspec_path
 from Dart.lib.build.base import DartBuildCommandBase
 from Dart.lib.pub_package import DartView
 from Dart.lib.pub_package import find_pubspec
@@ -153,6 +155,10 @@ class DartRunCommand(DartBuildCommandBase):
             except:
                 _logger.debug('cannot run an unsaved file')
                 return
+
+        working_dir = find_pubspec_path(file_name)
+        if not working_dir:
+            working_dir = os.path.dirname(file_name)
 
         sdk = SDK()
         dart_view = DartView(self.window.active_view())

@@ -42,10 +42,11 @@ class SDK(object):
         p = self.setts.get('dart_sdk_path')
         try:
             if not os.path.exists(
-                os.path.join(p, 'bin', to_platform_path('dart', '.exe'))):
+                os.path.join(p, 'bin', join_on_win('dart', '.exe'))):
                     msg = 'wrong path in dart_sdk_path: {}'.format(p)
                     raise FatalConfigError(msg)
             self._path = p
+            self.analysis_snapshot = setts.get('dart_path_analysis_snapshot')
         except TypeError:
             msg = 'invalid value of dart_sdk_path: {}'.format(p)
             raise FatalConfigError(msg)
