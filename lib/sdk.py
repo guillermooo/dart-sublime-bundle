@@ -135,10 +135,11 @@ class SDK(object):
         # dartium is available.
         try:
             p = os.path.realpath(os.path.join(self.path, '..', 'chromium', 'chrome'))
-            return to_platform_path(p, '.exe')
-        except:
-            # Dartium will not always be available on the user's machine.
-            raise ConfigError('could not find Dartium')
+            p = to_platform_path(p, '.exe')
+            if not os.path.exists(p):
+                # Dartium will not always be available on the user's machine.
+                raise ConfigError('could not find Dartium')
+            return p
 
     def check_version(self):
         return check_output([self.path_to_dart, '--version'],
