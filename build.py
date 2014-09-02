@@ -20,11 +20,11 @@ _logger = PluginLogger(__name__)
 
 
 class ContextProvider(sublime_plugin.EventListener):
-    '''Implements the 'dart_is_runnable' context for .sublime-keymap
+    '''Implements the 'dart_can_do_launch' context for .sublime-keymap
     files.
     '''
     def on_query_context(self, view, key, operator, operand, match_all):
-        if key == 'dart_is_file_runnable':
+        if key == 'dart_can_do_launch':
             return DartView(view).is_runnable
 
 
