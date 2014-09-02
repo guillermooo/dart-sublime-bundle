@@ -2,6 +2,13 @@
 // Save your customizations to Packages/User/Preferences.sublime-settings instead.
 
 {
+	// Path to the sdk directory.
+	"dart_sdk_path": null,
+	// Path to the directory containing Dartium.
+	// You only need to set this if you are not using the DartEditor package.
+	// For example, if you install the sdk and Dartium separately.
+	"dart_dartium_path": null,
+
 	// Dartlint plugin settings
 	"dart_linter_active" : false,
 	"dart_linter_on_load" : true,
