@@ -60,7 +60,8 @@ class PolymerCommand(sublime_plugin.WindowCommand):
         project = DartProject.from_path(view.file_name())
 
         target_path = project.path_to_web
-        if project.is_path_under(project.path_to_web, view.file_name()):
+        if project.is_prefix(prefix=project.path_to_web,
+                             path=view.file_name()):
             target_path = os.path.dirname(view.file_name())
 
         return target_path
