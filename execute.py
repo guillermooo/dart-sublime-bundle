@@ -46,7 +46,7 @@ class DartExecCommand(sublime_plugin.WindowCommand, ProcessListener):
             self.out_panel = OutputPanel(panel_name)
 
         # Default to the current files directory if no working directory was given
-        if (working_dir and
+        if (not working_dir and
             self.window.active_view() and
             self.window.active_view().file_name()):
                 working_dir = os.path.dirname(

@@ -1,21 +1,22 @@
 import sublime
 
-from subprocess import Popen
-from subprocess import STDOUT
-from subprocess import check_output
-from subprocess import TimeoutExpired
+from os.path import exists
 from os.path import join
 from os.path import realpath
-from os.path import exists
+from subprocess import check_output
+from subprocess import Popen
+from subprocess import STDOUT
+from subprocess import TimeoutExpired
 import os
 
 from Dart import PluginLogger
+from Dart.lib.error import ConfigError
+from Dart.lib.error import FatalConfigError
 from Dart.lib.filter import TextFilter
 from Dart.lib.path import find_in_path
 from Dart.lib.plat import is_windows
 from Dart.lib.plat import supress_window
 from Dart.lib.plat import to_platform_path
-from Dart.lib.error import FatalConfigError
 
 
 _logger = PluginLogger(__name__)
@@ -25,9 +26,9 @@ class SDK(object):
     """Wraps the Dart SDK.
     """
     def __init__(self):
-        setts = sublime.load_settings('Preferences.sublime-settings')
-        p = setts.get('dart_sdk_path')
+        self.setts = sublime.load_settings('Preferences.sublime-settings')
 
+        p = self.setts.get('dart_sdk_path')
         try:
             if not os.path.exists(
                 os.path.join(p, 'bin', to_platform_path('dart', '.exe'))):
@@ -124,6 +125,30 @@ class SDK(object):
         """
         return self.get_bin_tool('docgen', '.bat')
 
+    @property
+    def path_to_dartium(self):
+        '''Returns the path to the chrome.exe of the 'Dartium' Chrome build.
+
+        May throw a ConfigError that the caller must prepare for.
+        '''
+        p = os.path.realpath(os.path.join(self.path, '..', 'chromium', 'chrome'))
+        p = to_platform_path(p, '.exe')
+        if os.path.exists(p):
+            return p
+
+        # It seems the user didn't install the DartEditor package, so try
+        # a setting. Dartium will not always be available on the user's
+        # machine.
+        p = self.setts.get('dart_dartium_path')
+        try:
+            full_path = to_platform_path(os.path.join(p, 'chrome'), '.exe')
+            if not os.path.exists(full_path):
+                raise ConfigError()
+            return full_path
+        except Exception as e:
+            _logger.error(e)
+            raise ConfigError('could not find Dartium')
+
     def check_version(self):
         return check_output([self.path_to_dart, '--version'],
                             stderr=STDOUT,
@@ -140,3 +165,30 @@ class DartFormat(object):
     def format(self, text):
         dart_fmt = TextFilter([self.path])
         return dart_fmt.filter(text)
+
+
+class Dartium(object):
+    '''Wraps Dartium.
+    '''
+    def __init__(self):
+        try:
+            self.path = SDK().path_to_dartium
+        except ConfigError as e:
+            _logger.error(e)
+
+    def get_env(self, new={}):
+        current = os.environ.copy()
+        current.update(new)
+        return current
+
+    def start(self, *args):
+        env = self.get_env({'DART_FLAGS': '--checked'})
+        try:
+            cmd = (self.path,) + args
+            Popen(cmd, startupinfo=supress_window(), env=env)
+        except Exception as e:
+            _logger.error('=' * 80)
+            _logger.error('could not start Dartium')
+            _logger.error('-' * 80)
+            _logger.error(e)
+            _logger.error('=' * 80)

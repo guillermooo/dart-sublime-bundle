@@ -78,3 +78,9 @@ def find_file(start, fname):
         return
 
     return find_file(os.path.dirname(start), fname)
+
+
+def is_prefix(prefix, path):
+    prefix = os.path.realpath(prefix)
+    path = os.path.realpath(path)
+    return path.startswith(prefix)
