@@ -46,7 +46,7 @@ class SDK(object):
                     msg = 'wrong path in dart_sdk_path: {}'.format(p)
                     raise FatalConfigError(msg)
             self._path = p
-            self.analysis_snapshot = setts.get('dart_path_analysis_snapshot')
+            self.analysis_snapshot = setts.get('dart_analysis_snapshot_path')
         except TypeError:
             msg = 'invalid value of dart_sdk_path: {}'.format(p)
             raise FatalConfigError(msg)

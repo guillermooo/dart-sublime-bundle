@@ -60,7 +60,7 @@ def init():
     except Exception as e:
         print('Dart: Exception occurred during init. Aborting')
         print('==============================================')
-        print(e.message)
+        print(e)
         print('==============================================')
         return
 
@@ -310,8 +310,8 @@ class AnalysisServer(object):
 
         AnalysisServer.server = PipeServer(['dart',
                             sdk.path_to_analysis_snapshot,
-                           '--sdk={0}'.format(sdk.path_to_sdk)])
-        AnalysisServer.server.start(working_dir=sdk.path_to_sdk)
+                           '--sdk={0}'.format(sdk.path)])
+        AnalysisServer.server.start(working_dir=sdk.path)
 
         self.start_stdout_watcher()
 
@@ -324,7 +324,7 @@ class AnalysisServer(object):
 
     def start_stdout_watcher(self):
         sdk = SDK()
-        t = StdoutWatcher(self, sdk.path_to_sdk)
+        t = StdoutWatcher(self, sdk.path)
         # Thread dies with the main thread.
         t.daemon = True
         # XXX: This is necessary. If we call t.start() directly, ST hangs.
