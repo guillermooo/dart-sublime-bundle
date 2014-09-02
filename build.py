@@ -19,6 +19,11 @@ from Dart.lib.sdk import SDK
 _logger = PluginLogger(__name__)
 
 
+def plugin_unloaded():
+    # Kill any existing server.
+    sublime.active_window().run_command('dart_run', {'kill_only': True})
+
+
 class ContextProvider(sublime_plugin.EventListener):
     '''Implements the 'dart_can_do_launch' context for .sublime-keymap
     files.
@@ -61,11 +66,15 @@ class DartRunCommand(DartBuildCommandBase):
         super().__init__(*args, **kwargs)
         self.server = False
 
-    def run(self, file_name, action='primary'):
+    def run(self, file_name, action='primary', kill_only=False):
         '''
         @action
           On of: primary, secondary
         '''
+        if self.server and kill_only:
+            self.execute(kill=True)
+            return
+
         try:
             working_dir = os.path.dirname(find_pubspec(file_name))
         except:
@@ -118,7 +127,7 @@ class DartRunCommand(DartBuildCommandBase):
             self.execute(kill=True)
 
         self.execute(
-            cmd=[SDK().path_to_pub, 'serve'],
+            cmd=[SDK().path_to_pub, 'serve', '--no-dart2js'],
             working_dir=working_dir,
             )
         self.server = True
