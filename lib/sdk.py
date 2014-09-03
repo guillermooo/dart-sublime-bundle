@@ -158,7 +158,6 @@ class SDK(object):
         try:
             name = self.setts.get(
                 'dart_user_browsers')[sublime.platform()]['default']
-            # TODO(guillermooo): check that it's a valid path
             path = self.setts.get(
                 'dart_user_browsers')[sublime.platform()][name]
             if not os.path.exists(path):
