@@ -132,6 +132,11 @@ class DartRunCommand(DartBuildCommandBase):
         sdk = SDK()
 
         if action == 'secondary':
+            if not sdk.path_to_default_user_browser:
+                print("Dart: No default browser found")
+                _logger.info('no default browser found')
+                return
+
             self.execute(
                 cmd=[sdk.path_to_pub, 'serve'],
                 working_dir=working_dir,

@@ -160,10 +160,13 @@ class SDK(object):
             name = self.setts.get(
                 'dart_user_browsers')[sublime.platform()]['default']
             # TODO(guillermooo): check that it's a valid path
-            return self.setts.get(
+            path = self.setts.get(
                 'dart_user_browsers')[sublime.platform()][name]
+            if not os.path.exists(path):
+                raise ConfigError('wrong path to browser')
+            return path
         except Exception as e:
-            _logger.debug('while retrieving default browser %s', e)
+            _logger.debug('error while retrieving default browser %s', e)
             return None
 
     @path_to_default_user_browser.setter
