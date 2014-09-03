@@ -131,17 +131,16 @@ class SDK(object):
 
         May throw a ConfigError that the caller must prepare for.
         '''
-        p = os.path.realpath(os.path.join(self.path, '..', 'chromium', 'chrome'))
-        p = to_platform_path(p, '.exe')
-        if os.path.exists(p):
-            return p
+        # Dartium will not always be available on the user's machine.
+        bin_name = 'chrome.exe'
+        if sublime.platform() == 'osx':
+            bin_name = 'Chrome.app'
+        elif sublime.platform() == 'linux':
+            raise ConfigError('not implemented for Linux')
 
-        # It seems the user didn't install the DartEditor package, so try
-        # a setting. Dartium will not always be available on the user's
-        # machine.
-        p = self.setts.get('dart_dartium_path')
+        path = self.setts.get('dart_dartium_path')
         try:
-            full_path = to_platform_path(os.path.join(p, 'chrome'), '.exe')
+            full_path = os.path.join(path, bin_name)
             if not os.path.exists(full_path):
                 raise ConfigError()
             return full_path
@@ -236,6 +235,9 @@ class Dartium(object):
         env = self.get_env({'DART_FLAGS': '--checked'})
         try:
             cmd = (self.path,) + args
+            if sublime.platform() == 'osx':
+                cmd = ('open',) + cmd
+            _logger.debug('Dartium cmd: %r' % (cmd,))
             Popen(cmd, startupinfo=supress_window(), env=env)
         except Exception as e:
             _logger.error('=' * 80)
