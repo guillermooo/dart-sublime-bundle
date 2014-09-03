@@ -149,6 +149,13 @@ class SDK(object):
             _logger.error(e)
             raise ConfigError('could not find Dartium')
 
+    @property
+    def path_to_browser(self):
+        '''Returns the full path to a non-Dartium browser specified by the
+        user.
+        '''
+        return self.setts.get('dart_browser_full_path')
+
     def check_version(self):
         return check_output([self.path_to_dart, '--version'],
                             stderr=STDOUT,
@@ -165,6 +172,18 @@ class DartFormat(object):
     def format(self, text):
         dart_fmt = TextFilter([self.path])
         return dart_fmt.filter(text)
+
+
+class GenericBinary(object):
+    def __init__(self, *args, window=True):
+        self.args = args
+        self.startupinfo = None
+        if not window:
+            self.startupinfo = supress_window()
+
+    def start(self, args=[], env={}):
+        cmd = self.args + tuple(args)
+        Popen(cmd, startupinfo=self.startupinfo, env=env)
 
 
 class Dartium(object):

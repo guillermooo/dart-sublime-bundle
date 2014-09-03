@@ -13,6 +13,7 @@ from Dart.lib.build.base import DartBuildCommandBase
 from Dart.lib.dart_project import DartView
 from Dart.lib.dart_project import find_pubspec
 from Dart.lib.sdk import Dartium
+from Dart.lib.sdk import GenericBinary
 from Dart.lib.sdk import SDK
 
 
@@ -53,7 +54,7 @@ class DartBuildProjectCommand(sublime_plugin.WindowCommand):
 
         self.window.run_command('dart_run', {
             'action': action,
-            'file_name': view.file_name()
+            'file_name': view.file_name(),
             })
 
 
@@ -69,10 +70,11 @@ class DartRunCommand(DartBuildCommandBase):
     def run(self, file_name, action='primary', kill_only=False):
         '''
         @action
-          On of: primary, secondary
+          One of: primary, secondary
         '''
         if self.server and kill_only:
             self.execute(kill=True)
+            self.server = False
             return
 
         try:
@@ -93,7 +95,7 @@ class DartRunCommand(DartBuildCommandBase):
             return
 
         if dart_view.is_web_app:
-            self.run_web_app(file_name, working_dir)
+            self.run_web_app(file_name, working_dir, action)
             return
 
         if action == 'primary':
@@ -121,19 +123,31 @@ class DartRunCommand(DartBuildCommandBase):
             preamble='Running dart...\n',
             )
 
-    def run_web_app(self, file_name, working_dir):
+    def run_web_app(self, file_name, working_dir, action):
 
         if self.server:
             self.execute(kill=True)
-
-        self.execute(
-            cmd=[SDK().path_to_pub, 'serve', '--no-dart2js'],
-            working_dir=working_dir,
-            )
         self.server = True
 
+        sdk = SDK()
+
+        if action == 'secondary':
+            self.execute(
+                cmd=[sdk.path_to_pub, 'serve'],
+                working_dir=working_dir,
+                )
+            bin_ = GenericBinary(sdk.path_to_browser)
+            sublime.set_timeout(
+                lambda: bin_.start(args=['http://localhost:8080']), 1000)
+            return
+
+        self.execute(
+            cmd=[sdk.path_to_pub, 'serve', '--no-dart2js'],
+            working_dir=working_dir,
+            )
+
         # TODO(guillermooo): run dartium in checked mode
-        sublime.set_timeout(lambda: Dartium().start('http:localhost:8080'),
+        sublime.set_timeout(lambda: Dartium().start('http//:localhost:8080'),
                             1000)
 
 
