@@ -150,11 +150,40 @@ class SDK(object):
             raise ConfigError('could not find Dartium')
 
     @property
-    def path_to_browser(self):
+    def path_to_default_user_browser(self):
+        '''Returns the full path to a default non-Dartium browser specified by
+        the user.
+
+        Returns a path or `None`.
+        '''
+        try:
+            name = self.setts.get(
+                'dart_user_browsers')[sublime.platform()]['default']
+            # TODO(guillermooo): check that it's a valid path
+            return self.setts.get(
+                'dart_user_browsers')[sublime.platform()][name]
+        except Exception as e:
+            _logger.debug('while retrieving default browser %s', e)
+            return None
+
+    @path_to_default_user_browser.setter
+    def path_to_default_user_browser(self, value):
+        plat_browsers = self.user_browsers
+        plat_browsers['default'] = value
+        all_plats = self.setts.get('dart_user_browsers')
+        all_plats[sublime.platform()] = plat_browsers
+        self.setts = sublime.load_settings('Preferences.sublime-settings')
+        self.setts.set('dart_user_browsers', all_plats)
+        sublime.save_settings('Preferences.sublime-settings')
+
+    @property
+    def user_browsers(self):
         '''Returns the full path to a non-Dartium browser specified by the
         user.
+
+        Returns a dictionary of name -> path, or `None`.
         '''
-        return self.setts.get('dart_browser_full_path')
+        return self.setts.get('dart_user_browsers')[sublime.platform()]
 
     def check_version(self):
         return check_output([self.path_to_dart, '--version'],

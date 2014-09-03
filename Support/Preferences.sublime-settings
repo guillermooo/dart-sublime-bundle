@@ -9,8 +9,15 @@
 	// For example, if you install the sdk and Dartium separately.
 	"dart_dartium_path": null,
 
-	// Full path to a non-Dartium browser.
-	"dart_browser_full_path": null,
+	// User-defined browsers.
+	// Maps arbitrary names to full paths to executables.
+	// The reserved 'default' name points to the default user browser. It must
+	// be a key in the corresponding dictionary.
+	"dart_user_browsers": {
+		"windows": {},
+		"osx": {},
+		"linux": {}
+	},
 
 	// Dartlint plugin settings
 	"dart_linter_active": false,

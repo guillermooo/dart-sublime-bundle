@@ -136,7 +136,7 @@ class DartRunCommand(DartBuildCommandBase):
                 cmd=[sdk.path_to_pub, 'serve'],
                 working_dir=working_dir,
                 )
-            bin_ = GenericBinary(sdk.path_to_browser)
+            bin_ = GenericBinary(sdk.path_to_default_user_browser)
             sublime.set_timeout(
                 lambda: bin_.start(args=['http://localhost:8080']), 1000)
             return
@@ -147,7 +147,7 @@ class DartRunCommand(DartBuildCommandBase):
             )
 
         # TODO(guillermooo): run dartium in checked mode
-        sublime.set_timeout(lambda: Dartium().start('http//:localhost:8080'),
+        sublime.set_timeout(lambda: Dartium().start('http://localhost:8080'),
                             1000)
 
 
