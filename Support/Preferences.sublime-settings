@@ -5,8 +5,11 @@
 	// Path to the sdk directory.
 	"dart_sdk_path": null,
 	// Path to the directory containing Dartium.
-	// TODO: allow for different paths by platform.
-	"dart_dartium_path": null,
+	"dart_dartium_path": {
+		"windows": {"path": null},
+		"osx": {"path": null},
+		"linux": {"path": null},
+	},
 
 	// User-defined browsers.
 	// Maps arbitrary names to full paths to executables.

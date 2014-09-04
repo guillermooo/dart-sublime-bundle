@@ -128,7 +128,8 @@ class SDK(object):
 
     @property
     def path_to_dartium(self):
-        '''Returns the path to the chrome.exe of the 'Dartium' Chrome build.
+        '''Returns the path to the `chrome` binary of the 'Dartium' Chrome
+        build.
 
         May throw a ConfigError that the caller must prepare for.
         '''
@@ -139,7 +140,12 @@ class SDK(object):
         elif sublime.platform() == 'linux':
             raise ConfigError('not implemented for Linux')
 
-        path = self.setts.get('dart_dartium_path')
+        try:
+            path = self.setts.get(
+                'dart_dartium_path')[sublime.platform()]['path']
+        except (KeyError, TypeError) as e:
+            raise ConfigError('could not find path to Dartium')
+
         try:
             full_path = os.path.join(path, bin_name)
             if not os.path.exists(full_path):

@@ -115,6 +115,25 @@ class DartRunCommand(DartBuildCommandBase):
 
         self.run_server_app(file_name, working_dir)
 
+    def start_default_browser(self):
+        sdk = SDK()
+
+        # TODO(guillermooo): make GUIProcess wrapper to abstract out some of
+        # the stuff below?
+        if sublime.platform() == 'osx'
+            bin_ = GenericBinary('open', sdk.path_to_default_user_browser)
+            sublime.set_timeout(
+                lambda: bin_.start(args=['http://localhost:8080']), 1000)
+            return
+
+        elif sublime.platform() == 'windows':
+            bin_ = GenericBinary(sdk.path_to_default_user_browser)
+            sublime.set_timeout(
+                lambda: bin_.start(args=['http://localhost:8080']), 1000)
+            return
+
+        TypeError('not implemented for linux')
+
     def run_server_app(self, file_name, working_dir):
         self.execute(
             cmd=[SDK().path_to_dart, '--checked', file_name],
@@ -141,9 +160,7 @@ class DartRunCommand(DartBuildCommandBase):
                 cmd=[sdk.path_to_pub, 'serve'],
                 working_dir=working_dir,
                 )
-            bin_ = GenericBinary(sdk.path_to_default_user_browser)
-            sublime.set_timeout(
-                lambda: bin_.start(args=['http://localhost:8080']), 1000)
+            self.start_default_browser()
             return
 
         self.execute(
