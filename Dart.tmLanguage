@@ -580,7 +580,7 @@
 				</dict>
 				<dict>
 					<key>match</key>
-					<string>\b(async\*|async|awaiy\*|await|yield)\b</string>
+					<string>\b(async\*|async|await\*|await|yield)\b</string>
 					<key>name</key>
 					<string>keyword.control.async.dart</string>
 				</dict>
