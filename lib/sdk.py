@@ -134,7 +134,7 @@ class SDK(object):
         # Dartium will not always be available on the user's machine.
         bin_name = 'chrome.exe'
         if sublime.platform() == 'osx':
-            bin_name = 'Chrome.app'
+            bin_name = 'Chromium.app/Contents/MacOS/Chromium'
         elif sublime.platform() == 'linux':
             raise ConfigError('not implemented for Linux')
 
@@ -234,8 +234,6 @@ class Dartium(object):
         env = self.get_env({'DART_FLAGS': '--checked'})
         try:
             cmd = (self.path,) + args
-            if sublime.platform() == 'osx':
-                cmd = ('open',) + cmd
             _logger.debug('Dartium cmd: %r' % (cmd,))
             Popen(cmd, startupinfo=supress_window(), env=env)
         except Exception as e:
