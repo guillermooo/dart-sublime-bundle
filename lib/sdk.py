@@ -25,6 +25,7 @@ _logger = PluginLogger(__name__)
 class SDK(object):
     """Wraps the Dart SDK.
     """
+    # TODO(guillermooo): make this class more test-friendly.
     def __init__(self):
         self.setts = sublime.load_settings('Preferences.sublime-settings')
 
@@ -205,7 +206,13 @@ class DartFormat(object):
 
 
 class GenericBinary(object):
+    '''Starts a process.
+    '''
     def __init__(self, *args, window=True):
+        '''
+        @window
+          Windows only. Whether to show a window.
+        '''
         self.args = args
         self.startupinfo = None
         if not window:

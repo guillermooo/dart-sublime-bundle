@@ -8,5 +8,5 @@ import os
 from Dart.lib.sdk import SDK
 
 
-class Test_SDK(unittest.TestCase):
+class Test_path_to_default_user_browser(unittest.TestCase):
     pass
