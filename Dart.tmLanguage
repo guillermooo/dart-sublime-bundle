@@ -580,6 +580,12 @@
 				</dict>
 				<dict>
 					<key>match</key>
+					<string>\b(async\*|async|await\*|await|yield)\b</string>
+					<key>name</key>
+					<string>keyword.control.async.dart</string>
+				</dict>
+				<dict>
+					<key>match</key>
 					<string>\b(new)\b</string>
 					<key>name</key>
 					<string>keyword.control.new.dart</string>
