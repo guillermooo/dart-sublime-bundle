@@ -127,6 +127,9 @@ class DartRunCommand(DartBuildCommandBase):
             return
 
         elif sublime.platform() == 'windows':
+            # FIXME(guillermooo): On Windows, Firefox won't work when started
+            # from the cmdline only. If it's started first from the shell, it
+            # will work here as well.
             path = sdk.path_to_default_user_browser
             bin_ = GenericBinary(path)
             sublime.set_timeout(lambda: bin_.start(
