@@ -1,3 +1,24 @@
+0.3000.2 - 20140906
+
+	- Abort build task is no default user browser is defined
+	- Assorted fixes
+	- Improve OSX compatibility
+	- Add async-related keywords
+	- Check for path erros
+	- Add build task to run preferred browser
+	- Add ability to run compiled application
+	- Run uncompiled dart code in Dartium
+	- Implement smart build task
+	- Make project aware of runnable files
+	- Add helpers to find and control Dartium
+	- Add 'is_prefix' helper
+	- Add non-fatal ConfigError class
+	- Add third party YAML lib
+	- Restrict 'launch' key bindings to 'dart_can_do_launch' context
+	- Add setting to locate Dartium
+	- Refactor build commands
+	- Modify 'exec' command so we have more control over it
+
 0.3000.1 - 20140827
 
 	- Implement custom build system infrastructure

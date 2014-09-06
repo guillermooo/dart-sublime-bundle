@@ -1,0 +1,36 @@
+Version 0.3000.2
+
+The Sublime Text Dart Package has been updated!
+
+This version includes changes to the build system for Dart projects and files.
+
+Full Documentation:
+
+Wiki: https://github.com/dart-lang/dart-sublime-bundle/wiki
+
+
+MAIN CHANGES
+------------
+
+	- Smarter build system
+
+	Runs the most suitable build action on the current file. See the wiki
+	for more details.	
+
+	- Add setting to locate Dartium: dart_dartium_path
+	- Add setting to define browsers to run compiled js in: dart_user_browsers
+	- Assorted fixes
+	- Improve OSX compatibility
+	- Add async-related keywords
+	- Add build task to run preferred browser
+	- Add ability to run compiled application
+	- Run uncompiled dart code in Dartium
+	- Restrict 'launch' key bindings to 'dart_can_do_launch' context
+
+
+Reporting Bugs and Requesting New Features
+------------------------------------------
+
+Please report any bugs and request features here:
+
+* https://github.com/dart-lang/dart-sublime-bundle/issues
