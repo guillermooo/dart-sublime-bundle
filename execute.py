@@ -35,7 +35,7 @@ class DartExecCommand(sublime_plugin.WindowCommand, ProcessListener):
             **kwargs):
 
         if kill:
-            if self.proc:
+            if hasattr(self, 'proc') and self.proc:
                 self.proc.kill()
                 self.proc = None
                 self.append_string(None, "[Cancelled]")
@@ -111,12 +111,6 @@ class DartExecCommand(sublime_plugin.WindowCommand, ProcessListener):
             self.append_string(None, self.debug_text + "\n")
             if not self.quiet:
                 self.append_string(None, "[Finished]")
-
-    def is_enabled(self, kill=False):
-        if kill:
-            return hasattr(self, 'proc') and self.proc and self.proc.poll()
-        else:
-            return True
 
     def append_data(self, proc, data):
         if proc != self.proc:

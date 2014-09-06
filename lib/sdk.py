@@ -141,8 +141,7 @@ class SDK(object):
             raise ConfigError('not implemented for Linux')
 
         try:
-            path = self.setts.get(
-                'dart_dartium_path')[sublime.platform()]['path']
+            path = self.setts.get('dart_dartium_path')
         except (KeyError, TypeError) as e:
             raise ConfigError('could not find path to Dartium')
 
@@ -163,10 +162,8 @@ class SDK(object):
         Returns a path or `None`.
         '''
         try:
-            name = self.setts.get(
-                'dart_user_browsers')[sublime.platform()]['default']
-            path = self.setts.get(
-                'dart_user_browsers')[sublime.platform()][name]
+            browsers = self.setts.get('dart_user_browsers')
+            path = browsers[browsers['default']]
             if not os.path.exists(path):
                 raise ConfigError('wrong path to browser')
             return path
@@ -178,10 +175,8 @@ class SDK(object):
     def path_to_default_user_browser(self, value):
         plat_browsers = self.user_browsers
         plat_browsers['default'] = value
-        all_plats = self.setts.get('dart_user_browsers')
-        all_plats[sublime.platform()] = plat_browsers
         self.setts = sublime.load_settings('Preferences.sublime-settings')
-        self.setts.set('dart_user_browsers', all_plats)
+        self.setts.set('dart_user_browsers', plat_browsers)
         sublime.save_settings('Preferences.sublime-settings')
 
     @property
@@ -224,9 +219,10 @@ class GenericBinary(object):
         if not window:
             self.startupinfo = supress_window()
 
-    def start(self, args=[], env={}):
+    def start(self, args=[], env={}, shell=False, cwd=None):
         cmd = self.args + tuple(args)
-        Popen(cmd, startupinfo=self.startupinfo, env=env)
+        Popen(cmd, startupinfo=self.startupinfo, env=env, shell=shell,
+              cwd=cwd)
 
 
 class Dartium(object):

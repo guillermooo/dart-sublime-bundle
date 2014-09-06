@@ -6,21 +6,13 @@
 	"dart_sdk_path": null,
 	// Path to the directory containing Dartium.
 	// In OSX, it's the directory containing Chromium.app.
-	"dart_dartium_path": {
-		"windows": {"path": null},
-		"osx": {"path": null},
-		"linux": {"path": null},
-	},
+	"dart_dartium_path": null,
 
 	// User-defined browsers.
-	// Maps arbitrary names to full paths to executables.
+	// Maps arbitrary keys to full paths to executables.
 	// The reserved 'default' name points to the default user browser. It must
-	// be a key in the corresponding dictionary.
-	"dart_user_browsers": {
-		"windows": {},
-		"osx": {},
-		"linux": {}
-	},
+	// be a key in the dictionary.
+	"dart_user_browsers": { },
 
 	// Dartlint plugin settings
 	"dart_linter_active": false,

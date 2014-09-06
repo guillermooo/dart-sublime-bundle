@@ -120,16 +120,20 @@ class DartRunCommand(DartBuildCommandBase):
 
         # TODO(guillermooo): make GUIProcess wrapper to abstract out some of
         # the stuff below?
-        if sublime.platform() == 'osx'
+        if sublime.platform() == 'osx':
             bin_ = GenericBinary('open', sdk.path_to_default_user_browser)
             sublime.set_timeout(
                 lambda: bin_.start(args=['http://localhost:8080']), 1000)
             return
 
         elif sublime.platform() == 'windows':
-            bin_ = GenericBinary(sdk.path_to_default_user_browser)
-            sublime.set_timeout(
-                lambda: bin_.start(args=['http://localhost:8080']), 1000)
+            path = sdk.path_to_default_user_browser
+            bin_ = GenericBinary(path)
+            sublime.set_timeout(lambda: bin_.start(
+                                   args=['http://localhost:8080'],
+                                   shell=True,
+                                   cwd=os.path.dirname(path)),
+                                1000)
             return
 
         TypeError('not implemented for linux')
