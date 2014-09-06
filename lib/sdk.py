@@ -25,6 +25,7 @@ _logger = PluginLogger(__name__)
 class SDK(object):
     """Wraps the Dart SDK.
     """
+    # TODO(guillermooo): make this class more test-friendly.
     def __init__(self):
         self.setts = sublime.load_settings('Preferences.sublime-settings')
 
@@ -127,27 +128,65 @@ class SDK(object):
 
     @property
     def path_to_dartium(self):
-        '''Returns the path to the chrome.exe of the 'Dartium' Chrome build.
+        '''Returns the path to the `chrome` binary of the 'Dartium' Chrome
+        build.
 
         May throw a ConfigError that the caller must prepare for.
         '''
-        p = os.path.realpath(os.path.join(self.path, '..', 'chromium', 'chrome'))
-        p = to_platform_path(p, '.exe')
-        if os.path.exists(p):
-            return p
+        # Dartium will not always be available on the user's machine.
+        bin_name = 'chrome.exe'
+        if sublime.platform() == 'osx':
+            bin_name = 'Chromium.app/Contents/MacOS/Chromium'
+        elif sublime.platform() == 'linux':
+            raise ConfigError('not implemented for Linux')
 
-        # It seems the user didn't install the DartEditor package, so try
-        # a setting. Dartium will not always be available on the user's
-        # machine.
-        p = self.setts.get('dart_dartium_path')
         try:
-            full_path = to_platform_path(os.path.join(p, 'chrome'), '.exe')
+            path = self.setts.get('dart_dartium_path')
+        except (KeyError, TypeError) as e:
+            raise ConfigError('could not find path to Dartium')
+
+        try:
+            full_path = os.path.join(path, bin_name)
             if not os.path.exists(full_path):
                 raise ConfigError()
             return full_path
         except Exception as e:
             _logger.error(e)
             raise ConfigError('could not find Dartium')
+
+    @property
+    def path_to_default_user_browser(self):
+        '''Returns the full path to a default non-Dartium browser specified by
+        the user.
+
+        Returns a path or `None`.
+        '''
+        try:
+            browsers = self.setts.get('dart_user_browsers')
+            path = browsers[browsers['default']]
+            if not os.path.exists(path):
+                raise ConfigError('wrong path to browser')
+            return path
+        except Exception as e:
+            _logger.debug('error while retrieving default browser %s', e)
+            return None
+
+    @path_to_default_user_browser.setter
+    def path_to_default_user_browser(self, value):
+        plat_browsers = self.user_browsers
+        plat_browsers['default'] = value
+        self.setts = sublime.load_settings('Preferences.sublime-settings')
+        self.setts.set('dart_user_browsers', plat_browsers)
+        sublime.save_settings('Preferences.sublime-settings')
+
+    @property
+    def user_browsers(self):
+        '''Returns the full path to a non-Dartium browser specified by the
+        user.
+
+        Returns a dictionary of name -> path, or `None`.
+        '''
+        return self.setts.get('dart_user_browsers')
 
     def check_version(self):
         return check_output([self.path_to_dart, '--version'],
@@ -165,6 +204,25 @@ class DartFormat(object):
     def format(self, text):
         dart_fmt = TextFilter([self.path])
         return dart_fmt.filter(text)
+
+
+class GenericBinary(object):
+    '''Starts a process.
+    '''
+    def __init__(self, *args, window=True):
+        '''
+        @window
+          Windows only. Whether to show a window.
+        '''
+        self.args = args
+        self.startupinfo = None
+        if not window:
+            self.startupinfo = supress_window()
+
+    def start(self, args=[], env={}, shell=False, cwd=None):
+        cmd = self.args + tuple(args)
+        Popen(cmd, startupinfo=self.startupinfo, env=env, shell=shell,
+              cwd=cwd)
 
 
 class Dartium(object):
@@ -185,6 +243,7 @@ class Dartium(object):
         env = self.get_env({'DART_FLAGS': '--checked'})
         try:
             cmd = (self.path,) + args
+            _logger.debug('Dartium cmd: %r' % (cmd,))
             Popen(cmd, startupinfo=supress_window(), env=env)
         except Exception as e:
             _logger.error('=' * 80)

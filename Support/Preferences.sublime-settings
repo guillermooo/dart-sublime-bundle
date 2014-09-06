@@ -5,23 +5,28 @@
 	// Path to the sdk directory.
 	"dart_sdk_path": null,
 	// Path to the directory containing Dartium.
-	// You only need to set this if you are not using the DartEditor package.
-	// For example, if you install the sdk and Dartium separately.
+	// In OSX, it's the directory containing Chromium.app.
 	"dart_dartium_path": null,
 
+	// User-defined browsers.
+	// Maps arbitrary keys to full paths to executables.
+	// The reserved 'default' name points to the default user browser. It must
+	// be a key in the dictionary.
+	"dart_user_browsers": { },
+
 	// Dartlint plugin settings
-	"dart_linter_active" : false,
-	"dart_linter_on_load" : true,
-	"dart_linter_on_save" : true,
-	"dart_linter_show_popup_level" : "WARNING",
+	"dart_linter_active": false,
+	"dart_linter_on_load": true,
+	"dart_linter_on_save": true,
+	"dart_linter_show_popup_level": "WARNING",
 	// Dartlint gutter icons
-	"dart_linter_gutter_icon_error" : "Packages/Dart/gutter/dartlint-simple-error.png",
-	"dart_linter_gutter_icon_warning" : "Packages/Dart/gutter/dartlint-simple-warning.png",
-	"dart_linter_gutter_icon_info" : "Packages/Dart/gutter/dartlint-simple-info.png",
+	"dart_linter_gutter_icon_error": "Packages/Dart/gutter/dartlint-simple-error.png",
+	"dart_linter_gutter_icon_warning": "Packages/Dart/gutter/dartlint-simple-warning.png",
+	"dart_linter_gutter_icon_info": "Packages/Dart/gutter/dartlint-simple-info.png",
 	// Underline colors
-	"dart_linter_underline_color_error" : "C7321C",
-	"dart_linter_underline_color_warning" : "F18512",
-	"dart_linter_underline_color_info" : "0000FC",
+	"dart_linter_underline_color_error": "C7321C",
+	"dart_linter_underline_color_warning": "F18512",
+	"dart_linter_underline_color_info": "0000FC",
 
 	// Log level (for debugging).
 	//Can be one of: debug < info < warning < error < critical
