@@ -118,6 +118,11 @@ class DartRunCommand(DartBuildCommandBase):
     def start_default_browser(self):
         sdk = SDK()
 
+        if not sdk.path_to_default_user_browser:
+            _logger.info('no default user browser defined')
+            print("Dart: No default user browser defined in User settings")
+            return
+
         # TODO(guillermooo): make GUIProcess wrapper to abstract out some of
         # the stuff below?
         if sublime.platform() == 'osx':

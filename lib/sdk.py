@@ -186,7 +186,7 @@ class SDK(object):
 
         Returns a dictionary of name -> path, or `None`.
         '''
-        return self.setts.get('dart_user_browsers')[sublime.platform()]
+        return self.setts.get('dart_user_browsers')
 
     def check_version(self):
         return check_output([self.path_to_dart, '--version'],
