@@ -4,10 +4,13 @@ from os.path import exists
 from os.path import join
 from os.path import realpath
 from subprocess import check_output
+from subprocess import PIPE
 from subprocess import Popen
 from subprocess import STDOUT
 from subprocess import TimeoutExpired
 import os
+import re
+import threading
 
 from Dart import PluginLogger
 from Dart.lib.error import ConfigError
@@ -17,6 +20,7 @@ from Dart.lib.path import find_in_path
 from Dart.lib.plat import is_windows
 from Dart.lib.plat import supress_window
 from Dart.lib.plat import to_platform_path
+from Dart.lib.io import AsyncStreamReader
 
 
 _logger = PluginLogger(__name__)
@@ -206,23 +210,44 @@ class DartFormat(object):
         return dart_fmt.filter(text)
 
 
-class GenericBinary(object):
-    '''Starts a process.
-    '''
-    def __init__(self, *args, window=True):
-        '''
-        @window
-          Windows only. Whether to show a window.
-        '''
-        self.args = args
-        self.startupinfo = None
-        if not window:
-            self.startupinfo = supress_window()
+class RunDartWithObservatory(object):
+    def __init__(self, path, cwd=None, listener=None):
+        self.proc = None
+        self.port = None
+        self.path = path
+        self.listener = listener
+        self.cwd = cwd
 
-    def start(self, args=[], env={}, shell=False, cwd=None):
-        cmd = self.args + tuple(args)
-        Popen(cmd, startupinfo=self.startupinfo, env=env, shell=shell,
-              cwd=cwd)
+    def start(self):
+        _logger.debug('running through observatory: %s' % self.path)
+        self.proc = Popen([SDK().path_to_dart, '--checked', '--observe=0',
+                          self.path], stdout=PIPE, stderr=PIPE, cwd=self.cwd,
+                          startupinfo=supress_window())
+
+        AsyncStreamReader(self.proc.stdout, self.on_data).start()
+        AsyncStreamReader(self.proc.stderr, self.on_error).start()
+
+    def stop(self):
+        if self.proc:
+            _logger.debug('stopping RunDartWithObservatory...')
+            self.proc.poll()
+            self.proc = None
+
+    def on_data(self, s):
+        s = s.decode('utf8').replace('\r\n', '\n')
+        if not self.port:
+            m = re.match('^Observatory listening on http://.*?:(\d+)', s)
+            self.port = int(m.groups()[0])
+            _logger.debug('captured observatory port: %d' % self.port)
+
+        if self.listener:
+            self.listener.on_data(s)
+
+    def on_error(self, s):
+        s = s.decode('utf8').replace('\r\n', '\n')
+
+        if self.listener:
+            self.listener.on_error(s)
 
 
 class Dartium(object):
