@@ -42,11 +42,25 @@ class ContextProvider(sublime_plugin.EventListener):
     files.
     '''
     def on_query_context(self, view, key, operator, operand, match_all):
-        if key == 'dart_can_do_launch' and operator == sublime.OP_EQUAL:
-            return DartView(view).is_runnable
+        if key == 'dart_can_do_launch':
+            value = DartView(view).is_runnable
+            return self._check(value, operator, operand, match_all)
 
-        if key == 'dart_can_show_observatory' and operator == sublime.OP_EQUAL:
-            return DartRunCommand.observatory != None
+        if key == 'dart_can_show_observatory':
+            value = DartRunCommand.observatory != None
+            return self._check(value, operator, operand, match_all)
+
+    def _check(self, value, operator, operand, match_all):
+        if operator == sublime.OP_EQUAL:
+            if operand == True:
+                return value
+            elif operand == False:
+                return not value
+        elif operator == sublime.OP_NOT_EQUAL:
+            if operand == True:
+                return not value
+            elif operand == False:
+                return value
 
 
 class DartBuildProjectCommand(sublime_plugin.WindowCommand):
