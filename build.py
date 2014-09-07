@@ -143,8 +143,14 @@ class DartRunCommand(DartBuildCommandBase):
                                    cwd=os.path.dirname(path)),
                                 1000)
             return
-
-        TypeError('not implemented for linux')
+            
+        path = sdk.path_to_default_user_browser
+        bin_ = GenericBinary(path)
+        sublime.set_timeout(lambda: bin_.start(
+                               args=['http://localhost:8080'],
+                               shell=True,
+                               cwd=os.path.dirname(path)),
+                            1000)
 
     def run_server_app(self, file_name, working_dir):
         self.execute(

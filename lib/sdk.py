@@ -138,7 +138,7 @@ class SDK(object):
         if sublime.platform() == 'osx':
             bin_name = 'Chromium.app/Contents/MacOS/Chromium'
         elif sublime.platform() == 'linux':
-            raise ConfigError('not implemented for Linux')
+            bin_name = 'chrome'
 
         try:
             path = self.setts.get('dart_dartium_path')
@@ -221,6 +221,7 @@ class GenericBinary(object):
 
     def start(self, args=[], env={}, shell=False, cwd=None):
         cmd = self.args + tuple(args)
+        _logger.debug('running cmd line (GenericBinary): %s', cmd)
         Popen(cmd, startupinfo=self.startupinfo, env=env, shell=shell,
               cwd=cwd)
 
