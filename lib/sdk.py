@@ -20,6 +20,7 @@ from Dart.lib.path import find_in_path
 from Dart.lib.plat import is_windows
 from Dart.lib.plat import supress_window
 from Dart.lib.plat import to_platform_path
+from Dart.lib.io import AsyncStreamReader
 
 
 _logger = PluginLogger(__name__)
@@ -207,50 +208,6 @@ class DartFormat(object):
     def format(self, text):
         dart_fmt = TextFilter([self.path])
         return dart_fmt.filter(text)
-
-
-class GenericBinary(object):
-    '''Starts a process.
-    '''
-    def __init__(self, *args, window=True):
-        '''
-        @window
-          Windows only. Whether to show a window.
-        '''
-        self.args = args
-        self.startupinfo = None
-        if not window:
-            self.startupinfo = supress_window()
-
-    def start(self, args=[], env={}, shell=False, cwd=None):
-        cmd = self.args + tuple(args)
-        Popen(cmd, startupinfo=self.startupinfo, env=env, shell=shell,
-              cwd=cwd)
-
-
-class AsyncStreamReader(threading.Thread):
-    '''Reads a process stream from an alternate thread.
-    '''
-    def __init__(self, stream, on_data, *args, **kwargs):
-        '''
-        @stream
-          Stream to read from.
-
-        @on_data
-          Callback to call with bytes read from @stream.
-        '''
-        super().__init__(*args, **kwargs)
-        self.stream = stream
-        self.on_data = on_data
-        assert(self.on_data, 'wrong call: must provide callback')
-
-    def run(self):
-        while True:
-            data = self.stream.readline()
-            if not data:
-                return
-
-            self.on_data(data)
 
 
 class RunDartWithObservatory(object):

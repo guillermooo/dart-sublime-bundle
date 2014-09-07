@@ -13,7 +13,7 @@ from Dart.lib.build.base import DartBuildCommandBase
 from Dart.lib.dart_project import DartView
 from Dart.lib.dart_project import find_pubspec
 from Dart.lib.sdk import Dartium
-from Dart.lib.sdk import GenericBinary
+from Dart.lib.io import GenericBinary
 from Dart.lib.sdk import SDK
 from Dart.lib.sdk import RunDartWithObservatory
 from Dart.lib.panels import OutputPanel
