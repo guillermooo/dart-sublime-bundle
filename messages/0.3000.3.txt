@@ -1,0 +1,25 @@
+Version 0.3000.3
+
+The Sublime Text Dart Package has been updated!
+
+This version includes changes to the build system for Dart projects and files.
+
+Full Documentation:
+
+Wiki: https://github.com/dart-lang/dart-sublime-bundle/wiki
+
+
+MAIN CHANGES
+------------
+
+	- Enable smart build system for Linux
+	- Improve context checking for key bindings
+	- Add command to run cmdline apps through Observatory
+
+
+Reporting Bugs and Requesting New Features
+------------------------------------------
+
+Please report any bugs and request features here:
+
+* https://github.com/dart-lang/dart-sublime-bundle/issues
