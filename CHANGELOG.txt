@@ -1,3 +1,11 @@
+0.3000.3 - 20140907
+
+	- Enable smart build system for Linux
+	- Add missing import
+	- Improve context checking for key bindings
+	- Refactor
+	- Add command to run cmdline apps through Observatory
+
 0.3000.2 - 20140906
 
 	- Abort build task is no default user browser is defined
