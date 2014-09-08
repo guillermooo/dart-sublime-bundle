@@ -28,6 +28,7 @@ class DartProject(object):
         p = os.path.join(self.pubspec.parent, name)
         if os.path.exists(p):
             return p
+        _logger.debug('path not found in project: %s', p)
 
     def make_top_level_dir(self, name):
         os.mkdir(os.path.join(self.pubspec.parent, name))
@@ -184,14 +185,16 @@ class DartView(object):
         project = DartProject.from_path(self.view.file_name())
         if not project:
             return
-        return self.has_prefix(project.path_to_bin)
+        if project.path_to_bin:
+            return self.has_prefix(project.path_to_bin)
 
     @property
     def is_web_app(self):
         project = DartProject.from_path(self.view.file_name())
         if not project:
             return
-        return self.has_prefix(project.path_to_web)
+        if project.path_to_web:
+            return self.has_prefix(project.path_to_web)
 
     @property
     def is_pubspec(self):
