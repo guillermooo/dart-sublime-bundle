@@ -1,0 +1,26 @@
+Version 0.3000.5
+
+The Sublime Text Dart Package has been updated!
+
+This version includes mainly bug fixes.
+
+Full Documentation:
+
+Wiki: https://github.com/dart-lang/dart-sublime-bundle/wiki
+
+
+MAIN CHANGES
+------------
+
+	- Check whether expected project paths exist ('bin', 'web', etc.)
+	- Config report (command palette 'Check Configuration' command)
+	- Better logging
+	- Assorted fixes
+
+
+Reporting Bugs and Requesting New Features
+------------------------------------------
+
+Please report any bugs and request features here:
+
+* https://github.com/dart-lang/dart-sublime-bundle/issues
