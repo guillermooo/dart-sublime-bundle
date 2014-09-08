@@ -3,7 +3,7 @@ import sublime
 import unittest
 import os
 
-from Dart.lib.plat import to_platform_path
+from Dart.lib.path import to_platform_path
 
 
 class Test_to_platform_path(unittest.TestCase):

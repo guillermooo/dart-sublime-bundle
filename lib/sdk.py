@@ -19,8 +19,9 @@ from Dart.lib.filter import TextFilter
 from Dart.lib.path import find_in_path
 from Dart.lib.plat import is_windows
 from Dart.lib.plat import supress_window
-from Dart.lib.plat import to_platform_path
+from Dart.lib.path import to_platform_path
 from Dart.lib.io import AsyncStreamReader
+from Dart.lib.text import decode_and_clean
 
 
 _logger = PluginLogger(__name__)
@@ -224,50 +225,31 @@ class RunDartWithObservatory(object):
                           self.path], stdout=PIPE, stderr=PIPE, cwd=self.cwd,
                           startupinfo=supress_window())
 
+        # TODO(guillermooo): add names and log these threads.
         AsyncStreamReader(self.proc.stdout, self.on_data).start()
         AsyncStreamReader(self.proc.stderr, self.on_error).start()
 
     def stop(self):
         if self.proc:
             _logger.debug('stopping RunDartWithObservatory...')
-            self.proc.poll()
+            self.proc.kill()
+            self.proc.stderr.close()
+            self.proc.stdout.close()
             self.proc = None
 
-    def on_data(self, s):
-        s = s.decode('utf8').replace('\r\n', '\n')
+    def on_data(self, data_bytes):
+        text = decode_and_clean(data_bytes)
         if not self.port:
-            m = re.match('^Observatory listening on http://.*?:(\d+)', s)
+            m = re.match('^Observatory listening on http://.*?:(\d+)', text)
             self.port = int(m.groups()[0])
             _logger.debug('captured observatory port: %d' % self.port)
 
         if self.listener:
-            self.listener.on_data(s)
+            self.listener.on_data(text)
 
-    def on_error(self, s):
-        s = s.decode('utf8').replace('\r\n', '\n')
-
+    def on_error(self, data_bytes):
         if self.listener:
-            self.listener.on_error(s)
-
-
-class GenericBinary(object):
-    '''Starts a process.
-    '''
-    def __init__(self, *args, window=True):
-        '''
-        @window
-          Windows only. Whether to show a window.
-        '''
-        self.args = args
-        self.startupinfo = None
-        if not window:
-            self.startupinfo = supress_window()
-
-    def start(self, args=[], env={}, shell=False, cwd=None):
-        cmd = self.args + tuple(args)
-        _logger.debug('running cmd line (GenericBinary): %s', cmd)
-        Popen(cmd, startupinfo=self.startupinfo, env=env, shell=shell,
-              cwd=cwd)
+            self.listener.on_error(decode_and_clean(data_bytes))
 
 
 class Dartium(object):

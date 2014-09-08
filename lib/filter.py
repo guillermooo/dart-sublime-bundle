@@ -5,6 +5,8 @@ import threading
 
 from Dart import PluginLogger
 from Dart.lib.plat import supress_window
+from Dart.lib.text import clean
+from Dart.lib.text import decode
 
 
 _logger = PluginLogger(__name__)
@@ -24,13 +26,7 @@ class TextFilter(object):
         self._proc = None
 
     def encode(self, text):
-        return text.encode(self.in_ecoding)
-
-    def decode(self, encoded_bytes):
-        return encoded_bytes.decode(self.out_encoding)
-
-    def clean(self, text):
-        return text.replace('\r', '').rstrip()
+        return text.encode(self.in_encoding)
 
     def _start(self):
         try:
@@ -46,15 +42,15 @@ class TextFilter(object):
     def filter(self, input_text):
         self._start()
         try:
-            in_bytes = input_text.encode(self.in_encoding)
+            in_bytes = self.encode(input_text)
             out_bytes, err_bytes = self._proc.communicate(in_bytes,
                                                           self.timeout)
             if err_bytes:
                 _logger.error('while filtering text: %s',
-                    self.clean(self.decode(err_bytes)))
+                    clean(decode(err_bytes, self.out_encoding)))
                 return
 
-            return self.clean(self.decode(out_bytes))
+            return clean(decode(out_bytes, self.out_encoding))
 
         except TimeoutExpired:
             _logger.debug('text filter program response timed out')
