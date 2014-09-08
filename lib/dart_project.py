@@ -162,6 +162,7 @@ class DartView(object):
                     return True
 
     def has_prefix(self, prefix):
+        assert(prefix, 'cannot call with empty prefix')
         return is_prefix(prefix, self.view.file_name())
 
     @property
