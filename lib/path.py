@@ -1,6 +1,7 @@
 import os
+from os.path import join
 
-from Dart.lib.plat import to_platform_path
+from Dart.lib.plat import is_windows
 
 
 def extension_equals(path_or_view, extension):
@@ -84,3 +85,20 @@ def is_prefix(prefix, path):
     prefix = os.path.realpath(prefix)
     path = os.path.realpath(path)
     return path.startswith(prefix)
+
+
+def to_platform_path(original, append):
+    """
+    Useful to add .exe to @original, .bat, etc if ST is running on Windows.
+
+    @original
+      Original path.
+    @append
+      Fragment to append to @original on Windows.
+    """
+    if is_windows():
+        if append.startswith('.'):
+            return original + append
+        return join(original, append)
+    return original
+

@@ -13,7 +13,7 @@ from Dart.lib.build.base import DartBuildCommandBase
 from Dart.lib.dart_project import DartView
 from Dart.lib.dart_project import find_pubspec
 from Dart.lib.sdk import Dartium
-from Dart.lib.io import GenericBinary
+from Dart.lib.subprocess import GenericBinary
 from Dart.lib.sdk import SDK
 from Dart.lib.sdk import RunDartWithObservatory
 from Dart.lib.panels import OutputPanel
@@ -24,7 +24,8 @@ _logger = PluginLogger(__name__)
 
 def plugin_unloaded():
     # Kill any existing server.
-    sublime.active_window().run_command('dart_run', {'kill_only': True})
+    sublime.active_window().run_command('dart_run', {'kill_only': True,
+                                        'file_name': '???'})
 
 
 class DartShowServerObservatoryCommand(sublime_plugin.WindowCommand):
@@ -99,6 +100,10 @@ class DartRunCommand(DartBuildCommandBase):
         self.server = False
         self.panel = None
 
+    def __del__(self):
+        self.stop_server_observatory()
+        self.execute(kill=True)
+
     def observatory_port(self):
         try:
             return DartRunCommand.observatory.port
@@ -110,9 +115,12 @@ class DartRunCommand(DartBuildCommandBase):
         @action
           One of: primary, secondary
         '''
-        if self.server and kill_only:
+        if self.server:
             self.execute(kill=True)
-            self.server = False
+
+        self.stop_server_observatory()
+
+        if kill_only:
             return
 
         try:
@@ -181,7 +189,7 @@ class DartRunCommand(DartBuildCommandBase):
                                    cwd=os.path.dirname(path)),
                                 1000)
             return
-            
+
         path = sdk.path_to_default_user_browser
         bin_ = GenericBinary(path)
         sublime.set_timeout(lambda: bin_.start(
@@ -209,8 +217,6 @@ class DartRunCommand(DartBuildCommandBase):
             DartRunCommand.observatory.start()
             return
 
-        self.stop_server_observatory()
-
         self.execute(
             cmd=[SDK().path_to_dart, '--checked', file_name],
             working_dir=working_dir,
@@ -219,13 +225,6 @@ class DartRunCommand(DartBuildCommandBase):
             )
 
     def run_web_app(self, file_name, working_dir, action):
-
-        self.stop_server_observatory()
-
-        if self.server:
-            self.execute(kill=True)
-        self.server = True
-
         sdk = SDK()
 
         if action == 'secondary':
