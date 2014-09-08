@@ -2,6 +2,7 @@ import sublime
 
 import os
 
+from Dart import PluginLogger
 from Dart.lib.out_there.yaml import load
 from Dart.lib.path import find_file
 from Dart.lib.path import is_prefix
@@ -9,8 +10,14 @@ from Dart.lib.path import is_view_dart_script
 from Dart.lib.path import to_platform_path
 
 
+_logger = PluginLogger(__name__)
+
+
 def find_pubspec(start):
-    return find_file(start, 'pubspec.yaml')
+    try:
+        return find_file(start, 'pubspec.yaml')
+    except Exception as e:
+        _logger.debug('error finding pubspec: %s', e)
 
 
 class DartProject(object):
@@ -131,6 +138,7 @@ class PubspecFile(object):
         p = find_pubspec(path)
         if p:
             return cls(p)
+        _logger.debug('no pubspec.yaml found')
 
 
 class DartView(object):
