@@ -78,6 +78,9 @@ def find_file(start, fname):
     if os.path.dirname(start) == start:
         return
 
+    if not os.path.exists(start):
+        return
+
     return find_file(os.path.dirname(start), fname)
 
 
