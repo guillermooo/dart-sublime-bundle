@@ -1,3 +1,8 @@
+0.3000.4 - 20140908
+
+	- Remove unecessary menu entries; fix paths in menus
+	- Refactor and fix lock-up when running Observatory
+
 0.3000.3 - 20140907
 
 	- Enable smart build system for Linux
