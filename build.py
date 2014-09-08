@@ -24,6 +24,8 @@ _logger = PluginLogger(__name__)
 
 def plugin_unloaded():
     # Kill any existing server.
+    # FIXME(guillermooo): this doesn't manage to clean up resources when
+    # ST exits.
     sublime.active_window().run_command('dart_run', {'kill_only': True,
                                         'file_name': '???'})
 
@@ -101,6 +103,8 @@ class DartRunCommand(DartBuildCommandBase):
         self.panel = None
 
     def __del__(self):
+        # FIXME(guillermooo): this doesn't manage to clean up resources when
+        # ST exits.
         self.stop_server_observatory()
         self.execute(kill=True)
 
