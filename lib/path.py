@@ -72,6 +72,9 @@ def find_file(start, fname):
     @fname
       Sought file.
     '''
+    if not os.path.exists(start):
+        return
+
     if os.path.exists(os.path.join(start, fname)):
         return os.path.join(start, fname)
 
