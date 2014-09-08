@@ -1,0 +1,22 @@
+Version 0.3000.4
+
+The Sublime Text Dart Package has been updated!
+
+Full Documentation:
+
+Wiki: https://github.com/dart-lang/dart-sublime-bundle/wiki
+
+
+MAIN CHANGES
+------------
+
+	- Remove unecessary menu entries; fix paths in menus
+	- Fix lock-up when running Observatory
+
+
+Reporting Bugs and Requesting New Features
+------------------------------------------
+
+Please report any bugs and request features here:
+
+* https://github.com/dart-lang/dart-sublime-bundle/issues
