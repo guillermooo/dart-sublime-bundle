@@ -1,3 +1,12 @@
+0.3000.5 - 20140908
+
+	- Return early if path does not exist
+	- Add assertion
+	- Check whether expected project paths exist
+	- Fix find_file function
+	- Improve config report
+	- Log event when pubspec can't be found
+
 0.3000.4 - 20140908
 
 	- Remove unecessary menu entries; fix paths in menus
