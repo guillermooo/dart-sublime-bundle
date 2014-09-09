@@ -5,8 +5,8 @@ from unittest import mock
 import os
 import unittest
 
-from Dart.lib.dart_project import PubspecFile
-from Dart.lib.dart_project import DartProject
+from Dart.lib.pub_package import PubspecFile
+from Dart.lib.pub_package import PubPackage
 
 
 VALID_PUBSPEC_CONTENT = '''name: foo
@@ -63,7 +63,7 @@ class Test_PubspecFile(unittest.TestCase):
             self.assertEqual(pubspec_lock_fname, p.get_pubspec_lock().path)
 
 
-class Test_DartProject(unittest.TestCase):
+class Test_PubPackage(unittest.TestCase):
     def setUp(self):
         self.d = TemporaryDirectory()
         fname = os.path.join(self.d.name, 'pubspec.yaml')
@@ -75,9 +75,9 @@ class Test_DartProject(unittest.TestCase):
         self.d.cleanup()
 
     def testInitCanFail(self):
-        p = DartProject.from_path('???')
+        p = PubPackage.from_path('???')
         self.assertEqual(p, None)
 
     def testInitCanSucceed(self):
-        p = DartProject.from_path(self.d.name)
+        p = PubPackage.from_path(self.d.name)
         self.assertEqual(self.d.name, p.pubspec.parent)

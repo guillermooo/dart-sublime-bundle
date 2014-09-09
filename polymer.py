@@ -3,7 +3,7 @@ import sublime_plugin
 
 import os
 
-from Dart.lib.dart_project import DartProject
+from Dart.lib.pub_package import PubPackage
 from Dart.lib.base_cmds import PolymerCommand
 from Dart import PluginLogger
 
@@ -26,7 +26,7 @@ class DartGeneratePolymerElementCommand(PolymerCommand):
 
     def on_done(self, name):
         view = self.window.active_view()
-        project = DartProject.from_path(view.file_name())
+        project = PubPackage.from_path(view.file_name())
         cmd = "pub run polymer:new_element {} -o \"{}\""
 
         # TODO(guillermooo): we cannot access the ouput panel used by exec.
@@ -52,7 +52,7 @@ class DartAddPolymerEntryPointCommand(PolymerCommand):
 
     def on_done(self, name):
         view = self.window.active_view()
-        project = DartProject.from_path(view.file_name())
+        project = PubPackage.from_path(view.file_name())
         cmd = "pub run polymer:new_entry {}".format(name)
 
         # TODO(guillermooo): we cannot access the ouput panel used by exec.

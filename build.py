@@ -10,8 +10,8 @@ import time
 
 from Dart import PluginLogger
 from Dart.lib.build.base import DartBuildCommandBase
-from Dart.lib.dart_project import DartView
-from Dart.lib.dart_project import find_pubspec
+from Dart.lib.pub_package import DartView
+from Dart.lib.pub_package import find_pubspec
 from Dart.lib.sdk import Dartium
 from Dart.lib.subprocess import GenericBinary
 from Dart.lib.sdk import SDK
