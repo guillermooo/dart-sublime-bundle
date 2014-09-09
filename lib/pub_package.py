@@ -20,7 +20,7 @@ def find_pubspec(start):
         _logger.debug('error finding pubspec: %s', e)
 
 
-class DartProject(object):
+class PubPackage(object):
     def __init__(self, pubspec):
         self.pubspec = pubspec
 
@@ -171,7 +171,7 @@ class DartView(object):
         the file is under the project's 'web' directory. If a file is under
         'web', we consider it runnable as part of the web app.
         '''
-        project = DartProject.from_path(self.view.file_name())
+        project = PubPackage.from_path(self.view.file_name())
         return any((self.is_dart_file,
                     self.is_pubspec,
                     project and self.has_prefix(project.path_to_web),
@@ -183,7 +183,7 @@ class DartView(object):
 
     @property
     def is_server_app(self):
-        project = DartProject.from_path(self.view.file_name())
+        project = PubPackage.from_path(self.view.file_name())
         if not project:
             return
         if project.path_to_bin:
@@ -191,7 +191,7 @@ class DartView(object):
 
     @property
     def is_web_app(self):
-        project = DartProject.from_path(self.view.file_name())
+        project = PubPackage.from_path(self.view.file_name())
         if not project:
             return
         if project.path_to_web:

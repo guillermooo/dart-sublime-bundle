@@ -4,7 +4,7 @@ import sublime_plugin
 
 import os
 
-from Dart.lib.pub_package import DartProject
+from Dart.lib.pub_package import PubPackage
 from Dart.lib.panels import ErrorPanel
 from Dart import PluginLogger
 
@@ -29,7 +29,7 @@ class PolymerCommand(sublime_plugin.WindowCommand):
         '''
         v = self.window.active_view()
 
-        project = DartProject.from_path(v.file_name())
+        project = PubPackage.from_path(v.file_name())
         if not project:
             _logger('no pubspec.yaml found - aborting')
             info = ErrorPanel()
@@ -57,7 +57,7 @@ class PolymerCommand(sublime_plugin.WindowCommand):
     def get_target_path(self, view):
         '''Returns the path in which the generated files belong.
         '''
-        project = DartProject.from_path(view.file_name())
+        project = PubPackage.from_path(view.file_name())
 
         target_path = project.path_to_web
         if project.is_prefix(prefix=project.path_to_web,
