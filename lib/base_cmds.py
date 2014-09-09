@@ -4,7 +4,7 @@ import sublime_plugin
 
 import os
 
-from Dart.lib.dart_project import DartProject
+from Dart.lib.pub_package import DartProject
 from Dart.lib.panels import ErrorPanel
 from Dart import PluginLogger
 

@@ -5,8 +5,8 @@ from unittest import mock
 import os
 import unittest
 
-from Dart.lib.dart_project import PubspecFile
-from Dart.lib.dart_project import DartProject
+from Dart.lib.pub_package import PubspecFile
+from Dart.lib.pub_package import DartProject
 
 
 VALID_PUBSPEC_CONTENT = '''name: foo

@@ -4,7 +4,7 @@ import sublime_plugin
 import pprint
 
 from Dart.lib.sdk import SDK
-from Dart.lib.dart_project import PubspecFile
+from Dart.lib.pub_package import PubspecFile
 
 
 class DartCheckConfigCommand(sublime_plugin.WindowCommand):
