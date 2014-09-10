@@ -34,6 +34,7 @@ class PubPackage(object):
         os.mkdir(os.path.join(self.pubspec.parent, name))
 
     def is_prefix(self, prefix, path):
+        assert prefix and path, 'cannot call with None params'
         return is_prefix(prefix, path)
 
     @property

@@ -89,13 +89,13 @@ class Test_PubPackage(unittest.TestCase):
         self.assertTrue(os.path.exists(os.path.join(self.d.name, 'web')))
 
     def test_is_prefix_RaisesExceptionIfPrefixIsNone(self):
-        self.assertRaises(TypeError, self.pub_package.is_prefix, None, 'bar')
+        self.assertRaises(AssertionError, self.pub_package.is_prefix, None, 'bar')
 
     def test_is_prefix_RaisesExceptionIfPathIsNone(self):
-        self.assertRaises(TypeError, self.pub_package.is_prefix, 'foo', None)
+        self.assertRaises(AssertionError, self.pub_package.is_prefix, 'foo', None)
 
     def test_is_prefix_RaisesExceptionIfPathAndPrefixAreNone(self):
-        self.assertRaises(TypeError, self.pub_package.is_prefix, None, None)
+        self.assertRaises(AssertionError, self.pub_package.is_prefix, None, None)
 
     def test_is_prefix_ReturnsFalseIfPathIsNotPrefixed(self):
         self.assertFalse(self.pub_package.is_prefix('foo', 'bar'))
@@ -129,12 +129,12 @@ class Test_PubPackage(unittest.TestCase):
         self.pub_package.make_top_level_dir('example')
         self.pub_package.make_top_level_dir('lib')
 
-        self.assertTrue(os.path.exists(os.path.join(self.pub_package.pubspec.parent, 'web')))
-        self.assertTrue(os.path.exists(os.path.join(self.pub_package.pubspec.parent, 'bin')))
-        self.assertTrue(os.path.exists(os.path.join(self.pub_package.pubspec.parent, 'test')))
-        self.assertTrue(os.path.exists(os.path.join(self.pub_package.pubspec.parent, 'tool')))
-        self.assertTrue(os.path.exists(os.path.join(self.pub_package.pubspec.parent, 'benchmark')))
-        self.assertTrue(os.path.exists(os.path.join(self.pub_package.pubspec.parent, 'doc')))
-        self.assertTrue(os.path.exists(os.path.join(self.pub_package.pubspec.parent, 'example')))
-        self.assertTrue(os.path.exists(os.path.join(self.pub_package.pubspec.parent, 'lib')))
-        
+        self.assertTrue(os.path.exists(self.pub_package.path_to_web))
+        self.assertTrue(os.path.exists(self.pub_package.path_to_bin))
+        self.assertTrue(os.path.exists(self.pub_package.path_to_test))
+        self.assertTrue(os.path.exists(self.pub_package.path_to_tool))
+        self.assertTrue(os.path.exists(self.pub_package.path_to_benchmark))
+        self.assertTrue(os.path.exists(self.pub_package.path_to_doc))
+        self.assertTrue(os.path.exists(self.pub_package.path_to_example))
+        self.assertTrue(os.path.exists(self.pub_package.path_to_lib))
+
