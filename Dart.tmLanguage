@@ -18,7 +18,7 @@
 		</dict>
 		<dict>
 			<key>begin</key>
-			<string>\b(library|import|export|part of|part)\b</string>
+			<string>^\s*\b(library|import|export|part of|part)\b</string>
 			<key>beginCaptures</key>
 			<dict>
 				<key>0</key>
