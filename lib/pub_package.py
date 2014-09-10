@@ -88,6 +88,9 @@ class PubspecLockFile(object):
     def __init__(self, pubspec):
         self.path = os.path.join(pubspec.parent, 'pubspec.lock')
         self._data = None
+    @property
+    def path_to_web(self):
+        return self._get_top_level_dir('web')
 
     @property
     def parent(self):
@@ -168,13 +171,18 @@ class DartView(object):
     @property
     def is_runnable(self):
         '''Returns `True` if the file is a pubspec.yaml or a .dart file, or if
-        the file is under the project's 'web' directory. If a file is under
-        'web', we consider it runnable as part of the web app.
+        the file is under the following directories:
+          - web
+          - example
+
+        If a file is under any of those dirs, we consider it runnable as part
+        of a web app or a cli program.
         '''
         project = PubPackage.from_path(self.view.file_name())
         return any((self.is_dart_file,
                     self.is_pubspec,
                     project and self.has_prefix(project.path_to_web),
+                    project and self.has_prefix(project.path_to_example),
                     ))
 
     @property
@@ -186,17 +194,43 @@ class DartView(object):
         project = PubPackage.from_path(self.view.file_name())
         if not project:
             return
-        if project.path_to_bin:
-            return self.has_prefix(project.path_to_bin)
+
+        if project.path_to_bin and self.has_prefix(project.path_to_bin):
+            return Tre
+
+        if (project.path_to_example and
+            self.has_prefix(project.path_to_example)):
+                # TODO(guillermooo): improve detection of cli apps under
+                # 'example'.
+                is_cli_script = self._find_at_top('dart:io')
+                is_not_web_file = (self.is_dart_file and
+                                   not self._find_at_top('import:html'))
+                return (is_cli_script or is_not_web_file)
 
     @property
     def is_web_app(self):
         project = PubPackage.from_path(self.view.file_name())
         if not project:
             return
-        if project.path_to_web:
-            return self.has_prefix(project.path_to_web)
+
+        if project.path_to_web and self.has_prefix(project.path_to_web):
+            return True
+
+        # We're assuming that we've checked before whether this is
+        # a cli app within 'example'.
+        return (project.path_to_example and
+                self.has_prefix(project.path_to_example))
 
     @property
     def is_pubspec(self):
         return os.path.basename(self.view.file_name()) == 'pubspec.yaml'
+
+    @property
+    def is_example(self):
+        '''Returns `True` if the view's path is under the 'example' dir.
+        '''
+        assert(self.view.file_name(), 'view has not been saved yet')
+        project = PubPackage.from_path(self.view.file_name())
+        if not (project and project.path_to_example):
+            return
+        return self.has_prefix(project.path_to_example)

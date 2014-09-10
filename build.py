@@ -145,7 +145,7 @@ class DartRunCommand(DartBuildCommandBase):
             return
 
         if dart_view.is_web_app:
-            self.run_web_app(file_name, working_dir, action)
+            self.run_web_app(dart_view, working_dir, action)
             return
 
         if action == 'primary':
@@ -228,7 +228,7 @@ class DartRunCommand(DartBuildCommandBase):
             preamble='Running dart...\n',
             )
 
-    def run_web_app(self, file_name, working_dir, action):
+    def run_web_app(self, dart_view, working_dir, action):
         sdk = SDK()
 
         if action == 'secondary':
@@ -237,17 +237,18 @@ class DartRunCommand(DartBuildCommandBase):
                 _logger.info('no default browser found')
                 return
 
-            self.execute(
-                cmd=[sdk.path_to_pub, 'serve'],
-                working_dir=working_dir,
-                )
+            cmd=[sdk.path_to_pub, 'serve']
+            if dart_view.is_example:
+                cmd.append('example')
+            self.execute(cmd=cmd, working_dir=working_dir)
             self.start_default_browser()
             return
 
-        self.execute(
-            cmd=[sdk.path_to_pub, 'serve', '--no-dart2js'],
-            working_dir=working_dir,
-            )
+        cmd=[sdk.path_to_pub, 'serve']
+        if dart_view.is_example:
+            cmd.append('example')
+        cmd.append('--no-dart2js')
+        self.execute(cmd=cmd, working_dir=working_dir)
 
         # TODO(guillermooo): run dartium in checked mode
         sublime.set_timeout(lambda: Dartium().start('http://localhost:8080'),
