@@ -165,7 +165,7 @@ class DartView(object):
                     return True
 
     def has_prefix(self, prefix):
-        assert(prefix, 'cannot call with empty prefix')
+        assert prefix, 'cannot call with empty prefix'
         return is_prefix(prefix, self.view.file_name())
 
     @property
@@ -181,8 +181,12 @@ class DartView(object):
         project = PubPackage.from_path(self.view.file_name())
         return any((self.is_dart_file,
                     self.is_pubspec,
-                    project and self.has_prefix(project.path_to_web),
-                    project and self.has_prefix(project.path_to_example),
+                    (project and
+                        project.path_to_web and
+                        self.has_prefix(project.path_to_web)),
+                    (project and
+                        project.path_to_example and
+                        self.has_prefix(project.path_to_example)),
                     ))
 
     @property
@@ -229,7 +233,7 @@ class DartView(object):
     def is_example(self):
         '''Returns `True` if the view's path is under the 'example' dir.
         '''
-        assert(self.view.file_name(), 'view has not been saved yet')
+        assert self.view.file_name(), 'view has not been saved yet'
         project = PubPackage.from_path(self.view.file_name())
         if not (project and project.path_to_example):
             return
