@@ -7,6 +7,7 @@ import unittest
 
 from Dart.lib.pub_package import PubspecFile
 from Dart.lib.pub_package import PubPackage
+from Dart.lib.pub_package import DartView
 
 
 VALID_PUBSPEC_CONTENT = '''name: foo
@@ -138,3 +139,22 @@ class Test_PubPackage(unittest.TestCase):
         self.assertTrue(os.path.exists(self.pub_package.path_to_example))
         self.assertTrue(os.path.exists(self.pub_package.path_to_lib))
 
+
+class Test_DartView(unittest.TestCase):
+    def setUp(self):
+        self.v = sublime.active_window().new_file()
+
+    def tearDown(self):
+        self.v.close()
+
+    def testCanInit(self):
+        dv = DartView(self.v)
+        self.assertEqual(dv.view, self.v)
+
+    def test_has_prefix_RaisesAssertionErrorIfCalledWithNone(self):
+        dv = DartView(self.v)
+        self.assertRaises(AssertionError, dv.has_prefix, None)
+
+    def test_has_prefix_CanSucceed(self):
+        # TODO: implement this
+        self.assertTrue(False)
