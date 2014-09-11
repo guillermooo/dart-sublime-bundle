@@ -237,5 +237,5 @@ class DartView(object):
         assert self.view.file_name(), 'view has not been saved yet'
         project = PubPackage.from_path(self.view.file_name())
         if not (project and project.path_to_example):
-            return
+            return False
         return self.has_prefix(project.path_to_example)
