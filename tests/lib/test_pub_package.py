@@ -1,6 +1,7 @@
 import sublime
 
 from tempfile import TemporaryDirectory
+from tempfile import TemporaryFile
 from unittest import mock
 import os
 import unittest
@@ -155,6 +156,59 @@ class Test_DartView(unittest.TestCase):
         dv = DartView(self.v)
         self.assertRaises(AssertionError, dv.has_prefix, None)
 
+    def test_has_prefix_FailsWhenExpected(self):
+        f = TemporaryFile(suffix='.dart')
+        try:
+            view = sublime.active_window().open_file(f.name)
+            dv = DartView(view)
+            self.assertFalse(dv.has_prefix('?xxx?'))
+        finally:
+            view.close()
+
     def test_has_prefix_CanSucceed(self):
-        # TODO: implement this
-        self.assertTrue(False)
+        f = TemporaryFile(suffix='.dart')
+        try:
+            view = sublime.active_window().open_file(f.name)
+            dv = DartView(view)
+            self.assertTrue(dv.has_prefix(os.path.dirname(f.name)))
+        finally:
+            view.close()
+
+    def test_is_dart_file_CanSucceed(self):
+        f = TemporaryFile(suffix='.dart')
+        try:
+            view = sublime.active_window().open_file(f.name)
+            dv = DartView(view)
+            self.assertTrue(dv.is_dart_file)
+        finally:
+            view.close()
+
+    def test_is_dart_file_FailsWhenExpected(self):
+        f = TemporaryFile(suffix='.js')
+        try:
+            view = sublime.active_window().open_file(f.name)
+            dv = DartView(view)
+            self.assertFalse(dv.is_dart_file)
+        finally:
+            view.close()
+
+    def test_is_pubspec_CanSucceed(self):
+        with TemporaryDirectory() as d:
+            path = os.path.join(d, 'pubspec.yaml')
+            with open(path, 'w'):
+                pass
+            try:
+                view = sublime.active_window().open_file(path)
+                dv = DartView(view)
+                self.assertTrue(dv.is_pubspec)
+            finally:
+                view.close()
+
+    def test_is_pubspec_FailsWhenExpected(self):
+        f = TemporaryFile(suffix='.js')
+        try:
+            view = sublime.active_window().open_file(f.name)
+            dv = DartView(view)
+            self.assertFalse(dv.is_pubspec)
+        finally:
+            view.close()
