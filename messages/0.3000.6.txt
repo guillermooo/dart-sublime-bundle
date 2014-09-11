@@ -1,0 +1,31 @@
+Version 0.3000.6
+
+The Sublime Text Dart Package has been updated!
+
+This version includes mainly bug fixes to the smart build system.
+
+Full Documentation:
+
+Wiki: https://github.com/dart-lang/dart-sublime-bundle/wiki
+
+
+MAIN CHANGES
+------------
+
+	- Add pub build task to command palette
+	- Improve smart build system (F7/Ctrl+F7)
+
+		* Detect and run files under 'example'
+		* Ensure paths exist before using them
+		The <root>/example and <root>/web directories should no longer be
+		expected to exist and therefore cause intermittent exceptions.
+
+	- Improve syntax def when using 'library' keyword
+
+
+Reporting Bugs and Requesting New Features
+------------------------------------------
+
+Please report any bugs and request features here:
+
+* https://github.com/dart-lang/dart-sublime-bundle/issues
