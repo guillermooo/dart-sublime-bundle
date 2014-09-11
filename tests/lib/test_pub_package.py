@@ -1,7 +1,7 @@
 import sublime
 
 from tempfile import TemporaryDirectory
-from tempfile import TemporaryFile
+from tempfile import NamedTemporaryFile
 from unittest import mock
 import os
 import unittest
@@ -167,7 +167,7 @@ class Test_DartView(unittest.TestCase):
         self.assertRaises(AssertionError, dv.has_prefix, None)
 
     def test_has_prefix_FailsWhenExpected(self):
-        f = TemporaryFile(suffix='.dart')
+        f = NamedTemporaryFile(suffix='.dart')
         try:
             view = sublime.active_window().open_file(f.name)
             dv = DartView(view)
@@ -176,7 +176,7 @@ class Test_DartView(unittest.TestCase):
             view.close()
 
     def test_has_prefix_CanSucceed(self):
-        f = TemporaryFile(suffix='.dart')
+        f = NamedTemporaryFile(suffix='.dart')
         try:
             view = sublime.active_window().open_file(f.name)
             dv = DartView(view)
@@ -185,7 +185,7 @@ class Test_DartView(unittest.TestCase):
             view.close()
 
     def test_is_dart_file_CanSucceed(self):
-        f = TemporaryFile(suffix='.dart')
+        f = NamedTemporaryFile(suffix='.dart')
         try:
             view = sublime.active_window().open_file(f.name)
             dv = DartView(view)
@@ -194,7 +194,7 @@ class Test_DartView(unittest.TestCase):
             view.close()
 
     def test_is_dart_file_FailsWhenExpected(self):
-        f = TemporaryFile(suffix='.js')
+        f = NamedTemporaryFile(suffix='.js')
         try:
             view = sublime.active_window().open_file(f.name)
             dv = DartView(view)
@@ -215,7 +215,7 @@ class Test_DartView(unittest.TestCase):
                 view.close()
 
     def test_is_pubspec_FailsWhenExpected(self):
-        f = TemporaryFile(suffix='.js')
+        f = NamedTemporaryFile(suffix='.js')
         try:
             view = sublime.active_window().open_file(f.name)
             dv = DartView(view)
