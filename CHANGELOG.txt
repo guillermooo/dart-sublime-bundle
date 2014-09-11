@@ -1,3 +1,14 @@
+0.3000.6 - 20140911
+
+	- Improve some tests
+	- Add pub build task
+	- Add tests for pub_package.py
+	- Ensure paths exist before using them
+	- Improve syntax def when using 'library' keyword
+	- Detect and run files under 'example'
+	- Rename DartProject --> PubPackage
+	- Rename dart_project --> pub_package
+
 0.3000.5 - 20140908
 
 	- Return early if path does not exist
