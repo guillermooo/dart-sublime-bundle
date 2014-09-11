@@ -21,14 +21,22 @@ packages: {}
 '''
 
 def make_package(pubspec=True, dirs=['web']):
-    d = TemporaryDirectory()
+    '''Helper to create a folder structure resembling a pub-compliant package.
+
+    @pubspec
+      Whether to create a pubspec.yaml file.
+
+    @dirs
+      List of subdirs to create within the package.
+    '''
+    tmp_dir = TemporaryDirectory()
+    pubspec_path = ''
     if pubspec:
-        ps = os.path.join(d.name, 'pubspec.yaml')
-        with open(ps, 'w'):
-            pass
+        pubspec_path = os.path.join(tmp_dir.name, 'pubspec.yaml')
+        open(pubspec_path, 'w').close()
     for subdir in dirs:
-        os.mkdir(os.path.join(d.name, subdir))
-    return pubspec, d
+        os.mkdir(os.path.join(tmp_dir.name, subdir))
+    return pubspec_path, tmp_dir
 
 
 class Test_PubspecFile(unittest.TestCase):
@@ -204,11 +212,11 @@ class Test_DartView(unittest.TestCase):
 
     def test_is_pubspec_CanSucceed(self):
         with TemporaryDirectory() as d:
-            path = os.path.join(d, 'pubspec.yaml')
-            with open(path, 'w'):
+            fname = os.path.join(d, 'pubspec.yaml')
+            with open(fname, 'w'):
                 pass
             try:
-                view = sublime.active_window().open_file(path)
+                view = sublime.active_window().open_file(fname)
                 dv = DartView(view)
                 self.assertTrue(dv.is_pubspec)
             finally:
@@ -224,30 +232,28 @@ class Test_DartView(unittest.TestCase):
             view.close()
 
     def test_is_example_CanSucceed(self):
-        ps, d = make_package(dirs=['example'])
-        fname = os.path.join(d.name, 'example', 'foo.dart')
-        with open(fname, 'w'):
-            pass
+        _, tmp_dir = make_package(dirs=['example'])
+        fname = os.path.join(tmp_dir.name, 'example', 'foo.dart')
+        open(fname, 'w').close()
         try:
             view = sublime.active_window().open_file(fname)
             dv = DartView(view)
             self.assertTrue(dv.is_example)
         finally:
             view.close()
-        d.cleanup()
+        tmp_dir.cleanup()
 
     def test_is_example_FailsWhenExpected(self):
-        ps, d = make_package(dirs=['bin'])
-        fname = os.path.join(d.name, 'bin', 'foo.dart')
-        with open(fname, 'w'):
-            pass
+        _, tmp_dir = make_package(dirs=['bin'])
+        fname = os.path.join(tmp_dir.name, 'bin', 'foo.dart')
+        open(fname, 'w').close()
         try:
             view = sublime.active_window().open_file(fname)
             dv = DartView(view)
             self.assertFalse(dv.is_example)
         finally:
             view.close()
-        d.cleanup()
+        tmp_dir.cleanup()
 
     def test_is_web_app_FailsIfNoPubPackageAvailable(self):
         ps, d = make_package(pubspec=False, dirs=['web'])
@@ -274,8 +280,8 @@ class Test_DartView(unittest.TestCase):
         d.cleanup()
 
     def test_is_web_app_ReturnsTrueIfFileUnderExample(self):
-        ps, d = make_package(pubspec=True, dirs=['example'])
-        fname = os.path.join(d.name, 'example', 'foo.dart')
+        _, tmp_dir = make_package(pubspec=True, dirs=['example'])
+        fname = os.path.join(tmp_dir.name, 'example', 'foo.dart')
         f = open(fname, 'w').close()
         try:
             view = sublime.active_window().open_file(fname)
@@ -283,11 +289,11 @@ class Test_DartView(unittest.TestCase):
             self.assertTrue(dv.is_web_app)
         finally:
             view.close()
-        d.cleanup()
+        tmp_dir.cleanup()
 
     def test_is_web_app_ReturnsFalseIfFileUnderOtherDirectory(self):
-        ps, d = make_package(pubspec=True, dirs=['example', 'bin'])
-        fname = os.path.join(d.name, 'bin', 'foo.dart')
+        _, tmp_dir = make_package(pubspec=True, dirs=['example', 'bin'])
+        fname = os.path.join(tmp_dir.name, 'bin', 'foo.dart')
         f = open(fname, 'w').close()
         try:
             view = sublime.active_window().open_file(fname)
@@ -295,11 +301,11 @@ class Test_DartView(unittest.TestCase):
             self.assertFalse(dv.is_web_app)
         finally:
             view.close()
-        d.cleanup()
+        tmp_dir.cleanup()
 
     def test_is_web_app_ReturnsFalseIfWebAndExampleDirsMissing(self):
-        ps, d = make_package(pubspec=True, dirs=['doc', 'bin'])
-        fname = os.path.join(d.name, 'bin', 'foo.dart')
+        _, tmp_dir = make_package(pubspec=True, dirs=['doc', 'bin'])
+        fname = os.path.join(tmp_dir.name, 'bin', 'foo.dart')
         f = open(fname, 'w').close()
         try:
             view = sublime.active_window().open_file(fname)
@@ -307,11 +313,11 @@ class Test_DartView(unittest.TestCase):
             self.assertFalse(dv.is_web_app)
         finally:
             view.close()
-        d.cleanup()
+        tmp_dir.cleanup()
 
     def test_is_web_app_ReturnsFalseIfWebDirMissing(self):
-        ps, d = make_package(pubspec=True, dirs=['example', 'bin'])
-        fname = os.path.join(d.name, 'bin', 'foo.dart')
+        _, tmp_dir = make_package(pubspec=True, dirs=['example', 'bin'])
+        fname = os.path.join(tmp_dir.name, 'bin', 'foo.dart')
         f = open(fname, 'w').close()
         try:
             view = sublime.active_window().open_file(fname)
@@ -319,4 +325,4 @@ class Test_DartView(unittest.TestCase):
             self.assertFalse(dv.is_web_app)
         finally:
             view.close()
-        d.cleanup()
+        tmp_dir.cleanup()
