@@ -5,8 +5,6 @@ from unittest import mock
 import os
 
 
-from Dart.lib.sdk import SDK
+from Dart.lib.sdk import join_exclusive_parts
 
 
-class Test_path_to_default_user_browser(unittest.TestCase):
-    pass
