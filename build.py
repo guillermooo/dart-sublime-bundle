@@ -247,7 +247,6 @@ class DartRunCommand(DartBuildCommandBase):
         cmd=[sdk.path_to_pub, 'serve']
         if dart_view.is_example:
             cmd.append('example')
-        cmd.append('--no-dart2js')
         self.execute(cmd=cmd, working_dir=working_dir)
 
         # TODO(guillermooo): run dartium in checked mode
