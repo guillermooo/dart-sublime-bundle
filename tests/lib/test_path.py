@@ -8,6 +8,7 @@ from subprocess import check_output
 from Dart.lib.path import find_in_path
 from Dart.lib.path import is_pubspec
 from Dart.lib.path import extension_equals
+from Dart.lib.path import join_exclusive_parts
 
 
 class Test_find_in_path(unittest.TestCase):
@@ -69,3 +70,49 @@ class Test_extension_equals_WithViews(unittest.TestCase):
 
     def tearDown(self):
         self.view.close()
+
+
+class Test_join_exclusive_parts(unittest.TestCase):
+    @unittest.skipIf(os.name == 'nt', 'only for Unix')
+    def testReturnsFullPathIfPerfectMatchUnix(self):
+        # TODO(guillermooo): Is OSX fsys case sensitive?
+        a = '/Users/foo/dart-sdk/chromium/Chromium.app/Contents/MacOS/Chromium'
+        b = 'Chromium.app/Contents/MacOS/Chromium'
+        self.assertEqual(join_exclusive_parts(a, b), a)
+
+    @unittest.skipIf(os.name == 'nt', 'only for Unix')
+    def testReturnsJoined_Unix(self):
+        # TODO(guillermooo): Is OSX fsys case sensitive?
+        a = '/Users/foo/dart-sdk/chromium/Chromium.app/Contents/MacOS'
+        b = 'Chromium.app/Contents/MacOS/Chromium'
+        self.assertEqual(join_exclusive_parts(a, b), os.path.join(a, 'Chromium'))
+
+    @unittest.skipUnless(os.name != 'nt', 'only for Unix')
+    def testReturnsJoinedPartial1_Windows(self):
+        # TODO(guillermooo): Is OSX fsys case sensitive?
+        a = '/Users/foo/dart-sdk/chromium/Chromium.app/Contents'
+        b = 'Chromium.app/Contents/MacOS/Chromium'
+        self.assertEqual(join_exclusive_parts(a, b), os.path.join(a, 'MacOS/Chromium'))
+
+    @unittest.skipUnless(os.name == 'nt', 'only for Windows')
+    def testReturnsFullPathIfPerfectMatch_Win(self):
+        # TODO(guillermooo): case sensitivity
+        a = r'C:\dart-sdk\chromium\chromium.exe'
+        b = r'chromium.exe'
+        self.assertEqual(join_exclusive_parts(a, b), a)
+        b = r'chromium\chromium.exe'
+        self.assertEqual(join_exclusive_parts(a, b), a)
+
+    @unittest.skipUnless(os.name == 'nt', 'only for Windows')
+    def testReturnsJoined_Windows(self):
+        # TODO(guillermooo): case sensitivity
+        a = r'C:\dart-sdk\chromium\\'
+        b = r'chromium.exe'
+        self.assertEqual(join_exclusive_parts(a, b), os.path.join(a, b))
+
+    @unittest.skipUnless(os.name == 'nt', 'only for Windows')
+    def testReturnsJoinedPartial1_Windows(self):
+        # TODO(guillermooo): case sensitivity
+        a = r'C:\dart-sdk\\chromium'
+        b = r'chromium\chromium.exe'
+        self.assertEqual(join_exclusive_parts(a, b), os.path.join(a, 'chromium.exe'))
