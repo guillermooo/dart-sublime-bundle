@@ -15,7 +15,7 @@ push-location $thisDir
         $installedPackages = (GetConfigValue 'global-win' 'installed-packages')
         write-output "copying files..."
         # TODO: Perhaps we should delete the folder first.
-        copy-item * -recurse -force "$installedPackages/../Packages/Dart"
+        copy-item * -recurse -force -exclude ".git" "$installedPackages/../Packages/Dart"
     pop-location
 pop-location
 
