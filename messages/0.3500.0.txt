@@ -1,0 +1,35 @@
+Version 0.3500.0
+
+The Sublime Text Dart Package has been updated!
+
+This version includes bug fixes and streamlined settings.
+
+Full Documentation:
+
+Wiki: https://github.com/dart-lang/dart-sublime-bundle/wiki
+
+
+MAIN CHANGES
+------------
+
+	- pub serve should run dart2js if it needs to (Thanks @sethladd)
+
+	It's now possible to browse the launched web app via F7 in Dartium as well
+	as in any other browser at the same time. F7 will serve both .dart code
+	for Dartium and compiled .js code for other browsers.
+
+	- Streamline settings
+
+	Dart package settings have been consolidated in a 'Dart - Plugin Settings.sublime-settings'
+	file. Your current settings should be copied to the new file automatically.
+	You don't need to take any action. If you want to clean up the old settings
+	file, make sure that the existing settings have been correctly copied to
+	the new file and then edit `Packages/User/Preferences.sublime-settings`.
+
+
+Reporting Bugs and Requesting New Features
+------------------------------------------
+
+Please report any bugs and request features here:
+
+* https://github.com/dart-lang/dart-sublime-bundle/issues
