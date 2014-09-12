@@ -16,10 +16,20 @@
 						"children":
 						[
 							{
-								"command": "open_file",
-								"args": {"file": "${packages}/Dart/Support/Preferences.sublime-settings"},
+								"command": "dart_open_settings",
+								"args": {"kind": "default", "scope": "global"},
 								"caption": "Settings – Default"
 							},
+							{
+								"command": "dart_open_settings",
+								"args": {"kind": "user", "scope": "global"},
+								"caption": "Settings – User"
+							},
+							{
+								"command": "dart_open_settings",
+								"args": {"kind": "user", "scope": "file_type"},
+								"caption": "Settings – File Type (User)"
+							}
 						]
 					}
 				]
