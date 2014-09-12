@@ -15,7 +15,6 @@ def plugin_loaded():
     # TODO(guillermooo): Remove this by 1.0
     transplant_settings('Preferences.sublime-settings',
                         'Dart - Plugin Settings.sublime-settings')
-    pass
 
 
 # TODO(guillermooo): Remove this by 1.0
