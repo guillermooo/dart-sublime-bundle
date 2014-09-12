@@ -6,9 +6,106 @@ import os
 
 from . import PluginLogger
 from .lib.sdk import SDK
+from .lib.panels import OutputPanel
 
 
 _logger = PluginLogger(__name__)
+
+def plugin_loaded():
+    # TODO(guillermooo): Remove this by 1.0
+    transplant_settings('Preferences.sublime-settings',
+                        'Dart - Plugin Settings.sublime-settings')
+    pass
+
+
+# TODO(guillermooo): Remove this by 1.0
+omg_message = '''
+ ____                              _
+/ ___| _   _  ___ ___ ___  ___ ___| |
+\___ \| | | |/ __/ __/ _ \/ __/ __| |
+ ___) | |_| | (_| (_|  __/\__ \__ \_|
+|____/ \__,_|\___\___\___||___/___(_)
+'''
+
+
+# TODO(guillermooo): Remove this by 1.0
+def transplant_settings(old_fname, new_fname):
+    '''Copies settings from @old_fname to @new_fname. Leaves obsolete settings
+    in @old_fname intact.
+
+    @old_fname
+      Basename of a .sublime-settings file.
+
+    @new_fname
+      Basename of a .sublime-settings file.
+    '''
+    if os.path.exists(os.path.join(sublime.packages_path(), 'User',
+                      new_fname)):
+        _logger.debug('new User settings file found, not transplating old settings')
+        return
+
+    _logger.debug('Transplanting old settings to new settings file...')
+
+    KNOWN_SETTINGS =  {
+    "dart_sdk_path": None,
+    "dart_dartium_path": None,
+
+    "dart_user_browsers": { },
+
+    "dart_linter_active": False,
+    "dart_linter_on_load": True,
+    "dart_linter_on_save": True,
+    "dart_linter_show_popup_level": "WARNING",
+
+    "dart_linter_gutter_icon_error": "Packages/Dart/gutter/dartlint-simple-error.png",
+    "dart_linter_gutter_icon_warning": "Packages/Dart/gutter/dartlint-simple-warning.png",
+    "dart_linter_gutter_icon_info": "Packages/Dart/gutter/dartlint-simple-info.png",
+
+    "dart_linter_underline_color_error": "C7321C",
+    "dart_linter_underline_color_warning": "F18512",
+    "dart_linter_underline_color_info": "0000FC",
+
+    "dart_log_level": "error"
+    }
+
+    try:
+        old_settings = sublime.load_settings(old_fname)
+        new_settings = sublime.load_settings(new_fname)
+        for name, default in KNOWN_SETTINGS.items():
+            value = old_settings.get(name, default)
+            _logger.info("Transplanting: %s: %s", name, default)
+            new_settings.set(name, value)
+        sublime.save_settings(new_fname)
+    except Exception as e:
+        _logger.error('something went wrong while transplanting old settings')
+        _logger.error(e)
+        print("Dart: Something went wrong while transplanting old settings :_[")
+        print("=" * 80)
+        print(e)
+        print("=" * 80)
+    else:
+        _logger.debug("old settings transplanted from %s to %s", old_fname, new_fname)
+        print("Dart: Old settings transplanted from %s to %s" % (old_fname,
+              new_fname))
+        message = OutputPanel("dart.message")
+        message.write("Dart Package for Sublime Text - Message\n")
+        message.write("=" * 80)
+        message.write(omg_message)
+        message.write('\n')
+        message.write("The Dart package for Sublime Text now uses different settings files.\n")
+        message.write('\n')
+        message.write("Your old Dart settings have been copied to '%s'." % new_fname)
+        message.write(" We'll use this new file from now on.\n")
+        message.write("Old settings have not been cleaned up. Please do so in '%s'" % old_fname)
+        message.write(" if you want.\n")
+        message.write('\n')
+        message.write('Check our wiki for more information:\n')
+        message.write('    https://github.com/dart-lang/dart-sublime-bundle/wiki\n')
+        message.write('\n')
+        message.write("Now please restart Sublime Text and we're all done!\n")
+        message.write('\n')
+        message.write("Thanks! :-)")
+        message.show()
 
 
 # TODO(guillermooo): we probably don't need a new command; ST already includes
