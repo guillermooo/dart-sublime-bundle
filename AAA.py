@@ -67,7 +67,7 @@ class _dart_report_config_errors(sublime_plugin.WindowCommand):
         text += '\n'
         text += ('-' * 80) + '\n'
 
-        setts = sublime.load_settings('Preferences.sublime-settings')
+        setts = sublime.load_settings('Dart - Plugin Settings.sublime-settings')
         text += "dart_sdk_path: {}".format(setts.get('dart_sdk_path'))
         text += '\n'
 
