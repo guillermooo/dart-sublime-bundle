@@ -74,7 +74,7 @@ class Test_extension_equals_WithViews(unittest.TestCase):
 
 class Test_join_exclusive_parts(unittest.TestCase):
     @unittest.skipIf(os.name == 'nt', 'only for Unix')
-    def testReturnsFullPathIfPerfectMatchUnix(self):
+    def testReturnsFullPathIfPerfectMatch_Unix(self):
         # TODO(guillermooo): Is OSX fsys case sensitive?
         a = '/Users/foo/dart-sdk/chromium/Chromium.app/Contents/MacOS/Chromium'
         b = 'Chromium.app/Contents/MacOS/Chromium'
@@ -87,8 +87,8 @@ class Test_join_exclusive_parts(unittest.TestCase):
         b = 'Chromium.app/Contents/MacOS/Chromium'
         self.assertEqual(join_exclusive_parts(a, b), os.path.join(a, 'Chromium'))
 
-    @unittest.skipUnless(os.name != 'nt', 'only for Unix')
-    def testReturnsJoinedPartial1_Windows(self):
+    @unittest.skipIf(os.name == 'nt', 'only for Unix')
+    def testReturnsJoinedPartial1_Unix(self):
         # TODO(guillermooo): Is OSX fsys case sensitive?
         a = '/Users/foo/dart-sdk/chromium/Chromium.app/Contents'
         b = 'Chromium.app/Contents/MacOS/Chromium'
