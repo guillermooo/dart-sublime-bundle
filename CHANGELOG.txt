@@ -1,3 +1,12 @@
+0.3500.0 - 20140912
+
+	- Add new settings file 'Dart - Plugin Settings.sublime-settings'
+	- Transplant User settings to new file if needed
+	- Windows: Exclude .git folder when deploying dev build
+	- pub serve should run dart2js if it needs to (Thanks @sethladd)
+	- Simplify naming for settings files
+	- Add tests for DartView
+
 0.3000.6 - 20140911
 
 	- Improve some tests
