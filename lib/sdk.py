@@ -32,7 +32,7 @@ class SDK(object):
     """
     # TODO(guillermooo): make this class more test-friendly.
     def __init__(self):
-        self.setts = sublime.load_settings('Preferences.sublime-settings')
+        self.setts = sublime.load_settings('Dart - Plugin Settings.sublime-settings')
 
         p = self.setts.get('dart_sdk_path')
         try:
@@ -180,9 +180,9 @@ class SDK(object):
     def path_to_default_user_browser(self, value):
         plat_browsers = self.user_browsers
         plat_browsers['default'] = value
-        self.setts = sublime.load_settings('Preferences.sublime-settings')
+        self.setts = sublime.load_settings('Dart - Plugin Settings.sublime-settings')
         self.setts.set('dart_user_browsers', plat_browsers)
-        sublime.save_settings('Preferences.sublime-settings')
+        sublime.save_settings('Dart - Plugin Settings.sublime-settings')
 
     @property
     def user_browsers(self):

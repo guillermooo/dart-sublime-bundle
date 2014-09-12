@@ -22,8 +22,8 @@ def _get_logging_level():
     if LOG_LEVEL is not None:
         return LOG_LEVEL
 
-    v = sublime.active_window().active_view()
-    level = v.settings().get('dart_log_level', 'ERROR')
+    setts = sublime.load_settings('Dart - Plugin Settings.sublime-settings')
+    level = setts.get('dart_log_level', 'ERROR')
 
     return getattr(logging, level.upper(), logging.ERROR)
 

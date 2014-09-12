@@ -245,7 +245,7 @@ class DartLint(sublime_plugin.EventListener):
             'dartlint.mark.gutter': 'not used'})
 
         # Get the current theme
-        system_prefs = sublime.load_settings('Preferences.sublime-settings')
+        system_prefs = sublime.load_settings('Dart - Plugin Settings.sublime-settings')
         theme = system_prefs.get('color_scheme')
         theme_xml = sublime.load_resource(theme)
         append_xml = False
@@ -286,7 +286,7 @@ class DartLint(sublime_plugin.EventListener):
         prep_path = FormRelativePath(path)
         if prep_path is not False:
             system_prefs.set('color_scheme', prep_path)
-            sublime.save_settings('Preferences.sublime-settings')
+            sublime.save_settings('Dart - Plugin Settings.sublime-settings')
             print('Created: %s' % prep_path)
 
 

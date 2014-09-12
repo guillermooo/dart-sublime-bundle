@@ -76,7 +76,7 @@ class DartExecCommand(sublime_plugin.WindowCommand, ProcessListener):
             self.append_string(self.proc, preamble)
 
         show_panel_on_build = sublime.load_settings(
-              "Preferences.sublime-settings").get("show_panel_on_build", True)
+              "Dart - Plugin Settings.sublime-settings").get("show_panel_on_build", True)
         if show_panel_on_build:
             self.out_panel.show()
 

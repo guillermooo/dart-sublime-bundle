@@ -134,8 +134,8 @@ class DartOpenDartEditorCommand(sublime_plugin.TextCommand):
 class DartOpenSettingsCommand(sublime_plugin.WindowCommand):
     """Opens Dart settings files.
 
-    a) Default settings (that is, Packages/Dart/Support/Preferences.sublime-settings).
-    b) User settings (that is, Packages/User/Preferences.sublime-settings).
+    a) Default settings (that is, Packages/Dart/Support/Dart - Plugin Settings.sublime-settings).
+    b) User settings (that is, Packages/User/Dart - Plugin Settings.sublime-settings).
     c) Dart file type settings (that is, Packages/User/Dart.sublime-settings)
 
     (a) is read-only and users should not rely on it, as it can be overwritten
@@ -201,7 +201,7 @@ class DartOpenSettingsCommand(sublime_plugin.WindowCommand):
                 return
 
         self.window.run_command('open_file', {
-            "file": "${packages}/User/Preferences.sublime-settings"
+            "file": "${packages}/User/Dart - Plugin Settings.sublime-settings"
             })
 
     def open_default(self):
@@ -209,7 +209,7 @@ class DartOpenSettingsCommand(sublime_plugin.WindowCommand):
         should not edit their settings here, but use the 'User' version instead.
         """
         setts = sublime.load_resource(
-            'Packages/Dart/Support/Preferences.sublime-settings')
+            'Packages/Dart/Support/Dart - Plugin Settings.sublime-settings')
 
         v = self.window.new_file()
         v.run_command('append', {'characters': setts.replace('\r', '')})
