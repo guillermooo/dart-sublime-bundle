@@ -104,21 +104,3 @@ def to_platform_path(original, append):
             return original + append
         return join(original, append)
     return original
-
-
-def join_exclusive_parts(base, suffix):
-    '''Joins the unshared parts between @base and @suffix.
-
-    @base
-      A path.
-    @suffix
-      A path.
-    '''
-    parts = os.path.split(suffix)
-    end = 0 if parts[0] else 1
-    for i in range(len(parts), end, -1):
-        if base.endswith(os.path.join(*parts[:i])):
-            if i == len(parts):
-                return base
-            return os.path.join(base, *parts[i:])
-    return os.path.join(base, suffix)
