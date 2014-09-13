@@ -5,7 +5,7 @@
 	// Path to the sdk directory.
 	"dart_sdk_path": null,
 	// Path to the directory containing Dartium.
-	// In OSX, it's the directory containing Chromium.app.
+	// On OSX, it's the full path to Chromium.app.
 	"dart_dartium_path": null,
 
 	// User-defined browsers.
