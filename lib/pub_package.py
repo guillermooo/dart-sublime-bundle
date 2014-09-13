@@ -201,7 +201,7 @@ class DartView(object):
             return
 
         if project.path_to_bin and self.has_prefix(project.path_to_bin):
-            return Tre
+            return True
 
         if (project.path_to_example and
             self.has_prefix(project.path_to_example)):
