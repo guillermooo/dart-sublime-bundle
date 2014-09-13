@@ -30,6 +30,16 @@ def plugin_unloaded():
                                         'file_name': '???'})
 
 
+class DartStopServicesCommand(sublime_plugin.WindowCommand):
+    '''Stops running servers started by this plugin.
+    '''
+    def run(self):
+        self.window.run_command('dart_run', {
+            "file_name": "???",
+            "kill_only": True
+            })
+
+
 class DartShowServerObservatoryCommand(sublime_plugin.WindowCommand):
     def is_enabled(self):
         return DartRunCommand.observatory != None
@@ -51,6 +61,11 @@ class ContextProvider(sublime_plugin.EventListener):
 
         if key == 'dart_can_show_observatory':
             value = DartRunCommand.observatory != None
+            return self._check(value, operator, operand, match_all)
+
+        if key == 'dart_services_running':
+            value = (DartRunCommand.observatory != None or
+                     DartRunCommand.server_running)
             return self._check(value, operator, operand, match_all)
 
     def _check(self, value, operator, operand, match_all):
@@ -96,10 +111,10 @@ class DartRunCommand(DartBuildCommandBase):
     Intended for .dart and .html files.
     '''
     observatory = None
+    server_running = False
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.server = False
         self.panel = None
 
     def __del__(self):
@@ -119,8 +134,10 @@ class DartRunCommand(DartBuildCommandBase):
         @action
           One of: primary, secondary
         '''
-        if self.server:
+
+        if DartRunCommand.server_running:
             self.execute(kill=True)
+            DartRunCommand.server_running = False
 
         self.stop_server_observatory()
 
@@ -241,6 +258,7 @@ class DartRunCommand(DartBuildCommandBase):
             if dart_view.is_example:
                 cmd.append('example')
             self.execute(cmd=cmd, working_dir=working_dir)
+            DartRunCommand.server_running = True
             self.start_default_browser()
             return
 
@@ -248,6 +266,7 @@ class DartRunCommand(DartBuildCommandBase):
         if dart_view.is_example:
             cmd.append('example')
         self.execute(cmd=cmd, working_dir=working_dir)
+        DartRunCommand.server_running = True
 
         # TODO(guillermooo): run dartium in checked mode
         sublime.set_timeout(lambda: Dartium().start('http://localhost:8080'),

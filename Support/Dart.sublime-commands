@@ -11,5 +11,7 @@
     { "caption": "Preferences: Dart Settings - User", "command": "dart_open_settings", "args": {"kind": "user"} },
     { "caption": "Preferences: Dart Settings - File Type (User)", "command": "dart_open_settings", "args": {"kind": "user", "scope": "file_type"} },
 
-    { "caption": "Dart: Show Observatory (Server Apps)", "command": "dart_show_server_observatory" }
+    { "caption": "Dart: Show Observatory (Server Apps)", "command": "dart_show_server_observatory" },
+
+    { "caption": "Dart: Stop Running Services", "command": "dart_stop_services" }
 ]
