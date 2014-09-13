@@ -46,7 +46,7 @@
             "osx":
             {
                 "cmd": ["/bin/bash", "--login", "-c",
-                        "dartanalyzer $file"]
+                        "dartanalyzer \"$file\""]
             }
         },
 
