@@ -8,7 +8,6 @@ from subprocess import check_output
 from Dart.lib.path import find_in_path
 from Dart.lib.path import is_pubspec
 from Dart.lib.path import extension_equals
-from Dart.lib.path import join_unique_parts
 
 
 class Test_find_in_path(unittest.TestCase):
