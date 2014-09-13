@@ -141,7 +141,7 @@ class SDK(object):
         # Dartium will not always be available on the user's machine.
         bin_name = 'chrome.exe'
         if sublime.platform() == 'osx':
-            bin_name = 'Chromium.app/Contents/MacOS/Chromium'
+            bin_name = 'Contents/MacOS/Chromium'
         elif sublime.platform() == 'linux':
             bin_name = 'chrome'
 

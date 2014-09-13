@@ -104,4 +104,3 @@ def to_platform_path(original, append):
             return original + append
         return join(original, append)
     return original
-
