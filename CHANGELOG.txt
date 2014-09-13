@@ -1,3 +1,10 @@
+0.3500.1 - 20140913
+
+	- OSX: Surround file with quotation marks when calling analyzer from build system
+	- Add command palette item to stop running services
+	- On OSX, 'dart_dartium_path' must point to 'Chromium.app'
+	- Fix typo
+
 0.3500.0 - 20140912
 
 	- Add new settings file 'Dart - Plugin Settings.sublime-settings'
