@@ -1,0 +1,30 @@
+Version 0.3500.1
+
+The Sublime Text Dart Package has been updated!
+
+Full Documentation:
+
+Wiki: https://github.com/dart-lang/dart-sublime-bundle/wiki
+
+
+MAIN CHANGES
+------------
+
+	- Add command palette item to stop running services
+
+	  The new 'Dart: Stop Running Services' will stop any `pub serve` or
+	  observatory instances created by this plugin.
+
+	- On OSX, 'dart_dartium_path' must point to 'Chromium.app'
+
+	  OSX users will need to update this setting if necessary.
+
+	- OSX: Surround file with quotation marks when calling analyzer from build system
+
+
+Reporting Bugs and Requesting New Features
+------------------------------------------
+
+Please report any bugs and request features here:
+
+* https://github.com/dart-lang/dart-sublime-bundle/issues
