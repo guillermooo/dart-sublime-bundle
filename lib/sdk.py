@@ -6,8 +6,7 @@ from os.path import realpath
 from subprocess import check_output
 from subprocess import PIPE
 
-from Dart.lib.plat import join_on_win
-from Dart.lib.internal import cached_property
+from Dart.lib.path import join_on_win
 
 from subprocess import Popen
 from subprocess import STDOUT
@@ -46,7 +45,8 @@ class SDK(object):
                     msg = 'wrong path in dart_sdk_path: {}'.format(p)
                     raise FatalConfigError(msg)
             self._path = p
-            self.analysis_snapshot = setts.get('dart_analysis_snapshot_path')
+            self.analysis_snapshot = self.setts.get(
+                                                'dart_analysis_snapshot_path')
         except TypeError:
             msg = 'invalid value of dart_sdk_path: {}'.format(p)
             raise FatalConfigError(msg)
@@ -199,6 +199,7 @@ class SDK(object):
         '''
         return self.setts.get('dart_user_browsers')
 
+    @property
     def path_to_analysis_snapshot(self):
         return self.analysis_snapshot
 

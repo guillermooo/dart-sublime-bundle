@@ -6,7 +6,6 @@ from os.path import join
 from contextlib import contextmanager
 
 from Dart.lib.plat import is_windows
-from Dart.lib.plat import join_on_win
 
 
 def extension_equals(path_or_view, extension):
