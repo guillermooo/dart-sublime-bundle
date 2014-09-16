@@ -1,0 +1,29 @@
+Version 0.3500.2
+
+The Sublime Text Dart Package has been updated!
+
+This version includes experimental support for the analysis server for Dart.
+This feature isn't ready for everyday use and must be turned on via settings.
+Additional installation steps are required too (see below).
+
+Full Documentation:
+
+Wiki: https://github.com/dart-lang/dart-sublime-bundle/wiki
+
+
+MAIN CHANGES
+------------
+
+	- Initial support for analysis server (experimental)
+
+	If you want to try this feature, follow the steps indicated here:
+
+	https://github.com/dart-lang/dart-sublime-bundle/wiki/Experimental
+
+
+Reporting Bugs and Requesting New Features
+------------------------------------------
+
+Please report any bugs and request features here:
+
+* https://github.com/dart-lang/dart-sublime-bundle/issues
