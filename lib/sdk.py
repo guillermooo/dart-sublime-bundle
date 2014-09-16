@@ -17,7 +17,6 @@ import threading
 
 from Dart import PluginLogger
 from Dart.lib.error import ConfigError
-
 from Dart.lib.error import FatalConfigError
 from Dart.lib.filter import TextFilter
 from Dart.lib.path import join_on_win
@@ -45,11 +44,30 @@ class SDK(object):
                     msg = 'wrong path in dart_sdk_path: {}'.format(p)
                     raise FatalConfigError(msg)
             self._path = p
-            self.analysis_snapshot = self.setts.get(
-                                                'dart_analysis_snapshot_path')
+
         except TypeError:
             msg = 'invalid value of dart_sdk_path: {}'.format(p)
             raise FatalConfigError(msg)
+
+    @property
+    def enable_experimental_features(self):
+        return (self.setts.get('dart_enable_experimental_features') is True)
+
+    @property
+    def path_to_analysis_snapshot(self):
+        if not self.enable_experimental_features:
+            return None
+
+        path = os.path.join(sublime.packages_path(),
+                            'Dart',
+                            'Support',
+                            'analyzer',
+                            'analysis_server.dart')
+
+        if not os.path.exists(path):
+            raise ConfigError('no analysis server found')
+
+        return path
 
     def get_bin_tool(self, name, win_ext=''):
         """Returns the full path to the @name tool in the SDK's bin dir.
@@ -198,10 +216,6 @@ class SDK(object):
         Returns a dictionary of name -> path, or `None`.
         '''
         return self.setts.get('dart_user_browsers')
-
-    @property
-    def path_to_analysis_snapshot(self):
-        return self.analysis_snapshot
 
     def check_version(self):
         return check_output([self.path_to_dart, '--version'],

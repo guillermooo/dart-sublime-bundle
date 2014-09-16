@@ -14,6 +14,7 @@ import time
 from Dart import PluginLogger
 from Dart.lib.sublime import after
 from Dart.lib.editor_context import EditorContext
+from Dart.lib.error import ConfigError
 from Dart.lib.analyzer import actions
 from Dart.lib.analyzer import requests
 from Dart.lib.analyzer.pipe_server import PipeServer
@@ -68,6 +69,17 @@ def init():
 
 
 def plugin_loaded():
+    sdk = SDK()
+
+    if not sdk.enable_experimental_features:
+        return
+    try:
+        sdk.path_to_analysis_snapshot
+    except ConfigError as e:
+        print("Dart: " + str(e))
+        _logger.error(e)
+        return
+
     # FIXME(guillermooo): Ignoring, then de-ignoring this package throws
     # errors.
     # Make ST more responsive on startup --- also helps the logger get ready.
