@@ -51,7 +51,7 @@ class SDK(object):
 
     @property
     def enable_experimental_features(self):
-        return (self.setts.get('dart_enable_experimental_features') is True)
+        return (self.setts.get('dart_enable_experimental_editor_features') is True)
 
     @property
     def path_to_analysis_snapshot(self):
