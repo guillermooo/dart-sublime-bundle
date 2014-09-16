@@ -70,11 +70,14 @@ def make_message_file(old_tag, new_tag):
     # TODO: For now, we simply copy the latest announcement file and use that
     #       as a template.
     try:
-        with open(os.path.join(PROJECT_ROOT,
-                  'messages/{0}.txt'.format(old_tag)), 'r') as f:
+        with open(os.path.join(PROJECT_ROOT, 'scripts/release.tmpl'),
+                  'r') as f:
             with open(os.path.join(PROJECT_ROOT,
                       'messages/{0}.txt'.format(new_tag)), 'w') as ff:
-                ff.write(f.read())
+                text = f.read()
+                text = text.format(version=new_tag,
+                                   changes='[INSERT CHANGES HERE]')
+                ff.write(text)
     except Exception as e:
         print('failed at creating new announcement file under messages/')
         raise e
