@@ -1,9 +1,5 @@
-'''Developer tools.
-
-Not meant for end-users.
+'''Developer tools. Not meant for end-users.
 '''
-
-
 
 import sublime
 import sublime_plugin

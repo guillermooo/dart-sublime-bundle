@@ -1,3 +1,6 @@
+'''Helper functions related to platform-specific issues.
+'''
+
 import sublime
 
 from os.path import join

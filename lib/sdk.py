@@ -5,6 +5,9 @@ from os.path import join
 from os.path import realpath
 from subprocess import check_output
 from subprocess import PIPE
+
+from Dart.lib.path import join_on_win
+
 from subprocess import Popen
 from subprocess import STDOUT
 from subprocess import TimeoutExpired
@@ -16,7 +19,7 @@ from Dart import PluginLogger
 from Dart.lib.error import ConfigError
 from Dart.lib.error import FatalConfigError
 from Dart.lib.filter import TextFilter
-from Dart.lib.path import find_in_path
+from Dart.lib.path import join_on_win
 from Dart.lib.plat import is_windows
 from Dart.lib.plat import supress_window
 from Dart.lib.path import to_platform_path
@@ -37,13 +40,34 @@ class SDK(object):
         p = self.setts.get('dart_sdk_path')
         try:
             if not os.path.exists(
-                os.path.join(p, 'bin', to_platform_path('dart', '.exe'))):
+                os.path.join(p, 'bin', join_on_win('dart', '.exe'))):
                     msg = 'wrong path in dart_sdk_path: {}'.format(p)
                     raise FatalConfigError(msg)
             self._path = p
+
         except TypeError:
             msg = 'invalid value of dart_sdk_path: {}'.format(p)
             raise FatalConfigError(msg)
+
+    @property
+    def enable_experimental_features(self):
+        return (self.setts.get('dart_enable_experimental_editor_features') is True)
+
+    @property
+    def path_to_analysis_snapshot(self):
+        if not self.enable_experimental_features:
+            return None
+
+        path = os.path.join(sublime.packages_path(),
+                            'Dart',
+                            'Support',
+                            'analyzer',
+                            'analysis_server.dart')
+
+        if not os.path.exists(path):
+            raise ConfigError('no analysis server found')
+
+        return path
 
     def get_bin_tool(self, name, win_ext=''):
         """Returns the full path to the @name tool in the SDK's bin dir.
@@ -53,7 +77,7 @@ class SDK(object):
         @win_ext
           Extension to append to @name in Windows.
         """
-        name = to_platform_path(name, win_ext)
+        name = join_on_win(name, win_ext)
         return os.path.realpath(os.path.join(self.path_to_bin_dir, name))
 
     def start_editor(self, file_name=None, row=None, col=None):
@@ -71,7 +95,7 @@ class SDK(object):
             return
 
         assert not any((file_name, row, col)), 'not implemented'
-        bin_name = to_platform_path('DartEditor', '.exe')
+        bin_name = join_on_win('DartEditor', '.exe')
 
         # TODO: Add path_to_editor property.
         path = realpath(join(self.path, '../{0}'.format(bin_name)))
