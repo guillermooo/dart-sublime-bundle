@@ -58,14 +58,12 @@ class SDK(object):
         if not self.enable_experimental_features:
             return None
 
-        path = os.path.join(sublime.packages_path(),
-                            'Dart',
-                            'Support',
-                            'analyzer',
-                            'analysis_server.dart')
+        path = os.path.join(self.path_to_bin_dir,
+                            'snapshots',
+                            'analysis_server.dart.snapshot')
 
         if not os.path.exists(path):
-            raise ConfigError('no analysis server found')
+            raise ConfigError('no analysis server found. are you using the dev channel?')
 
         return path
 
