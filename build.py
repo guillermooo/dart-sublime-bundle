@@ -274,7 +274,7 @@ class DartRunCommand(DartBuildCommandBase):
         self.execute(cmd=cmd, working_dir=working_dir)
         DartRunCommand.server_running = True
 
-        # TODO(guillermooo): run dartium in checked mode
+        # TODO(guillermooo): Move this to sdk (Dartium class).
         user_home = os.path.expanduser("~")
         args = [
             '--user-data-dir=' + user_home + '/.dartium',
