@@ -241,6 +241,17 @@ class Dartium(object):
     '''Wraps Dartium.
     '''
     def __init__(self):
+        user_home = os.path.expanduser("~")
+        self.args = (
+            '--checked',
+            '--user-data-dir=' + os.path.join(user_home, '/.dartium'),
+            '--enable-experimental-web-platform-features',
+            '--enable-html-imports',
+            '--no-first-run',
+            '--no-default-browser-check',
+            '--no-process-singleton-dialog',
+            '--enable-avfoundation',
+            )
         try:
             self.path = SDK().path_to_dartium
         except ConfigError as e:
@@ -252,11 +263,10 @@ class Dartium(object):
         return current
 
     def start(self, *args):
-        env = self.get_env({'DART_FLAGS': '--checked'})
         try:
-            cmd = (self.path,) + args
+            cmd = (self.path,) + self.args + args
             _logger.debug('Dartium cmd: %r' % (cmd,))
-            Popen(cmd, startupinfo=supress_window(), env=env)
+            Popen(cmd, startupinfo=supress_window())
         except Exception as e:
             _logger.error('=' * 80)
             _logger.error('could not start Dartium')

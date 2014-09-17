@@ -274,18 +274,7 @@ class DartRunCommand(DartBuildCommandBase):
         self.execute(cmd=cmd, working_dir=working_dir)
         DartRunCommand.server_running = True
 
-        # TODO(guillermooo): Move this to sdk (Dartium class).
-        user_home = os.path.expanduser("~")
-        args = [
-            '--user-data-dir=' + user_home + '/.dartium',
-            '--enable-experimental-web-platform-features',
-            '--enable-html-imports',
-            '--no-first-run',
-            '--no-default-browser-check',
-            '--no-process-singleton-dialog',
-            '--enable-avfoundation',
-            ]
-        sublime.set_timeout(lambda: Dartium().start('http://localhost:8080', *args),
+        sublime.set_timeout(lambda: Dartium().start('http://localhost:8080'),
                             1000)
 
     def stop_server_observatory(self):
