@@ -114,6 +114,7 @@ def to_platform_path(original, append):
     return original
 
 
+# TODO(guillermooo): duplicated (find_pubspec)?
 def find_pubspec_path(path, original=None):
     """Locates the directory containing a pubspec.yaml file.
 
