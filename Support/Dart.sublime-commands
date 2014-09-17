@@ -4,7 +4,6 @@
 
     { "caption": "Dart: Check Configuration", "command": "dart_check_config" },
     { "caption": "Dart: Browse API Reference", "command": "dart_open_browser", "args": {"url": "https://api.dartlang.org/apidocs/channels/stable/dartdoc-viewer/home" } },
-    { "caption": "Dart: Open Dart Editor", "command": "dart_open_dart_editor" },
     { "caption": "Dart: Set Default User Browser", "command": "dart_show_user_browsers" },
 
     { "caption": "Preferences: Dart Settings - Default", "command": "dart_open_settings", "args": {"kind": "default"} },
