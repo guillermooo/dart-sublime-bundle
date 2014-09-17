@@ -1,0 +1,27 @@
+Version 0.3500.4
+
+The Sublime Text Dart Package has been updated!
+
+This version includes bug fixes and minor new features.
+
+Full Documentation:
+
+Wiki: https://github.com/dart-lang/dart-sublime-bundle/wiki
+
+
+MAIN CHANGES
+------------
+
+	- Remove command to open DartEditor
+	- Add command palette item to stop running scripts
+	- Added additional args to Dartium launch
+
+	Dartium should behave more similarly to what it does when run from the
+	Dart Editor.
+
+Reporting Bugs and Requesting New Features
+------------------------------------------
+
+Please report any bugs and request features here:
+
+* https://github.com/dart-lang/dart-sublime-bundle/issues

@@ -1,3 +1,10 @@
+0.3500.4 - 20140918
+
+	- Remove command to open DartEditor
+	- Add command palette item to stop running scripts
+	- Fix return value for find_pubspec_path
+	- Added additional args to Dartium launch
+
 0.3500.3 - 20140917
 
 	- Use analysis server snapshot from SDK.
