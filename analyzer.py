@@ -299,9 +299,10 @@ class AnalysisServer(object):
             _logger.debug('not a valid path: %s', path)
             return
 
-        p, found = find_pubspec_path(path)
-        if not found:
+        p = find_pubspec_path(path)
+        if not p:
             _logger.debug('did not found pubspec.yaml in path: %s', path)
+            return
 
         with AnalysisServer._op_lock:
             if p not in self.roots:
