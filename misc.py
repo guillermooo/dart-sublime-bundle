@@ -119,17 +119,6 @@ class DartOpenBrowserCommand(sublime_plugin.WindowCommand):
         webbrowser.open_new_tab(url)
 
 
-class DartOpenDartEditorCommand(sublime_plugin.TextCommand):
-    """Opens the Dart Editor.
-    """
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-
-    def run(self, edit):
-        sdk = SDK()
-        sdk.start_editor()
-
-
 class DartOpenSettingsCommand(sublime_plugin.WindowCommand):
     """Opens Dart settings files.
 

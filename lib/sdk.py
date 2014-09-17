@@ -78,43 +78,6 @@ class SDK(object):
         name = join_on_win(name, win_ext)
         return os.path.realpath(os.path.join(self.path_to_bin_dir, name))
 
-    def start_editor(self, file_name=None, row=None, col=None):
-        """Launches the Dart Editor.
-
-        @file_name
-          File to open in the editor.
-        @row
-          Text row to move the caret to.
-        @col
-          Column to move the caret to.
-        """
-        if not self.path:
-            _logger.info('could not locate the dart sdk')
-            return
-
-        assert not any((file_name, row, col)), 'not implemented'
-        bin_name = join_on_win('DartEditor', '.exe')
-
-        # TODO: Add path_to_editor property.
-        path = realpath(join(self.path, '../{0}'.format(bin_name)))
-        if not exists(path):
-            print("Dart: Error - Cannot find Dart Editor binary.")
-            print("              Is the Dart Editor installed?")
-            _logger.info('cannot find Dart Editor binary')
-            _logger.info('using path to Dart SDK: %s', self.path)
-            return
-
-        # Don't wait for process to terminate so we don't block ST.
-        proc = Popen([path])
-        try:
-            # Just see if we got an error sort of quickly.
-            proc.wait(.5)
-        except TimeoutExpired:
-            pass
-        else:
-            if proc.returncode != 0:
-                _logger.error('Dart Editor exited with error code %d', proc.returncode)
-
     @property
     def path(self):
         return self._path
