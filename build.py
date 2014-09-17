@@ -275,7 +275,17 @@ class DartRunCommand(DartBuildCommandBase):
         DartRunCommand.server_running = True
 
         # TODO(guillermooo): run dartium in checked mode
-        sublime.set_timeout(lambda: Dartium().start('http://localhost:8080'),
+        user_home = os.path.expanduser("~")
+        args = [
+            '--user-data-dir=' + user_home + '/.dartium',
+            '--enable-experimental-web-platform-features',
+            '--enable-html-imports',
+            '--no-first-run',
+            '--no-default-browser-check',
+            '--no-process-singleton-dialog',
+            '--enable-avfoundation',
+            ]
+        sublime.set_timeout(lambda: Dartium().start('http://localhost:8080', *args),
                             1000)
 
     def stop_server_observatory(self):
