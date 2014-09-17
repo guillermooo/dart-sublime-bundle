@@ -13,5 +13,6 @@
 
     { "caption": "Dart: Show Observatory (Server Apps)", "command": "dart_show_server_observatory" },
 
-    { "caption": "Dart: Stop Running Services", "command": "dart_stop_services" }
+    { "caption": "Dart: Stop Running Services", "command": "dart_stop_services" },
+    { "caption": "Dart: Stop Running Scripts", "command": "dart_exec", "args": {"kill": true} }
 ]
