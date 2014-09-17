@@ -1,3 +1,7 @@
+0.3500.3 - 20140917
+
+	- Use analysis server snapshot from SDK.
+
 0.3500.2 - 20140916
 
 	- Initial support for analysis server (experimental)
