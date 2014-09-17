@@ -114,6 +114,7 @@ def to_platform_path(original, append):
     return original
 
 
+# TODO(guillermooo): duplicated (find_pubspec)?
 def find_pubspec_path(path, original=None):
     """Locates the directory containing a pubspec.yaml file.
 
@@ -121,7 +122,7 @@ def find_pubspec_path(path, original=None):
     pubspec.yaml was found, the path will be passed-in path.
     """
     if os.path.exists(os.path.join(path, 'pubspec.yaml')):
-        return (path, True)
+        return path
 
     if original is None:
         original = path
@@ -132,7 +133,7 @@ def find_pubspec_path(path, original=None):
     if p == os.path.dirname(p):
         if not os.path.isdir(original):
             p = os.path.dirname(original)
-        return (p, False)
+        return
 
     return find_pubspec_path(p, original)
 
