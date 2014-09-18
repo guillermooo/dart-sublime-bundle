@@ -10,7 +10,7 @@
     { "caption": "Preferences: Dart Settings - User", "command": "dart_open_settings", "args": {"kind": "user"} },
     { "caption": "Preferences: Dart Settings - File Type (User)", "command": "dart_open_settings", "args": {"kind": "user", "scope": "file_type"} },
 
-    { "caption": "Dart: Show Observatory (Server Apps)", "command": "dart_show_server_observatory" },
+    { "caption": "Dart: Run In Observatory (Server Apps)", "command": "dart_run_in_observatory" },
 
     { "caption": "Dart: Stop Running Services", "command": "dart_stop_services" },
     { "caption": "Dart: Stop Running Scripts", "command": "dart_exec", "args": {"kill": true} }
