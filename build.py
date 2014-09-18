@@ -50,10 +50,13 @@ class DartRunInObservatoryCommand(sublime_plugin.WindowCommand):
           the Observatory is always available in the Dartium
           Dev Tools panel.
     '''
-    # def is_enabled(self):
-    #     return True
-        # view = self.window.active_view()
-        # return view and DartView(view).is_server_app
+    def is_enabled(self):
+        # TODO(guillermooo): Fix this in pub_package.DartView
+        view = self.window.active_view()
+        if not view:
+            return
+        dart_view = DartView(view)
+        return (not dart_view.is_web_app) and dart_view.is_server_app
 
     def run(self):
         # TODO(guillermooo): Document this
