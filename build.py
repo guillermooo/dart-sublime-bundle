@@ -245,7 +245,7 @@ class DartRunCommand(DartBuildCommandBase):
             self.panel = OutputPanel('dart.out')
             self.panel.write('='*80)
             self.panel.write('\n')
-            self.panel.write('Running dart with Observatory. (Press F5 to open.)\n')
+            self.panel.write('Running dart with Observatory.\n')
             self.panel.write('='*80)
             self.panel.write('\n')
             self.panel.show()
@@ -254,9 +254,15 @@ class DartRunCommand(DartBuildCommandBase):
                                                            cwd=working_dir,
                                                            listener=self)
             DartRunCommand.observatory.start()
-            d = Dartium()
-            url = 'http://localhost:{}'.format(DartRunCommand.observatory.port)
-            sublime.set_timeout(lambda: d.start(url), 1000)
+            def start_dartium():
+                d = Dartium()
+                url = 'http://localhost:{}'.format(DartRunCommand.observatory.port)
+                if DartRunCommand.observatory.port is None:
+                    _logger.debug('could not capture observatory port')
+                    print("Dart: Cannot start Observatory because its port couldn't be found")
+                    return
+                d.start(url)
+            sublime.set_timeout(lambda: start_dartium(), 1250)
             return
 
         self.execute(
