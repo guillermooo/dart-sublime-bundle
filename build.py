@@ -54,7 +54,7 @@ class DartRunInObservatoryCommand(sublime_plugin.WindowCommand):
         # TODO(guillermooo): Fix this in pub_package.DartView
         view = self.window.active_view()
         if not view:
-            return
+            return False
         dart_view = DartView(view)
         return (not dart_view.is_web_app) and dart_view.is_server_app
 
