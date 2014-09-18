@@ -1,3 +1,9 @@
+0.3500.5 - 20140918
+
+	- Add command palette item to run server apps through Observatory
+	- Bugfix: Don't call analysis server if unavailable
+	- Refactor: move code
+
 0.3500.4 - 20140918
 
 	- Remove command to open DartEditor

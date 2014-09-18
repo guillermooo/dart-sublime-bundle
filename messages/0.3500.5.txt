@@ -1,0 +1,34 @@
+Version 0.3500.5
+
+The Sublime Text Dart Package has been updated!
+
+This version includes bug fixes and a new command palette item to launch
+server apps in the Observatory.
+
+Please restart Sublime Text.
+
+Full Documentation:
+
+Wiki: https://github.com/dart-lang/dart-sublime-bundle/wiki
+
+
+MAIN CHANGES
+------------
+
+	- Add command palette item to run server apps through Observatory
+
+	The new command 'Run In Observatory (Server Apps)' will only work with
+	server apps and will launch the app and the attached Observatory instance
+	in Dartium.
+
+	Note: Web apps can always access the observatory via the Dev Tools pane
+	in Dartium.
+	
+	- Bugfix: Don't call analysis server if unavailable
+
+Reporting Bugs and Requesting New Features
+------------------------------------------
+
+Please report any bugs and request features here:
+
+* https://github.com/dart-lang/dart-sublime-bundle/issues
