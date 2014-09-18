@@ -113,9 +113,10 @@ class ActivityTracker(sublime_plugin.EventListener):
 
     def on_idle(self, view):
         # _logger.debug("active view was idle; could send requests")
-        if view.is_dirty() and is_active(view):
-            _logger.debug('sending overlay data for %s', view.file_name())
-            g_server.send_add_content(view)
+        if AnalysisServer.ping():
+            if view.is_dirty() and is_active(view):
+                _logger.debug('sending overlay data for %s', view.file_name())
+                g_server.send_add_content(view)
 
     # TODO(guillermooo): Use on_modified_async
     def on_modified(self, view):
@@ -153,7 +154,8 @@ class ActivityTracker(sublime_plugin.EventListener):
         sublime.set_timeout(lambda: self.check_idle(view), 1000)
 
         # The file has been saved, so force use of filesystem content.
-        g_server.send_remove_content(view)
+        if AnalysisServer.ping():
+            g_server.send_remove_content(view)
 
     def on_deactivated(self, view):
         # Any ongoing searches must be invalidated.
