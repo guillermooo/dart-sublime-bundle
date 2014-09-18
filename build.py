@@ -42,14 +42,26 @@ class DartStopServicesCommand(sublime_plugin.WindowCommand):
             })
 
 
-class DartShowServerObservatoryCommand(sublime_plugin.WindowCommand):
-    def is_enabled(self):
-        return DartRunCommand.observatory != None
+class DartRunInObservatoryCommand(sublime_plugin.WindowCommand):
+    '''Runs a server app through the Observatory.
+
+    Note:
+        - We don't need this for web apps, because in that case
+          the Observatory is always available in the Dartium
+          Dev Tools panel.
+    '''
+    # def is_enabled(self):
+    #     return True
+        # view = self.window.active_view()
+        # return view and DartView(view).is_server_app
 
     def run(self):
-        d = Dartium()
-        url = 'http://localhost:{}'.format(DartRunCommand.observatory.port)
-        d.start(url)
+        # TODO(guillermooo): Document this
+        view = self.window.active_view()
+        self.window.run_command('dart_run', {
+            "file_name": view.file_name(),
+            "action": "secondary"
+            })
 
 
 class ContextProvider(sublime_plugin.EventListener):
@@ -242,6 +254,9 @@ class DartRunCommand(DartBuildCommandBase):
                                                            cwd=working_dir,
                                                            listener=self)
             DartRunCommand.observatory.start()
+            d = Dartium()
+            url = 'http://localhost:{}'.format(DartRunCommand.observatory.port)
+            sublime.set_timeout(lambda: d.start(url), 1000)
             return
 
         self.execute(
