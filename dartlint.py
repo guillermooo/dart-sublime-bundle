@@ -218,7 +218,7 @@ class DartLint(sublime_plugin.EventListener):
         RunDartanalyzer(view, file_name, self.settings, show_popup=False)
 
     def load_settings(self, view):
-        self.settings = view.settings()
+        self.settings = sublime.load_settings('Dart - Plugin Settings.sublime-settings')
         self.do_lint = self.settings.get('dart_linter_active')
         self.do_save = self.settings.get('dart_linter_on_save')
         self.do_load = self.settings.get('dart_linter_on_load')
@@ -226,7 +226,7 @@ class DartLint(sublime_plugin.EventListener):
 
     def check_theme(self, view):
         # Get some settings
-        self.settings = view.settings()
+        self.settings = sublime.load_settings('Dart - Plugin Settings.sublime-settings')
         error_color = self.settings.get('dart_linter_underline_color_error')
         warn_color = self.settings.get('dart_linter_underline_color_warning')
         info_color = self.settings.get('dart_linter_underline_color_info')
@@ -245,7 +245,7 @@ class DartLint(sublime_plugin.EventListener):
             'dartlint.mark.gutter': 'not used'})
 
         # Get the current theme
-        system_prefs = sublime.load_settings('Dart - Plugin Settings.sublime-settings')
+        system_prefs = sublime.load_settings('Preferences.sublime-settings')
         theme = system_prefs.get('color_scheme')
         theme_xml = sublime.load_resource(theme)
         append_xml = False
@@ -286,7 +286,7 @@ class DartLint(sublime_plugin.EventListener):
         prep_path = FormRelativePath(path)
         if prep_path is not False:
             system_prefs.set('color_scheme', prep_path)
-            sublime.save_settings('Dart - Plugin Settings.sublime-settings')
+            sublime.save_settings('Preferences.sublime-settings')
             print('Created: %s' % prep_path)
 
 
