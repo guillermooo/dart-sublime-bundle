@@ -30,7 +30,7 @@ class DartExecCommand(sublime_plugin.WindowCommand, ProcessListener):
             word_wrap=True,
             syntax="Packages/Text/Plain text.tmLanguage",
             preamble='',
-            panel_name='dart',
+            panel_name='dart.out',
             # Catches "path" and "shell"
             **kwargs):
 
