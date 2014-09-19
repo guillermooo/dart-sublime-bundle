@@ -13,6 +13,7 @@ from . import PluginLogger
 from .lib.sdk import SDK
 from .lib.path import is_pubspec
 from .lib.path import is_view_dart_script
+from Dart.lib.sublime import after
 
 
 _logger = PluginLogger(__name__)
@@ -72,7 +73,7 @@ class PubThread(threading.Thread):
             _logger.error("error running pub: %s\n%s", self.file_name, errs)
             data = 'error running pub: %s\n%s' % (self.file_name, errs)
 
-        sublime.set_timeout(lambda: self.callback(data), 50)
+        after(50, lambda: self.callback(data))
 
     def format_data(self, data):
         return data.replace('\r', '')

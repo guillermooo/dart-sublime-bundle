@@ -19,6 +19,7 @@ from Dart.lib.subprocess import GenericBinary
 from Dart.lib.sdk import SDK
 from Dart.lib.sdk import RunDartWithObservatory
 from Dart.lib.panels import OutputPanel
+from Dart.lib.sublime import after
 
 
 _logger = PluginLogger(__name__)
@@ -230,7 +231,7 @@ class DartRunCommand(DartBuildCommandBase):
         # the stuff below?
         if sublime.platform() == 'osx':
             bin_ = GenericBinary('open', sdk.path_to_default_user_browser)
-            sublime.set_timeout(lambda: bin_.start(args=[url]), 1000)
+            after(1000, lambda: bin_.start(args=[url]))
             return
 
         elif sublime.platform() == 'windows':
@@ -239,20 +240,20 @@ class DartRunCommand(DartBuildCommandBase):
             # will work here as well.
             path = sdk.path_to_default_user_browser
             bin_ = GenericBinary(path)
-            sublime.set_timeout(lambda: bin_.start(
+            after(1000, lambda: bin_.start(
                                    args=[url],
                                    shell=True,
-                                   cwd=os.path.dirname(path)),
-                                1000)
+                                   cwd=os.path.dirname(path)
+                                   ))
             return
 
         path = sdk.path_to_default_user_browser
         bin_ = GenericBinary(path)
-        sublime.set_timeout(lambda: bin_.start(
+        after(1000, lambda: bin_.start(
                                args=[url],
                                shell=True,
-                               cwd=os.path.dirname(path)),
-                            1000)
+                               cwd=os.path.dirname(path)
+                               ))
 
     def run_server_app(self, file_name, working_dir, action):
         if action == 'secondary':
@@ -279,7 +280,7 @@ class DartRunCommand(DartBuildCommandBase):
                     print("Dart: Cannot start Observatory because its port couldn't be found")
                     return
                 d.start(url)
-            sublime.set_timeout(lambda: start_dartium(), 1250)
+            after(1250, lambda: start_dartium())
             return
 
         self.execute(
@@ -315,7 +316,7 @@ class DartRunCommand(DartBuildCommandBase):
         url = 'http://localhost:8080'
         if dart_view.url_path:
             url = url + "/" + dart_view.url_path
-        sublime.set_timeout(lambda: Dartium().start(url), 1000)
+        after(1000, lambda: Dartium().start(url))
 
     def stop_server_observatory(self):
         if DartRunCommand.observatory:
