@@ -32,13 +32,23 @@ def plugin_unloaded():
                                         'file_name': '???'})
 
 
-class DartStopServicesCommand(sublime_plugin.WindowCommand):
-    '''Stops running servers started by this plugin.
+class DartStopAllCommand(sublime_plugin.WindowCommand):
+    '''Stops Dart programs or services run by this plugin.
+
+    Namely:
+      - pub serve
+      - plain server apps
+      - server apps through Observatory
     '''
+
     def run(self):
         self.window.run_command('dart_run', {
             "file_name": "???",
             "kill_only": True
+            })
+
+        self.window.run_command("dart_exec", {
+            "kill": True
             })
 
 
