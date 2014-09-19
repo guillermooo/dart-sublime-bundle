@@ -1,0 +1,30 @@
+Version 0.3500.6
+
+The Sublime Text Dart Package has been updated!
+
+This version includes bug fixes and adds a new command to reopen the main
+output panel used by the plugin.
+
+Please restart Sublime Text.
+
+Full Documentation:
+
+Wiki: https://github.com/dart-lang/dart-sublime-bundle/wiki
+
+
+MAIN CHANGES
+------------
+
+	- Add 'Dart: Show Output Panel' command palette item
+
+	Reopens the output panel last used. For example, the one you see when
+	running a server app via F7. This output panel can be easily hidden by
+	accident by pressing Esc. This command provides the ability to show it
+	again and check the progress.
+
+Reporting Bugs and Requesting New Features
+------------------------------------------
+
+Please report any bugs and request features here:
+
+* https://github.com/dart-lang/dart-sublime-bundle/issues
