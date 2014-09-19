@@ -222,15 +222,15 @@ class DartRunCommand(DartBuildCommandBase):
             return
 
         dart_view = DartView(self.window.active_view())
+        url = 'http://localhost:8080'
+        if dart_view.url_path:
+            url = url + "/" + dart_view.url_path
+
         # TODO(guillermooo): make GUIProcess wrapper to abstract out some of
         # the stuff below?
         if sublime.platform() == 'osx':
             bin_ = GenericBinary('open', sdk.path_to_default_user_browser)
-            url = 'http://localhost:8080'
-            if dart_view.url_path:
-                url = url + "/" + dart_view.url_path
-            sublime.set_timeout(
-                lambda: bin_.start(args=[url]), 1000)
+            sublime.set_timeout(lambda: bin_.start(args=[url]), 1000)
             return
 
         elif sublime.platform() == 'windows':
@@ -240,7 +240,7 @@ class DartRunCommand(DartBuildCommandBase):
             path = sdk.path_to_default_user_browser
             bin_ = GenericBinary(path)
             sublime.set_timeout(lambda: bin_.start(
-                                   args=['http://localhost:8080'],
+                                   args=[url],
                                    shell=True,
                                    cwd=os.path.dirname(path)),
                                 1000)
@@ -249,7 +249,7 @@ class DartRunCommand(DartBuildCommandBase):
         path = sdk.path_to_default_user_browser
         bin_ = GenericBinary(path)
         sublime.set_timeout(lambda: bin_.start(
-                               args=['http://localhost:8080'],
+                               args=[url],
                                shell=True,
                                cwd=os.path.dirname(path)),
                             1000)
