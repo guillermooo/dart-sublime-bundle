@@ -1,3 +1,9 @@
+0.3500.6 - 20140919
+
+	- Add 'Dart: Show Output Panel' command palette item
+	- Always return bool from .is_enabled() method
+	- Fix setting file names
+
 0.3500.5 - 20140918
 
 	- Add command palette item to run server apps through Observatory
