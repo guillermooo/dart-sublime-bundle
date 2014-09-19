@@ -6,7 +6,7 @@
     "variants": [
         {
             "cmd": ["pub", "build"],
-            "name": "Dart: build",
+            "name": "Dart: pub build",
 
             "windows":
             {
@@ -30,81 +30,6 @@
             {
                 "cmd": ["/bin/bash", "--login", "-c", "dart2js --minify -o$file.js $file"]
             }
-        },
-
-        {
-            "cmd": ["dartanalyzer",
-                    "$file"],
-            "name": "Dart: Analyzer",
-            "file_regex": "^(?:\\[(?:error|warning|hint)\\].*?)\\((.*?\\.dart), line (\\d*), col (\\d*)\\)$",
-
-            "windows":
-            {
-                "cmd": ["dartanalyzer.bat",
-                        "$file"]
-            },
-            "osx":
-            {
-                "cmd": ["/bin/bash", "--login", "-c",
-                        "dartanalyzer \"$file\""]
-            }
-        },
-
-        {
-            "cmd": ["docgen", "--no-include-sdk", "$project_path"],
-            "name": "Dart: Generate Documentation",
-
-            "windows":
-            {
-                "cmd": ["docgen.bat", "--no-include-sdk", "$project_path"]
-            },
-            "osx":
-            {
-                "cmd": ["/bin/bash", "--login", "-c",
-                        "docgen --no-include-sdk $project_path"]
-            }
-        },
-
-        {
-            "cmd": ["docgen", "--no-include-sdk", "--serve", "$project_path"],
-            "name": "Dart: Serve Documentation",
-
-            "windows":
-            {
-                "cmd": ["docgen.bat", "--no-include-sdk", "--serve",
-                    "$project_path"]
-            },
-            "osx":
-            {
-                "cmd": ["/bin/bash", "--login", "-c",
-                        "docgen --no-include-sdk --serve $project_path"]
-            }
-        },
-
-        {
-            "name": "Dart: Run",
-            "cmd": ["dart", "--checked", "$file"],
-            "file_regex": "'file:///(.+)': error: line (\\d+) pos (\\d+): (.*)$",
-
-            "windows":
-            {
-                "cmd": ["dart.exe", "--checked", "$file"]
-            },
-            "osx":
-            {
-                "cmd": ["/bin/bash", "--login", "-c", "dart --checked $file"]
-            }
-        },
-
-        {
-            "name": "Dart: Reformat (Selection)",
-            "target": "dart_format"
-        },
-
-        {
-            "name": "Dart: Reformat (All)",
-            "target": "dart_format",
-            "full_file": true
         }
     ]
 }
