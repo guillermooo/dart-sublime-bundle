@@ -40,7 +40,10 @@ def transplant_settings(old_fname, new_fname):
     '''
     if os.path.exists(os.path.join(sublime.packages_path(), 'User',
                       new_fname)):
-        _logger.debug('new User settings file found, not transplating old settings')
+        _logger.debug(
+            "new-style User settings file found, "
+            "not copying old settings."
+            "Everything ok.")
         return
 
     _logger.debug('Transplanting old settings to new settings file...')
