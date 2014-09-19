@@ -19,6 +19,8 @@ class DartFormatCommand(sublime_plugin.WindowCommand):
     '''
     def run(self, **kwargs):
         view = self.window.active_view()
+        if not view:
+            return
 
         # Reformat the whole file.
         if kwargs.get('full_file'):
