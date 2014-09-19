@@ -12,6 +12,7 @@ import time
 
 from Default.exec import ProcessListener
 from Default.exec import AsyncProcess
+from Dart.lib.sublime import after
 
 from Dart.lib.panels import OutputPanel
 
@@ -159,7 +160,7 @@ class DartExecCommand(sublime_plugin.WindowCommand, ProcessListener):
             sublime.status_message(("Build finished with %d errors") % len(errs))
 
     def on_data(self, proc, data):
-        sublime.set_timeout(functools.partial(self.append_data, proc, data), 0)
+        after(0, functools.partial(self.append_data, proc, data))
 
     def on_finished(self, proc):
-        sublime.set_timeout(functools.partial(self.finish, proc), 0)
+        after(0, functools.partial(self.finish, proc))

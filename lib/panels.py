@@ -2,6 +2,8 @@ import sublime
 
 import os
 
+from Dart.lib.sublime import after
+
 
 class OutputPanel(object):
     """Manages an ST output panel.
@@ -65,7 +67,7 @@ class OutputPanel(object):
         assert isinstance(text, str), 'must pass decoded text data'
         text = self._clean_text(text)
         fun = lambda: self.view.run_command('append', {'characters': text})
-        sublime.set_timeout(fun, 0)
+        after(0, fun)
 
     def flush(self):
         pass
