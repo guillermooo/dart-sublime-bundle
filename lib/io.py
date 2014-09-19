@@ -15,7 +15,7 @@ class AsyncStreamReader(threading.Thread):
         super().__init__(*args, **kwargs)
         self.stream = stream
         self.on_data = on_data
-        assert(self.on_data, 'wrong call: must provide callback')
+        assert self.on_data, 'wrong call: must provide callback'
 
     def run(self):
         while True:
