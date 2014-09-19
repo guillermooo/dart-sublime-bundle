@@ -308,8 +308,10 @@ class DartRunCommand(DartBuildCommandBase):
         self.execute(cmd=cmd, working_dir=working_dir)
         DartRunCommand.server_running = True
 
-        sublime.set_timeout(lambda: Dartium().start('http://localhost:8080'),
-                            1000)
+        url = 'http://localhost:8080'
+        if dart_view.url_path:
+            url = url + "/" + dart_view.url_path
+        sublime.set_timeout(lambda: Dartium().start(url), 1000)
 
     def stop_server_observatory(self):
         if DartRunCommand.observatory:

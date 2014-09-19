@@ -195,6 +195,23 @@ class DartView(object):
         return is_view_dart_script(self.view)
 
     @property
+    def url_path(self):
+        # TODO(guillermooo): Fix this; we should not have to check for both.
+        if self.is_server_app or not self.is_web_app:
+            return
+
+        if not self.view.file_name().endswith('.html'):
+            return
+
+        project = PubPackage.from_path(self.view.file_name())
+        path = None
+        if self.is_example:
+            path = self.view.file_name()[len(project.path_to_example)+1:]
+        else:
+            path = self.view.file_name()[len(project.path_to_web)+1:]
+        return path.replace('\\', '/')
+
+    @property
     def is_server_app(self):
         project = PubPackage.from_path(self.view.file_name())
         if not project:
