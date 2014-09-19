@@ -1,0 +1,30 @@
+Version 0.3500.7
+
+The Sublime Text Dart Package has been updated!
+
+This version includes bug fixes and some reorganization of commands in the
+UI. Most notably, most commands formerly named 'Build: Dart: XXX' have been
+renamed to 'Dart: XXX', as they did not really perform a build task.
+
+Please restart Sublime Text.
+
+Full Documentation:
+
+Wiki: https://github.com/dart-lang/dart-sublime-bundle/wiki
+
+
+MAIN CHANGES
+------------
+
+	- Start browser at current file (if it's .html)
+	- Sort commands. Move from 'Build: Dart: XXX' to 'Dart: XXX'
+	- Rename 'Dart: build' to 'Dart: pub build'
+	- Add a 'StopAllCommand' to stop scripts, pub serve, etc. at the same time.
+
+
+Reporting Bugs and Requesting New Features
+------------------------------------------
+
+Please report any bugs and request features here:
+
+* https://github.com/dart-lang/dart-sublime-bundle/issues
