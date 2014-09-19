@@ -6,7 +6,7 @@
     "variants": [
         {
             "cmd": ["pub", "build"],
-            "name": "Dart: build",
+            "name": "Dart: pub build",
 
             "windows":
             {
