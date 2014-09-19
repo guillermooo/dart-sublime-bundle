@@ -221,12 +221,16 @@ class DartRunCommand(DartBuildCommandBase):
             print("Dart: No default user browser defined in User settings")
             return
 
+        dart_view = DartView(self.window.active_view())
         # TODO(guillermooo): make GUIProcess wrapper to abstract out some of
         # the stuff below?
         if sublime.platform() == 'osx':
             bin_ = GenericBinary('open', sdk.path_to_default_user_browser)
+            url = 'http://localhost:8080'
+            if dart_view.url_path:
+                url = url + "/" + dart_view.url_path
             sublime.set_timeout(
-                lambda: bin_.start(args=['http://localhost:8080']), 1000)
+                lambda: bin_.start(args=[url]), 1000)
             return
 
         elif sublime.platform() == 'windows':
