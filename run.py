@@ -106,7 +106,7 @@ class ContextProvider(sublime_plugin.EventListener):
                 return value
 
 
-class DartBuildProjectCommand(sublime_plugin.WindowCommand):
+class DartSmartRunCommand(sublime_plugin.WindowCommand):
     '''Runs the current file in the most appropriate way.
     '''
 
