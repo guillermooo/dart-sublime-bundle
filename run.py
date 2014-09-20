@@ -310,6 +310,9 @@ class DartRunFileCommand(DartBuildCommandBase):
             DartRunFileCommand.observatory.stop()
             DartRunFileCommand.observatory = None
 
+        if self.panel:
+            self.panel.write('[Observatory stopped]')
+
     def on_data(self, text):
         self.panel.write(text)
 
