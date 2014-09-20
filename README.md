@@ -27,6 +27,14 @@ Check our [wiki][docs] for full documentation on how to install and use this
 package.
 
 
+---
+
+Looking for an IDE experience? Try [Dart Editor][2], the
+[Dart plugin for Eclipse][3], or the [Dart plugin for IntelliJ/WebStorm][4].
+
+---
+
+
 ## License
 
     Copyright 2012, the Dart project authors. All rights reserved.
