@@ -215,7 +215,7 @@ class DartView(object):
     def is_server_app(self):
         project = PubPackage.from_path(self.view.file_name())
         if not project:
-            return
+            return False
 
         if project.path_to_bin and self.has_prefix(project.path_to_bin):
             return True
