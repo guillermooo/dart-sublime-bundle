@@ -34,7 +34,7 @@
 		]
 	},
 
-	// Build system keys.
+	// 'Run' system keys.
 	{
 		"keys": ["f7"], "command": "dart_smart_run",
 		"context": [
@@ -54,13 +54,15 @@
 	},
 
 	{
-		"keys": ["f5"], "command": "dart_show_server_observatory",
+		"keys": ["ctrl+keypad0"], "command": "dart_smart_run",  "args": {
+			"kill_only": true
+		},
 		"context": [
-			{ "key": "dart_can_show_observatory" },
+			{ "key": "dart_services_running" },
 			{ "key": "setting.command_mode", "operand": false }
 		]
-	},
-	
-	{ "keys": ["ctrl+.", "ctrl+t"], "command": "dart_find_top_level_decls" },
-	{ "keys": ["ctrl+.", "ctrl+r"], "command": "dart_find_references" }
+	}
+
+	// { "keys": ["ctrl+.", "ctrl+t"], "command": "dart_find_top_level_decls" },
+	// { "keys": ["ctrl+.", "ctrl+r"], "command": "dart_find_references" }
 ]

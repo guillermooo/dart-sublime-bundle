@@ -13,7 +13,7 @@
     { "caption": "Dart: Run In Observatory (Server Apps)", "command": "dart_run_in_observatory" },
 
     { "caption": "Dart: Run", "command": "dart_smart_run" },
-    { "caption": "Dart: Stop", "command": "dart_stop_all" },
+    { "caption": "Dart: Stop", "command": "dart_smart_run", "args": {"kill_only": true} },
 
     { "caption": "Dart: Show Output Panel", "command": "show_panel", "args": {"panel": "output.dart.out"} },
 
