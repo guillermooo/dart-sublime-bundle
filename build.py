@@ -88,12 +88,12 @@ class ContextProvider(sublime_plugin.EventListener):
             return self._check(value, operator, operand, match_all)
 
         if key == 'dart_can_show_observatory':
-            value = DartRunCommand.observatory != None
+            value = DartRunFileCommand.observatory != None
             return self._check(value, operator, operand, match_all)
 
         if key == 'dart_services_running':
-            value = (DartRunCommand.observatory != None or
-                     DartRunCommand.server_running)
+            value = (DartRunFileCommand.observatory != None or
+                     DartRunFileCommand.server_running)
             return self._check(value, operator, operand, match_all)
 
     def _check(self, value, operator, operand, match_all):
@@ -152,7 +152,7 @@ class DartRunFileCommand(DartBuildCommandBase):
 
     def observatory_port(self):
         try:
-            return DartRunCommand.observatory.port
+            return DartRunFileCommand.observatory.port
         except Exception:
             return
 
@@ -162,9 +162,9 @@ class DartRunFileCommand(DartBuildCommandBase):
           One of: primary, secondary
         '''
 
-        if DartRunCommand.server_running:
+        if DartRunFileCommand.server_running:
             self.execute(kill=True)
-            DartRunCommand.server_running = False
+            DartRunFileCommand.server_running = False
 
         self.stop_server_observatory()
 
@@ -267,15 +267,15 @@ class DartRunFileCommand(DartBuildCommandBase):
             self.panel.write('\n')
             self.panel.write('Starting Dartium...\n')
             self.panel.show()
-            DartRunCommand.observatory = RunDartWithObservatory(
+            DartRunFileCommand.observatory = RunDartWithObservatory(
                                                            file_name,
                                                            cwd=working_dir,
                                                            listener=self)
-            DartRunCommand.observatory.start()
+            DartRunFileCommand.observatory.start()
             def start_dartium():
                 d = Dartium()
-                url = 'http://localhost:{}'.format(DartRunCommand.observatory.port)
-                if DartRunCommand.observatory.port is None:
+                url = 'http://localhost:{}'.format(DartRunFileCommand.observatory.port)
+                if DartRunFileCommand.observatory.port is None:
                     _logger.debug('could not capture observatory port')
                     print("Dart: Cannot start Observatory because its port couldn't be found")
                     return
@@ -303,7 +303,7 @@ class DartRunFileCommand(DartBuildCommandBase):
             if dart_view.is_example:
                 cmd.append('example')
             self.execute(cmd=cmd, working_dir=working_dir)
-            DartRunCommand.server_running = True
+            DartRunFileCommand.server_running = True
             self.start_default_browser()
             return
 
@@ -311,7 +311,7 @@ class DartRunFileCommand(DartBuildCommandBase):
         if dart_view.is_example:
             cmd.append('example')
         self.execute(cmd=cmd, working_dir=working_dir)
-        DartRunCommand.server_running = True
+        DartRunFileCommand.server_running = True
 
         url = 'http://localhost:8080'
         if dart_view.url_path:
@@ -319,9 +319,9 @@ class DartRunFileCommand(DartBuildCommandBase):
         after(1000, lambda: Dartium().start(url))
 
     def stop_server_observatory(self):
-        if DartRunCommand.observatory:
-            DartRunCommand.observatory.stop()
-            DartRunCommand.observatory = None
+        if DartRunFileCommand.observatory:
+            DartRunFileCommand.observatory.stop()
+            DartRunFileCommand.observatory = None
 
     def on_data(self, text):
         self.panel.write(text)
