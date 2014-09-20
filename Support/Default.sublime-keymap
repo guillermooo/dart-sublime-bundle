@@ -34,6 +34,15 @@
 		]
 	},
 
+	{
+		"keys": ["ctrl+.", "ctrl+o"], "command": "show_panel",
+			"args": { "panel": "output.dart.out" },
+		"context":
+		[
+			{ "key": "setting.command_mode", "operand": false }
+		]
+	},
+
 	// 'Run' system keys.
 	{
 		"keys": ["f7"], "command": "dart_smart_run",
