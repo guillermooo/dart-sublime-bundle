@@ -30,26 +30,6 @@ def plugin_unloaded():
                                         'file_name': '???'})
 
 
-class DartStopAllCommand(sublime_plugin.WindowCommand):
-    '''Stops Dart programs or services run by this plugin.
-
-    Namely:
-      - pub serve
-      - plain server apps
-      - server apps through Observatory
-    '''
-
-    def run(self):
-        self.window.run_command('dart_run_file', {
-            "file_name": "???",
-            "kill_only": True
-            })
-
-        self.window.run_command("dart_exec", {
-            "kill": True
-            })
-
-
 class DartRunInObservatoryCommand(sublime_plugin.WindowCommand):
     '''Runs a server app through the Observatory.
 
@@ -90,7 +70,8 @@ class ContextProvider(sublime_plugin.EventListener):
 
         if key == 'dart_services_running':
             value = (DartRunFileCommand.observatory != None or
-                     DartRunFileCommand.server_running)
+                     DartRunFileCommand.is_server_running,
+                     DartRunFileCommand.is_script_running)
             return self._check(value, operator, operand, match_all)
 
     def _check(self, value, operator, operand, match_all):
@@ -110,7 +91,7 @@ class DartSmartRunCommand(sublime_plugin.WindowCommand):
     '''Runs the current file in the most appropriate way.
     '''
 
-    def run(self, action='primary'):
+    def run(self, action='primary', kill_only=False):
         '''
         @action
           One of: primary, secondary
@@ -126,6 +107,7 @@ class DartSmartRunCommand(sublime_plugin.WindowCommand):
         self.window.run_command('dart_run_file', {
             'action': action,
             'file_name': view.file_name(),
+            'kill_only': kill_only,
             })
 
 
@@ -135,7 +117,8 @@ class DartRunFileCommand(DartBuildCommandBase):
     Runs .dart and .html files.
     '''
     observatory = None
-    server_running = False
+    is_server_running = False
+    is_script_running = False
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -154,7 +137,7 @@ class DartRunFileCommand(DartBuildCommandBase):
             _logger.error('could not retrieve Observatory port')
             return
 
-    def run(self, file_name, action='primary', kill_only=False):
+    def run(self, file_name=None, action='primary', kill_only=False):
         '''
         @action
           One of: primary, secondary
@@ -162,15 +145,20 @@ class DartRunFileCommand(DartBuildCommandBase):
         @kill_only
           Whether we should simply kill any running processes.
         '''
+        assert kill_only or (file_name and not kill_only), 'wrong call'
 
         # First, clean up any existing processes.
-        if DartRunFileCommand.server_running:
+        if DartRunFileCommand.is_server_running:
             self.execute(kill=True)
-            DartRunFileCommand.server_running = False
+            DartRunFileCommand.is_server_running = False
 
         self.stop_server_observatory()
 
         if kill_only:
+            self.window.run_command("dart_exec", {
+                "kill": True
+                })
+            DartRunFileCommand.is_script_running = False
             return
 
         try:
@@ -287,6 +275,7 @@ class DartRunFileCommand(DartBuildCommandBase):
             file_regex=r"'file:///(.+)': error: line (\d+) pos (\d+): (.*)$",
             preamble='Running dart...\n',
             )
+        DartRunFileCommand.is_script_running = True
 
     def run_web_app(self, dart_view, working_dir, action):
         sdk = SDK()
@@ -301,7 +290,7 @@ class DartRunFileCommand(DartBuildCommandBase):
             if dart_view.is_example:
                 cmd.append('example')
             self.execute(cmd=cmd, working_dir=working_dir)
-            DartRunFileCommand.server_running = True
+            DartRunFileCommand.is_server_running = True
             self.start_default_browser()
             return
 
@@ -309,7 +298,7 @@ class DartRunFileCommand(DartBuildCommandBase):
         if dart_view.is_example:
             cmd.append('example')
         self.execute(cmd=cmd, working_dir=working_dir)
-        DartRunFileCommand.server_running = True
+        DartRunFileCommand.is_server_running = True
 
         url = 'http://localhost:8080'
         if dart_view.url_path:
