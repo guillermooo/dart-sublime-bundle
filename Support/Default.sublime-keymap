@@ -36,7 +36,7 @@
 
 	// Build system keys.
 	{
-		"keys": ["f7"], "command": "dart_build_project",
+		"keys": ["f7"], "command": "dart_smart_run",
 		"context": [
 			{ "key": "dart_can_do_launch" },
 			{ "key": "setting.command_mode", "operand": false }
@@ -44,7 +44,7 @@
 	},
 
 	{
-		"keys": ["ctrl+f7"], "command": "dart_build_project", "args": {
+		"keys": ["ctrl+f7"], "command": "dart_smart_run", "args": {
 			"action": "secondary"
 		},
 		"context": [

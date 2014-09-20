@@ -4,22 +4,19 @@
 import sublime
 import sublime_plugin
 
-from functools import partial
 import os
 import time
 
 from Dart import PluginLogger
-from Dart.lib.sdk import SDK
-from Dart.lib.dart_project import find_pubspec_path
 from Dart.lib.build.base import DartBuildCommandBase
+from Dart.lib.panels import OutputPanel
 from Dart.lib.pub_package import DartView
 from Dart.lib.pub_package import find_pubspec
 from Dart.lib.sdk import Dartium
-from Dart.lib.subprocess import GenericBinary
-from Dart.lib.sdk import SDK
 from Dart.lib.sdk import RunDartWithObservatory
-from Dart.lib.panels import OutputPanel
+from Dart.lib.sdk import SDK
 from Dart.lib.sublime import after
+from Dart.lib.subprocess import GenericBinary
 
 
 _logger = PluginLogger(__name__)
@@ -29,7 +26,7 @@ def plugin_unloaded():
     # Kill any existing server.
     # FIXME(guillermooo): this doesn't manage to clean up resources when
     # ST exits.
-    sublime.active_window().run_command('dart_run', {'kill_only': True,
+    sublime.active_window().run_command('dart_run_file', {'kill_only': True,
                                         'file_name': '???'})
 
 
@@ -43,7 +40,7 @@ class DartStopAllCommand(sublime_plugin.WindowCommand):
     '''
 
     def run(self):
-        self.window.run_command('dart_run', {
+        self.window.run_command('dart_run_file', {
             "file_name": "???",
             "kill_only": True
             })
@@ -72,7 +69,7 @@ class DartRunInObservatoryCommand(sublime_plugin.WindowCommand):
     def run(self):
         # TODO(guillermooo): Document this
         view = self.window.active_view()
-        self.window.run_command('dart_run', {
+        self.window.run_command('dart_run_file', {
             "file_name": view.file_name(),
             "action": "secondary"
             })
@@ -88,12 +85,12 @@ class ContextProvider(sublime_plugin.EventListener):
             return self._check(value, operator, operand, match_all)
 
         if key == 'dart_can_show_observatory':
-            value = DartRunCommand.observatory != None
+            value = DartRunFileCommand.observatory != None
             return self._check(value, operator, operand, match_all)
 
         if key == 'dart_services_running':
-            value = (DartRunCommand.observatory != None or
-                     DartRunCommand.server_running)
+            value = (DartRunFileCommand.observatory != None or
+                     DartRunFileCommand.server_running)
             return self._check(value, operator, operand, match_all)
 
     def _check(self, value, operator, operand, match_all):
@@ -109,34 +106,33 @@ class ContextProvider(sublime_plugin.EventListener):
                 return value
 
 
-class DartBuildProjectCommand(sublime_plugin.WindowCommand):
-    '''Orchestrates different build tasks.
-
-    Meant to be called from a key binding.
+class DartSmartRunCommand(sublime_plugin.WindowCommand):
+    '''Runs the current file in the most appropriate way.
     '''
+
     def run(self, action='primary'):
         '''
         @action
-          One of: 'primary', 'secondary'
+          One of: primary, secondary
         '''
         view = self.window.active_view()
         if DartView(view).is_pubspec:
-            self.window.run_command('dart_build_pubspec', {
+            self.window.run_command('dart_run_pubspec', {
                 'action': action,
                 'file_name': view.file_name()
                 })
             return
 
-        self.window.run_command('dart_run', {
+        self.window.run_command('dart_run_file', {
             'action': action,
             'file_name': view.file_name(),
             })
 
 
-class DartRunCommand(DartBuildCommandBase):
+class DartRunFileCommand(DartBuildCommandBase):
     '''Runs a file with the most appropriate action.
 
-    Intended for .dart and .html files.
+    Runs .dart and .html files.
     '''
     observatory = None
     server_running = False
@@ -153,19 +149,24 @@ class DartRunCommand(DartBuildCommandBase):
 
     def observatory_port(self):
         try:
-            return DartRunCommand.observatory.port
+            return DartRunFileCommand.observatory.port
         except Exception:
+            _logger.error('could not retrieve Observatory port')
             return
 
     def run(self, file_name, action='primary', kill_only=False):
         '''
         @action
           One of: primary, secondary
+
+        @kill_only
+          Whether we should simply kill any running processes.
         '''
 
-        if DartRunCommand.server_running:
+        # First, clean up any existing processes.
+        if DartRunFileCommand.server_running:
             self.execute(kill=True)
-            DartRunCommand.server_running = False
+            DartRunFileCommand.server_running = False
 
         self.stop_server_observatory()
 
@@ -182,11 +183,6 @@ class DartRunCommand(DartBuildCommandBase):
                 _logger.debug('cannot run an unsaved file')
                 return
 
-        working_dir = find_pubspec_path(file_name)
-        if not working_dir:
-            working_dir = os.path.dirname(file_name)
-
-        sdk = SDK()
         dart_view = DartView(self.window.active_view())
 
         if dart_view.is_server_app:
@@ -197,19 +193,17 @@ class DartRunCommand(DartBuildCommandBase):
             self.run_web_app(dart_view, working_dir, action)
             return
 
-        if action == 'primary':
-            self.execute(
-                    cmd=[sdk.path_to_dart2js,
-                                '--minify', '-o', file_name + '.js',
-                                file_name],
-                    working_dir=working_dir,
-                    file_regex="(\\S*):(\\d*):(\\d*): (.*)",
-                    preamble='Running dart2js...\n',
-                    )
-            return
-
-        if action != 'secondary':
-            _logger("unknown action: %s", action)
+        # At this point, we are looking at a file that either:
+        #   - is not a .dart or .html file
+        #   - is outside of a pub package
+        # As a last restort, run the file as a script, but only if the user
+        # requested a 'secondary' action.
+        if action != 'secondary' or not dart_view.is_dart_file:
+            print("Dart: Cannot determine best action for {}".format(
+                  dart_view.view.file_name()
+                  ))
+            _logger.debug("cannot determine best run action for %s",
+                          dart_view.view.file_name())
             return
 
         self.run_server_app(file_name, working_dir, action)
@@ -219,7 +213,8 @@ class DartRunCommand(DartBuildCommandBase):
 
         if not sdk.path_to_default_user_browser:
             _logger.info('no default user browser defined')
-            print("Dart: No default user browser defined in User settings")
+            print("Dart: No default user browser defined "
+                  "in Dart plugin settings")
             return
 
         dart_view = DartView(self.window.active_view())
@@ -243,7 +238,7 @@ class DartRunCommand(DartBuildCommandBase):
             after(1000, lambda: bin_.start(
                                    args=[url],
                                    shell=True,
-                                   cwd=os.path.dirname(path)
+                                   cwd=os.path.dirname(path),
                                    ))
             return
 
@@ -252,41 +247,44 @@ class DartRunCommand(DartBuildCommandBase):
         after(1000, lambda: bin_.start(
                                args=[url],
                                shell=True,
-                               cwd=os.path.dirname(path)
+                               cwd=os.path.dirname(path),
                                ))
 
     def run_server_app(self, file_name, working_dir, action):
         if action == 'secondary':
             # run with observatory
             # we need to do additional processing in this case, so we don't
-            # use the regular .execute() command to manage the subprocess.
+            # use the regular .execute() method to manage the subprocess.
             self.panel = OutputPanel('dart.out')
-            self.panel.write('='*80)
+            self.panel.write('=' * 80)
             self.panel.write('\n')
             self.panel.write('Running dart with Observatory.\n')
-            self.panel.write('='*80)
+            self.panel.write('=' * 80)
             self.panel.write('\n')
+            self.panel.write('Starting Dartium...\n')
             self.panel.show()
-            DartRunCommand.observatory = RunDartWithObservatory(
+            DartRunFileCommand.observatory = RunDartWithObservatory(
                                                            file_name,
                                                            cwd=working_dir,
                                                            listener=self)
-            DartRunCommand.observatory.start()
+            DartRunFileCommand.observatory.start()
             def start_dartium():
                 d = Dartium()
-                url = 'http://localhost:{}'.format(DartRunCommand.observatory.port)
-                if DartRunCommand.observatory.port is None:
+                port = DartRunFileCommand.observatory.port
+                if port is None:
                     _logger.debug('could not capture observatory port')
-                    print("Dart: Cannot start Observatory because its port couldn't be found")
+                    print("Dart: Cannot start Observatory "
+                          "because its port couldn't be retrieved")
                     return
-                d.start(url)
-            after(1250, lambda: start_dartium())
+                d.start('http://localhost:{}'.format(port))
+
+            after(1000, lambda: start_dartium())
             return
 
         self.execute(
             cmd=[SDK().path_to_dart, '--checked', file_name],
             working_dir=working_dir,
-            file_regex="'file:///(.+)': error: line (\\d+) pos (\\d+): (.*)$",
+            file_regex=r"'file:///(.+)': error: line (\d+) pos (\d+): (.*)$",
             preamble='Running dart...\n',
             )
 
@@ -303,7 +301,7 @@ class DartRunCommand(DartBuildCommandBase):
             if dart_view.is_example:
                 cmd.append('example')
             self.execute(cmd=cmd, working_dir=working_dir)
-            DartRunCommand.server_running = True
+            DartRunFileCommand.server_running = True
             self.start_default_browser()
             return
 
@@ -311,7 +309,7 @@ class DartRunCommand(DartBuildCommandBase):
         if dart_view.is_example:
             cmd.append('example')
         self.execute(cmd=cmd, working_dir=working_dir)
-        DartRunCommand.server_running = True
+        DartRunFileCommand.server_running = True
 
         url = 'http://localhost:8080'
         if dart_view.url_path:
@@ -319,9 +317,9 @@ class DartRunCommand(DartBuildCommandBase):
         after(1000, lambda: Dartium().start(url))
 
     def stop_server_observatory(self):
-        if DartRunCommand.observatory:
-            DartRunCommand.observatory.stop()
-            DartRunCommand.observatory = None
+        if DartRunFileCommand.observatory:
+            DartRunFileCommand.observatory.stop()
+            DartRunFileCommand.observatory = None
 
     def on_data(self, text):
         self.panel.write(text)
@@ -330,12 +328,13 @@ class DartRunCommand(DartBuildCommandBase):
         self.panel.write(text)
 
 
-class DartBuildPubspecCommand(DartBuildCommandBase):
+class DartRunPubspecCommand(DartBuildCommandBase):
+    '''Performs actions on a pubspec.yaml file.
+    '''
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-    '''Build behavior for pubspec.yaml.
-    '''
     PUB_CMDS = [
                 'deps',
                 'help',
@@ -346,7 +345,7 @@ class DartBuildPubspecCommand(DartBuildCommandBase):
     def run(self, action, file_name):
         '''
         @action
-          One of: 'primary', 'secondary'
+          One of: primary, secondary
 
         @file_name
           A valid path.
@@ -365,10 +364,10 @@ class DartBuildPubspecCommand(DartBuildCommandBase):
             _logger.error('not implemented')
             return
 
-        f = partial(self.on_done, file_name, working_dir)
+        f = lambda i: self.on_done(i, file_name, working_dir)
         self.window.show_quick_panel(self.PUB_CMDS, f)
 
-    def on_done(self, file_name, working_dir, idx):
+    def on_done(self, idx, file_name, working_dir):
         if idx == -1:
             return
 
