@@ -29,7 +29,7 @@ def plugin_unloaded():
     # Kill any existing server.
     # FIXME(guillermooo): this doesn't manage to clean up resources when
     # ST exits.
-    sublime.active_window().run_command('dart_run', {'kill_only': True,
+    sublime.active_window().run_command('dart_run_file', {'kill_only': True,
                                         'file_name': '???'})
 
 
@@ -43,7 +43,7 @@ class DartStopAllCommand(sublime_plugin.WindowCommand):
     '''
 
     def run(self):
-        self.window.run_command('dart_run', {
+        self.window.run_command('dart_run_file', {
             "file_name": "???",
             "kill_only": True
             })
@@ -72,7 +72,7 @@ class DartRunInObservatoryCommand(sublime_plugin.WindowCommand):
     def run(self):
         # TODO(guillermooo): Document this
         view = self.window.active_view()
-        self.window.run_command('dart_run', {
+        self.window.run_command('dart_run_file', {
             "file_name": view.file_name(),
             "action": "secondary"
             })
@@ -110,14 +110,13 @@ class ContextProvider(sublime_plugin.EventListener):
 
 
 class DartBuildProjectCommand(sublime_plugin.WindowCommand):
-    '''Orchestrates different build tasks.
-
-    Meant to be called from a key binding.
+    '''Runs the current file in the most appropriate way.
     '''
+
     def run(self, action='primary'):
         '''
         @action
-          One of: 'primary', 'secondary'
+          One of: primary, secondary
         '''
         view = self.window.active_view()
         if DartView(view).is_pubspec:
@@ -127,13 +126,13 @@ class DartBuildProjectCommand(sublime_plugin.WindowCommand):
                 })
             return
 
-        self.window.run_command('dart_run', {
+        self.window.run_command('dart_run_file', {
             'action': action,
             'file_name': view.file_name(),
             })
 
 
-class DartRunCommand(DartBuildCommandBase):
+class DartRunFileCommand(DartBuildCommandBase):
     '''Runs a file with the most appropriate action.
 
     Intended for .dart and .html files.
@@ -266,6 +265,7 @@ class DartRunCommand(DartBuildCommandBase):
             self.panel.write('Running dart with Observatory.\n')
             self.panel.write('='*80)
             self.panel.write('\n')
+            self.panel.write('Starting Dartium...\n')
             self.panel.show()
             DartRunCommand.observatory = RunDartWithObservatory(
                                                            file_name,
