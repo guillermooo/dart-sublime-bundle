@@ -64,3 +64,6 @@ Looking for an IDE experience? Try [Dart Editor][2], the
 
 [1]: http://news.dartlang.org/2013/02/using-dart-with-sublime-text.html
 [docs]: https://github.com/dart-lang/dart-sublime-bundle/wiki
+[2]: http://www.dartlang.org/editor
+[3]: http://news.dartlang.org/2012/08/dart-plugin-for-eclipse-is-ready-for.html
+[4]: http://plugins.intellij.net/plugin/?id=6351
