@@ -69,9 +69,9 @@ class ContextProvider(sublime_plugin.EventListener):
             return self._check(value, operator, operand, match_all)
 
         if key == 'dart_services_running':
-            value = any(DartRunFileCommand.observatory != None,
+            value = any((DartRunFileCommand.observatory != None,
                         DartRunFileCommand.is_server_running,
-                        DartRunFileCommand.is_script_running)
+                        DartRunFileCommand.is_script_running))
             return self._check(value, operator, operand, match_all)
 
     def _check(self, value, operator, operand, match_all):
