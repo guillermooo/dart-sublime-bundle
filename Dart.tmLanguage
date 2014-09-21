@@ -47,7 +47,7 @@
 				</dict>
 				<dict>
 					<key>match</key>
-					<string>\b(as|show|hide)\b</string>
+					<string>\b(as|show|hide|deferred)\b</string>
 					<key>name</key>
 					<string>keyword.other.import.dart</string>
 				</dict>
