@@ -79,6 +79,6 @@ class PubThread(threading.Thread):
         return data.replace('\r', '')
 
     def callback(self, data):
-        panel = OutputPanel('dart.pub')
+        panel = OutputPanel('dart.out')
         panel.write(self.format_data(data))
         panel.show()

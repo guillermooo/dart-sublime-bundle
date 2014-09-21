@@ -350,6 +350,7 @@ class DartRunPubspecCommand(DartBuildCommandBase):
                 cmd=[SDK().path_to_pub] + ['get'],
                 working_dir=working_dir,
                 preamble="Running pub...\n",
+                panel_name='dart.out',
                 )
             return
 
@@ -368,4 +369,5 @@ class DartRunPubspecCommand(DartBuildCommandBase):
             cmd=[SDK().path_to_pub] + [self.PUB_CMDS[idx]],
             working_dir=os.path.dirname(file_name),
             preamble="Running pub...\n",
+            panel_name='dart.out',
             )

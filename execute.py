@@ -42,6 +42,8 @@ class DartExecCommand(sublime_plugin.WindowCommand, ProcessListener):
                 self.append_string(None, "[Cancelled]")
             return
 
+        # TODO(guillermooo): We cannot have multiple processes running at the
+        # same time, or processes that use separate output panels.
         if not hasattr(self, 'out_panel'):
             # Try not to call get_output_panel until the regexes are assigned
             self.out_panel = OutputPanel(panel_name)
