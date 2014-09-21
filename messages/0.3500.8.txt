@@ -1,0 +1,29 @@
+Version 0.3500.8
+
+The Sublime Text Dart Package has been updated!
+
+This version includes multiple bug fixes and tweaks, as well as a new item
+in the command palette: 'Run' to run pub package files (same as F7). New
+key bindings have been added to stop running processes and showing the main
+output panel at any time.
+
+Please restart Sublime Text.
+
+Full Documentation:
+
+Wiki: https://github.com/dart-lang/dart-sublime-bundle/wiki
+
+
+MAIN CHANGES
+------------
+
+	- Add 'Dart: Run' item to command palette.
+	- Ctrl+.,Ctrl+o opens the output panel (if available).
+	- Add key binding to stop processes (Ctrl+Keypad0).
+
+Reporting Bugs and Requesting New Features
+------------------------------------------
+
+Please report any bugs and request features here:
+
+* https://github.com/dart-lang/dart-sublime-bundle/issues
