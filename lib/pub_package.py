@@ -229,6 +229,8 @@ class DartView(object):
                                    not self._find_at_top('import:html'))
                 return (is_cli_script or is_not_web_file)
 
+        return False
+
     @property
     def is_web_app(self):
         project = PubPackage.from_path(self.view.file_name())
