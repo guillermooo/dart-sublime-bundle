@@ -1,3 +1,21 @@
+0.3500.8 - 20140921
+
+	- Add 'Dart: Run' item to command palette.
+	- Add feedback for users when stopping the Observatory.
+	- Ctrl+.,Ctrl+o opens the output panel (if available).
+	- Edit error message.
+	- Edit README.
+	- Fix key binding context check.
+	- Many small changes: names, line length, and minor behavior tweaks.
+	- Refactor, add key binding to stop processes.
+	- Remove wrong parens.
+	- Rename class.
+	- Rename command.
+	- Rename file.
+	- Rename output panels.
+	- Return bool.
+	- User 'after' function everywhere.
+
 0.3500.7 - 20140919
 
 	- Start browser at current file (if it's .html)
