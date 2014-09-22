@@ -66,7 +66,7 @@ class OutputPanel(object):
     def write(self, text):
         assert isinstance(text, str), 'must pass decoded text data'
         text = self._clean_text(text)
-        fun = lambda: self.view.run_command('append', {'characters': text})
+        fun = lambda: self.view.run_command('append', {'characters': text, 'force': True, 'scroll_to_end': True})
         after(0, fun)
 
     def flush(self):
