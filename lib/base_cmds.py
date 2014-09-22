@@ -31,7 +31,7 @@ class PolymerCommand(sublime_plugin.WindowCommand):
 
         project = PubPackage.from_path(v.file_name())
         if not project:
-            _logger('no pubspec.yaml found - aborting')
+            _logger.debug('no pubspec.yaml found - aborting')
             info = ErrorPanel()
             info.write('Could not locate pubspec.yaml file for: {}\n'
                                                     .format(v.file_name()))
@@ -40,7 +40,7 @@ class PolymerCommand(sublime_plugin.WindowCommand):
             return
 
         if not project.has_dependency('polymer'):
-            _logger('no polymer dep found - aborting')
+            _logger.debug('no polymer dep found - aborting')
             info = ErrorPanel()
             info.write("Polymer isn't a dependency in this project.")
             info.write('Cannot run Polymer command.')
