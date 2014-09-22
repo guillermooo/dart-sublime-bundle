@@ -17,8 +17,7 @@
 
     { "caption": "Dart: Show Output Panel", "command": "show_panel", "args": {"panel": "output.dart.out"} },
 
-    { "caption": "Dart: Format (All)", "command": "dart_format", "args": {"full_file": true} },
-    { "caption": "Dart: Format (Selection)", "command": "dart_format" },
+    { "caption": "Dart: Format", "command": "dart_format" },
 
     { "caption": "Dart: Run Dart Analyzer", "command": "dart_analyzer" },
 
