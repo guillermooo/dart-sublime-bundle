@@ -1,3 +1,9 @@
+0.3500.10 - 20140923
+
+	- Remove Format (Selection) command.
+	- Make Output panel scroll to end.
+	- Re-enable Polymer command to generate new element.
+
 0.3500.9 - 20140922
 
 	- Assorted fixes
