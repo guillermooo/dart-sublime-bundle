@@ -1,0 +1,26 @@
+Version 0.3500.10
+
+The Sublime Text Dart Package has been updated!
+
+This version includes bug fixes.
+
+Please restart Sublime Text.
+
+Full Documentation:
+
+Wiki: https://github.com/dart-lang/dart-sublime-bundle/wiki
+
+
+MAIN CHANGES
+------------
+
+	- Remove Format (Selection) command.
+	- Make Output panel scroll to end.
+	- Re-enable Polymer command to generate new element.
+
+Reporting Bugs and Requesting New Features
+------------------------------------------
+
+Please report any bugs and request features here:
+
+* https://github.com/dart-lang/dart-sublime-bundle/issues
