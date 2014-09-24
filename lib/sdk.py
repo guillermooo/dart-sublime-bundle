@@ -37,7 +37,7 @@ class SDK(object):
     def __init__(self):
         self.setts = sublime.load_settings('Dart - Plugin Settings.sublime-settings')
 
-        p = self.setts.get('dart_sdk_path')
+        p = os.path.expandvars(os.path.expanduser(self.setts.get('dart_sdk_path')))
         try:
             if not os.path.exists(
                 os.path.join(p, 'bin', join_on_win('dart', '.exe'))):
@@ -137,6 +137,7 @@ class SDK(object):
 
         try:
             full_path = os.path.join(path, bin_name)
+            full_path = os.path.expandvars(os.path.expanduser(full_path))
             if not os.path.exists(full_path):
                 raise ConfigError()
             return full_path
@@ -154,6 +155,7 @@ class SDK(object):
         try:
             browsers = self.setts.get('dart_user_browsers')
             path = browsers[browsers['default']]
+            path = os.path.expandvars(os.path.expanduser(path))
             if not os.path.exists(path):
                 raise ConfigError('wrong path to browser')
             return path
