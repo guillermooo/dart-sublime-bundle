@@ -1,0 +1,25 @@
+Version 0.3500.12
+
+The Sublime Text Dart Package has been updated!
+
+This version includes bug fixes.
+
+Please restart Sublime Text.
+
+Full Documentation:
+
+Wiki: https://github.com/dart-lang/dart-sublime-bundle/wiki
+
+
+MAIN CHANGES
+------------
+
+	- Fix syntax definition (new keyword as parameter).
+	- Expand ~ and env variables in paths (settings).
+
+Reporting Bugs and Requesting New Features
+------------------------------------------
+
+Please report any bugs and request features here:
+
+* https://github.com/dart-lang/dart-sublime-bundle/issues
