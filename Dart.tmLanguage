@@ -380,7 +380,7 @@
 						</dict>
 					</dict>
 					<key>comment</key>
-					<string>A function invocation after 'return'</string>
+					<string>A class instantiation after 'new'</string>
 					<key>end</key>
 					<string>\)</string>
 					<key>name</key>
@@ -471,6 +471,44 @@
 					<string>\)</string>
 					<key>name</key>
 					<string>meta.parameter.function.dart</string>
+					<key>patterns</key>
+					<array>
+						<dict>
+							<key>include</key>
+							<string>#decl-function-parameter</string>
+						</dict>
+						<dict>
+							<key>include</key>
+							<string>#strings</string>
+						</dict>
+						<dict>
+							<key>include</key>
+							<string>#keywords</string>
+						</dict>
+					</array>
+				</dict>
+				<dict>
+					<key>begin</key>
+					<string>\b(new)\b\s+(\w+)(?=\()</string>
+					<key>beginCaptures</key>
+					<dict>
+						<key>1</key>
+						<dict>
+							<key>name</key>
+							<string>keyword.declaration.dart</string>
+						</dict>
+						<key>2</key>
+						<dict>
+							<key>name</key>
+							<string>function.name.dart</string>
+						</dict>
+					</dict>
+					<key>comment</key>
+					<string>A class instantiation after 'new'</string>
+					<key>end</key>
+					<string>\)</string>
+					<key>name</key>
+					<string>meta.invocation.function.dart</string>
 					<key>patterns</key>
 					<array>
 						<dict>
