@@ -327,6 +327,82 @@
 				</dict>
 				<dict>
 					<key>begin</key>
+					<string>^\s*(?:\b(return)\b)\s+(\w+)(?=\()</string>
+					<key>beginCaptures</key>
+					<dict>
+						<key>1</key>
+						<dict>
+							<key>name</key>
+							<string>keyword.control.dart</string>
+						</dict>
+						<key>2</key>
+						<dict>
+							<key>name</key>
+							<string>function.name.dart</string>
+						</dict>
+					</dict>
+					<key>comment</key>
+					<string>A function invocation after 'return'</string>
+					<key>end</key>
+					<string>\)</string>
+					<key>name</key>
+					<string>meta.invocation.function.dart</string>
+					<key>patterns</key>
+					<array>
+						<dict>
+							<key>include</key>
+							<string>#decl-function-parameter</string>
+						</dict>
+						<dict>
+							<key>include</key>
+							<string>#strings</string>
+						</dict>
+						<dict>
+							<key>include</key>
+							<string>#keywords</string>
+						</dict>
+					</array>
+				</dict>
+				<dict>
+					<key>begin</key>
+					<string>^\s*\b(new)\b\s+(\w+)(?=\()</string>
+					<key>beginCaptures</key>
+					<dict>
+						<key>1</key>
+						<dict>
+							<key>name</key>
+							<string>keyword.declaration.dart</string>
+						</dict>
+						<key>2</key>
+						<dict>
+							<key>name</key>
+							<string>function.name.dart</string>
+						</dict>
+					</dict>
+					<key>comment</key>
+					<string>A function invocation after 'return'</string>
+					<key>end</key>
+					<string>\)</string>
+					<key>name</key>
+					<string>meta.invocation.function.dart</string>
+					<key>patterns</key>
+					<array>
+						<dict>
+							<key>include</key>
+							<string>#decl-function-parameter</string>
+						</dict>
+						<dict>
+							<key>include</key>
+							<string>#strings</string>
+						</dict>
+						<dict>
+							<key>include</key>
+							<string>#keywords</string>
+						</dict>
+					</array>
+				</dict>
+				<dict>
+					<key>begin</key>
 					<string>^\s*(?:\b(\w+)\b)\s+(\w+)(?=\()</string>
 					<key>beginCaptures</key>
 					<dict>
@@ -369,6 +445,10 @@
 		<dict>
 			<key>patterns</key>
 			<array>
+				<dict>
+					<key>include</key>
+					<string>#constants-and-special-vars</string>
+				</dict>
 				<dict>
 					<key>begin</key>
 					<string>(?:\b(void|bool|num|int|double|dynamic|var|String)\b)\s+(\w+)(?=\()</string>
