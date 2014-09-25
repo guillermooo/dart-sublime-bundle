@@ -10,10 +10,11 @@
     { "caption": "Preferences: Dart Settings - User", "command": "dart_open_settings", "args": {"kind": "user"} },
     { "caption": "Preferences: Dart Settings - File Type (User)", "command": "dart_open_settings", "args": {"kind": "user", "scope": "file_type"} },
 
-    { "caption": "Dart: Run In Observatory (Server Apps)", "command": "dart_run_in_observatory" },
-
     { "caption": "Dart: Run", "command": "dart_smart_run" },
+    { "caption": "Dart: Run (This File)", "command": "dart_smart_run", "args": {"force_update": true} },
     { "caption": "Dart: Stop", "command": "dart_smart_run", "args": {"kill_only": true} },
+
+    { "caption": "Dart: Run In Observatory (This File)", "command": "dart_run_in_observatory" },
 
     { "caption": "Dart: Show Output Panel", "command": "show_panel", "args": {"panel": "output.dart.out"} },
 

@@ -9,7 +9,7 @@ from contextlib import contextmanager
 
 from Dart.lib.pub_package import PubspecFile
 from Dart.lib.pub_package import PubPackage
-from Dart.lib.pub_package import DartView
+from Dart.lib.pub_package import DartFile
 
 
 VALID_PUBSPEC_CONTENT = '''name: foo
@@ -160,7 +160,7 @@ class Test_PubPackage(unittest.TestCase):
         self.assertTrue(os.path.exists(self.pub_package.path_to_lib))
 
 
-class Test_DartView(unittest.TestCase):
+class Test_DartFile(unittest.TestCase):
     def setUp(self):
         self.v = sublime.active_window().new_file()
 
@@ -178,39 +178,39 @@ class Test_DartView(unittest.TestCase):
             view.close()
 
     def testCanInit(self):
-        dv = DartView(self.v)
-        self.assertEqual(dv.view, self.v)
+        df = DartFile(self.v)
+        self.assertEqual(df.view, self.v)
 
     def test_has_prefix_RaisesAssertionErrorIfCalledWithNone(self):
-        dv = DartView(self.v)
-        self.assertRaises(AssertionError, dv.has_prefix, None)
+        df = DartFile(self.v)
+        self.assertRaises(AssertionError, df.has_prefix, None)
 
     def test_has_prefix_FailsWhenExpected(self):
         f = NamedTemporaryFile(suffix='.dart')
         with self.open_file(f.name) as view:
-            dv = DartView(view)
-            self.assertFalse(dv.has_prefix('?xxx?'))
+            df = DartFile(view)
+            self.assertFalse(df.has_prefix('?xxx?'))
         f.close()
 
     def test_has_prefix_CanSucceed(self):
         f = NamedTemporaryFile(suffix='.dart')
         with self.open_file(f.name) as view:
-            dv = DartView(view)
-            self.assertTrue(dv.has_prefix(os.path.dirname(f.name)))
+            df = DartFile(view)
+            self.assertTrue(df.has_prefix(os.path.dirname(f.name)))
         f.close()
 
     def test_is_dart_file_CanSucceed(self):
         f = NamedTemporaryFile(suffix='.dart')
         with self.open_file(f.name) as view:
-            dv = DartView(view)
-            self.assertTrue(dv.is_dart_file)
+            df = DartFile(view)
+            self.assertTrue(df.is_dart_file)
         f.close()
 
     def test_is_dart_file_FailsWhenExpected(self):
         f = NamedTemporaryFile(suffix='.js', delete=True)
         with self.open_file(f.name) as view:
-            dv = DartView(view)
-            self.assertFalse(dv.is_dart_file)
+            df = DartFile(view)
+            self.assertFalse(df.is_dart_file)
         f.close()
 
     def test_is_pubspec_CanSucceed(self):
@@ -219,14 +219,14 @@ class Test_DartView(unittest.TestCase):
             with open(fname, 'w'):
                 pass
             with self.open_file(fname) as view:
-                dv = DartView(view)
-                self.assertTrue(dv.is_pubspec)
+                df = DartFile(view)
+                self.assertTrue(df.is_pubspec)
 
     def test_is_pubspec_FailsWhenExpected(self):
         f = NamedTemporaryFile(suffix='.js', delete=True)
         with self.open_file(f.name) as view:
-            dv = DartView(view)
-            self.assertFalse(dv.is_pubspec)
+            df = DartFile(view)
+            self.assertFalse(df.is_pubspec)
         f.close()
 
     def test_is_example_CanSucceed(self):
@@ -234,8 +234,8 @@ class Test_DartView(unittest.TestCase):
         fname = os.path.join(tmp_dir.name, 'example', 'foo.dart')
         open(fname, 'w').close()
         with self.open_file(fname) as view:
-            dv = DartView(view)
-            self.assertTrue(dv.is_example)
+            df = DartFile(view)
+            self.assertTrue(df.is_example)
         tmp_dir.cleanup()
 
     def test_is_example_FailsWhenExpected(self):
@@ -243,8 +243,8 @@ class Test_DartView(unittest.TestCase):
         fname = os.path.join(tmp_dir.name, 'bin', 'foo.dart')
         open(fname, 'w').close()
         with self.open_file(fname) as view:
-            dv = DartView(view)
-            self.assertFalse(dv.is_example)
+            df = DartFile(view)
+            self.assertFalse(df.is_example)
         tmp_dir.cleanup()
 
     def test_is_web_app_FailsIfNoPubPackageAvailable(self):
@@ -252,8 +252,8 @@ class Test_DartView(unittest.TestCase):
         fname = os.path.join(tmp_dir.name, 'web', 'foo.dart')
         open(fname, 'w').close()
         with self.open_file(fname) as view:
-            dv = DartView(view)
-            self.assertFalse(dv.is_web_app)
+            df = DartFile(view)
+            self.assertFalse(df.is_web_app)
         tmp_dir.cleanup()
 
     def test_is_web_app_ReturnsTrueIfFileUnderWeb(self):
@@ -261,8 +261,8 @@ class Test_DartView(unittest.TestCase):
         fname = os.path.join(tmp_dir.name, 'web', 'foo.dart')
         open(fname, 'w').close()
         with self.open_file(fname) as view:
-            dv = DartView(view)
-            self.assertTrue(dv.is_web_app)
+            df = DartFile(view)
+            self.assertTrue(df.is_web_app)
         tmp_dir.cleanup()
 
     def test_is_web_app_ReturnsTrueIfFileUnderExample(self):
@@ -270,8 +270,8 @@ class Test_DartView(unittest.TestCase):
         fname = os.path.join(tmp_dir.name, 'example', 'foo.dart')
         open(fname, 'w').close()
         with self.open_file(fname) as view:
-            dv = DartView(view)
-            self.assertTrue(dv.is_web_app)
+            df = DartFile(view)
+            self.assertTrue(df.is_web_app)
         tmp_dir.cleanup()
 
     def test_is_web_app_ReturnsFalseIfFileUnderOtherDirectory(self):
@@ -279,8 +279,8 @@ class Test_DartView(unittest.TestCase):
         fname = os.path.join(tmp_dir.name, 'bin', 'foo.dart')
         open(fname, 'w').close()
         with self.open_file(fname) as view:
-            dv = DartView(view)
-            self.assertFalse(dv.is_web_app)
+            df = DartFile(view)
+            self.assertFalse(df.is_web_app)
         tmp_dir.cleanup()
 
     def test_is_web_app_ReturnsFalseIfWebAndExampleDirsMissing(self):
@@ -288,8 +288,8 @@ class Test_DartView(unittest.TestCase):
         fname = os.path.join(tmp_dir.name, 'bin', 'foo.dart')
         open(fname, 'w').close()
         with self.open_file(fname) as view:
-            dv = DartView(view)
-            self.assertFalse(dv.is_web_app)
+            df = DartFile(view)
+            self.assertFalse(df.is_web_app)
         tmp_dir.cleanup()
 
     def test_is_web_app_ReturnsFalseIfWebDirMissing(self):
@@ -297,6 +297,6 @@ class Test_DartView(unittest.TestCase):
         fname = os.path.join(tmp_dir.name, 'bin', 'foo.dart')
         f = open(fname, 'w').close()
         with self.open_file(fname) as view:
-            dv = DartView(view)
-            self.assertFalse(dv.is_web_app)
+            df = DartFile(view)
+            self.assertFalse(df.is_web_app)
         tmp_dir.cleanup()

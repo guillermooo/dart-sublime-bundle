@@ -10,7 +10,7 @@ import time
 from Dart import PluginLogger
 from Dart.lib.build.base import DartBuildCommandBase
 from Dart.lib.panels import OutputPanel
-from Dart.lib.pub_package import DartView
+from Dart.lib.pub_package import DartFile
 from Dart.lib.pub_package import find_pubspec
 from Dart.lib.sdk import Dartium
 from Dart.lib.sdk import RunDartWithObservatory
@@ -39,11 +39,11 @@ class DartRunInObservatoryCommand(sublime_plugin.WindowCommand):
           Dev Tools panel.
     '''
     def is_enabled(self):
-        # TODO(guillermooo): Fix this in pub_package.DartView
+        # TODO(guillermooo): Fix this in pub_package.DartFile
         view = self.window.active_view()
         if not view:
             return False
-        dart_view = DartView(view)
+        dart_view = DartFile(view)
         return (not dart_view.is_web_app) and dart_view.is_server_app
 
     def run(self):
@@ -61,7 +61,12 @@ class ContextProvider(sublime_plugin.EventListener):
     '''
     def on_query_context(self, view, key, operator, operand, match_all):
         if key == 'dart_can_do_launch':
-            value = DartView(view).is_runnable
+            value = DartFile(view).is_runnable
+            return self._check(value, operator, operand, match_all)
+
+        if key == 'dart_can_do_relaunch':
+            value = (DartFile(view).is_runnable or
+                     DartSmartRunCommand.last_run_file[1])
             return self._check(value, operator, operand, match_all)
 
         if key == 'dart_can_show_observatory':
@@ -90,23 +95,37 @@ class ContextProvider(sublime_plugin.EventListener):
 class DartSmartRunCommand(sublime_plugin.WindowCommand):
     '''Runs the current file in the most appropriate way.
     '''
+    last_run_file = (None, None)
 
-    def run(self, action='primary', kill_only=False):
+    def run(self, action='primary', force_update=False, kill_only=False):
         '''
         @action
           One of: primary, secondary
         '''
-        view = self.window.active_view()
-        if DartView(view).is_pubspec:
+
+        try:
+            view = self.window.active_view()
+        except TypeError:
+            return
+
+        if force_update or DartSmartRunCommand.last_run_file[0] is None:
+            try:
+                DartSmartRunCommand.last_run_file = (
+                                                DartFile(view).is_pubspec,
+                                                view.file_name())
+            except TypeError:
+                return
+
+        if DartSmartRunCommand.last_run_file[0]:
             self.window.run_command('dart_run_pubspec', {
                 'action': action,
-                'file_name': view.file_name()
+                'file_name': DartSmartRunCommand.last_run_file[1]
                 })
             return
 
         self.window.run_command('dart_run_file', {
             'action': action,
-            'file_name': view.file_name(),
+            'file_name': DartSmartRunCommand.last_run_file[1],
             'kill_only': kill_only,
             })
 
@@ -171,7 +190,7 @@ class DartRunFileCommand(DartBuildCommandBase):
                 _logger.debug('cannot run an unsaved file')
                 return
 
-        dart_view = DartView(self.window.active_view())
+        dart_view = DartFile.from_path(file_name)
 
         if dart_view.is_server_app:
             self.run_server_app(file_name, working_dir, action)
@@ -188,15 +207,15 @@ class DartRunFileCommand(DartBuildCommandBase):
         # requested a 'secondary' action.
         if action != 'secondary' or not dart_view.is_dart_file:
             print("Dart: Cannot determine best action for {}".format(
-                  dart_view.view.file_name()
+                  dart_view.path
                   ))
             _logger.debug("cannot determine best run action for %s",
-                          dart_view.view.file_name())
+                          dart_view.path)
             return
 
         self.run_server_app(file_name, working_dir, action)
 
-    def start_default_browser(self):
+    def start_default_browser(self, file_name):
         sdk = SDK()
 
         if not sdk.path_to_default_user_browser:
@@ -205,7 +224,7 @@ class DartRunFileCommand(DartBuildCommandBase):
                   "in Dart plugin settings")
             return
 
-        dart_view = DartView(self.window.active_view())
+        dart_view = DartFile.from_path(file_name)
         url = 'http://localhost:8080'
         if dart_view.url_path:
             url = url + "/" + dart_view.url_path
