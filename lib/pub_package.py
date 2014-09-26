@@ -202,11 +202,11 @@ class DartFile(object):
         return any((self.is_dart_file,
                     self.is_pubspec,
                     (project and
-                        project.path_to_web and
-                        self.has_prefix(project.path_to_web)),
+                     project.path_to_web and
+                     self.has_prefix(project.path_to_web)),
                     (project and
-                        project.path_to_example and
-                        self.has_prefix(project.path_to_example)),
+                     project.path_to_example and
+                     self.has_prefix(project.path_to_example)),
                     ))
 
     @property
@@ -259,6 +259,7 @@ class DartFile(object):
         if project.path_to_web and self.has_prefix(project.path_to_web):
             return True
 
+        # FIXME(guillermooo): This is wrong.
         # We're assuming that we've checked before whether this is
         # a cli app within 'example'.
         return bool(project.path_to_example and

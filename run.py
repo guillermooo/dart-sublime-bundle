@@ -17,6 +17,7 @@ from Dart.lib.sdk import RunDartWithObservatory
 from Dart.lib.sdk import SDK
 from Dart.lib.sublime import after
 from Dart.lib.subprocess import GenericBinary
+from Dart.lib.event import EventSource
 
 
 _logger = PluginLogger(__name__)
@@ -288,6 +289,13 @@ class DartRunFileCommand(DartBuildCommandBase):
             after(1000, lambda: start_dartium())
             return
 
+        # TODO(guillermooo): improve event args
+        # TODO(guillermooo): if we want to raise an event for pub build, we
+        # need to create a command class for it; we cannot use the default
+        # build system.
+        self.raise_event(EventSource.ON_DART_RUN,
+            file_name=file_name,
+            working_dir=working_dir)
         self.execute(
             cmd=[SDK().path_to_dart, '--checked', file_name],
             working_dir=working_dir,
