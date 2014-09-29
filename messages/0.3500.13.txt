@@ -1,0 +1,27 @@
+Version 0.3500.13
+
+The Sublime Text Dart Package has been updated!
+
+This version modifies the 'run' commands: F7 ('Run' in command palette) will
+now remember the file that was run last and use that subsequently. To update
+the target file, use Ctrl+F7 or 'Run (This File)'. Ctrl+F7 and Ctrl+Shift+F7,
+which perform a secondary action on a file, behave similarly.
+
+Please restart Sublime Text.
+
+Full Documentation:
+
+Wiki: https://github.com/dart-lang/dart-sublime-bundle/wiki
+
+
+MAIN CHANGES
+------------
+
+	- Remember last run target
+
+Reporting Bugs and Requesting New Features
+------------------------------------------
+
+Please report any bugs and request features here:
+
+* https://github.com/dart-lang/dart-sublime-bundle/issues

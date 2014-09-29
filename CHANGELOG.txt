@@ -1,3 +1,8 @@
+0.3500.13 - 20140929
+
+	- Add event infrastructure
+	- Remember last run target
+
 0.3500.12 - 20140925
 
 	- Fix syntax definition (new keyword as parameter).
