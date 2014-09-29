@@ -32,9 +32,13 @@ def is_view_dart_script(view):
     Returns `True` if @view's file name ends with '.dart'.
     Returns `False` if @view isn't saved on disk.
     """
-    if view.file_name() is None:
-        return False
-    return is_dart_script(view.file_name())
+    try:
+        if view.file_name() is None:
+            return False
+        return is_dart_script(view.file_name())
+    except AttributeError:
+        # view is a path
+        return is_dart_script(view)
 
 
 def is_pubspec(path_or_view):

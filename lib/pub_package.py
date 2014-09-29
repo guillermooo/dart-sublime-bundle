@@ -146,12 +146,31 @@ class PubspecFile(object):
         _logger.debug('no pubspec.yaml found')
 
 
-class DartView(object):
-    '''Wraps a regular ST view and provides convenience methods if it's
+class DartFile(object):
+    '''Wraps a ST view or a file name and provides convenience methods if it's
     a Dart project file.
     '''
     def __init__(self, view):
-        self.view = view
+        '''
+        @view
+          A ST view.
+        '''
+        self.view = None
+        self.path = None
+        if isinstance(view, sublime.View):
+            self.view = view
+            self.path = view.file_name()
+
+    @classmethod
+    def from_path(cls, path):
+        '''
+        @path
+          A path to a file.
+        '''
+        assert isinstance(path, str), 'wrong call'
+        dart_view = cls(None)
+        dart_view.path = path
+        return dart_view
 
     def _get_top_lines(self):
         end = self.view.full_line(80 * 50).end()
@@ -167,7 +186,7 @@ class DartView(object):
 
     def has_prefix(self, prefix):
         assert prefix, 'cannot call with empty prefix'
-        return is_prefix(prefix, self.view.file_name())
+        return is_prefix(prefix, self.path)
 
     @property
     def is_runnable(self):
@@ -179,20 +198,20 @@ class DartView(object):
         If a file is under any of those dirs, we consider it runnable as part
         of a web app or a cli program.
         '''
-        project = PubPackage.from_path(self.view.file_name())
+        project = PubPackage.from_path(self.path)
         return any((self.is_dart_file,
                     self.is_pubspec,
                     (project and
-                        project.path_to_web and
-                        self.has_prefix(project.path_to_web)),
+                     project.path_to_web and
+                     self.has_prefix(project.path_to_web)),
                     (project and
-                        project.path_to_example and
-                        self.has_prefix(project.path_to_example)),
+                     project.path_to_example and
+                     self.has_prefix(project.path_to_example)),
                     ))
 
     @property
     def is_dart_file(self):
-        return is_view_dart_script(self.view)
+        return is_view_dart_script(self.view or self.path)
 
     @property
     def url_path(self):
@@ -200,20 +219,20 @@ class DartView(object):
         if self.is_server_app or not self.is_web_app:
             return
 
-        if not self.view.file_name().endswith('.html'):
+        if not self.path.endswith('.html'):
             return
 
-        project = PubPackage.from_path(self.view.file_name())
+        project = PubPackage.from_path(self.path)
         path = None
         if self.is_example:
-            path = self.view.file_name()[len(project.path_to_example)+1:]
+            path = self.path[len(project.path_to_example)+1:]
         else:
-            path = self.view.file_name()[len(project.path_to_web)+1:]
+            path = self.path[len(project.path_to_web)+1:]
         return path.replace('\\', '/')
 
     @property
     def is_server_app(self):
-        project = PubPackage.from_path(self.view.file_name())
+        project = PubPackage.from_path(self.path)
         if not project:
             return False
 
@@ -233,13 +252,14 @@ class DartView(object):
 
     @property
     def is_web_app(self):
-        project = PubPackage.from_path(self.view.file_name())
+        project = PubPackage.from_path(self.path)
         if not project:
             return False
 
         if project.path_to_web and self.has_prefix(project.path_to_web):
             return True
 
+        # FIXME(guillermooo): This is wrong.
         # We're assuming that we've checked before whether this is
         # a cli app within 'example'.
         return bool(project.path_to_example and
@@ -247,14 +267,14 @@ class DartView(object):
 
     @property
     def is_pubspec(self):
-        return os.path.basename(self.view.file_name()) == 'pubspec.yaml'
+        return os.path.basename(self.path) == 'pubspec.yaml'
 
     @property
     def is_example(self):
         '''Returns `True` if the view's path is under the 'example' dir.
         '''
-        assert self.view.file_name(), 'view has not been saved yet'
-        project = PubPackage.from_path(self.view.file_name())
+        assert self.path, 'view has not been saved yet'
+        project = PubPackage.from_path(self.path)
         if not (project and project.path_to_example):
             return False
         return self.has_prefix(project.path_to_example)

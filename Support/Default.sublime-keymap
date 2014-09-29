@@ -43,9 +43,19 @@
 		]
 	},
 
-	// 'Run' system keys.
+	// 'Run' keys.
 	{
 		"keys": ["f7"], "command": "dart_smart_run",
+		"context": [
+			{ "key": "dart_can_do_relaunch" },
+			{ "key": "setting.command_mode", "operand": false }
+		]
+	},
+
+	{
+		"keys": ["shift+f7"], "command": "dart_smart_run", "args": {
+			"force_update": true
+		},
 		"context": [
 			{ "key": "dart_can_do_launch" },
 			{ "key": "setting.command_mode", "operand": false }
@@ -55,6 +65,16 @@
 	{
 		"keys": ["ctrl+f7"], "command": "dart_smart_run", "args": {
 			"action": "secondary"
+		},
+		"context": [
+			{ "key": "dart_can_do_relaunch" },
+			{ "key": "setting.command_mode", "operand": false }
+		]
+	},
+
+	{
+		"keys": ["ctrl+shift+f7"], "command": "dart_smart_run", "args": {
+			"action": "secondary", "force_update": true
 		},
 		"context": [
 			{ "key": "dart_can_do_launch" },

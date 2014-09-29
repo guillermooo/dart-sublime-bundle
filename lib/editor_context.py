@@ -9,6 +9,7 @@ from Dart.lib.panels import OutputPanel
 class EditorContext(object):
     search_id_lock = threading.Lock()
 
+    # FIXME(guillermooo): This is utterly wrong. This needs to be a singleton.
     def __init__(self):
         self._search_id = None
         self.results_panel = None
@@ -40,15 +41,11 @@ class EditorContext(object):
 
     def append_search_results(self, items):
         items = list(items)
-        print("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA", list(items))
         with EditorContext.search_id_lock:
-            print("UUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUU")
             if not self.results_panel:
-                print("))))))))))))))))))))))))))))))))))))))))))")
                 return
 
             for item in items:
-                print("IIIIIIIIIIIIIIIII", item)
                 self.results_panel.write(item.to_encoded_pos())
 
             self.results_panel.show()
