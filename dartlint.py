@@ -179,15 +179,14 @@ class DartLint(sublime_plugin.EventListener):
             return
 
         self.check_theme(view)
-        file_name = view.file_name()
-        print("Dart lint: Running dartanalyzer on ", file_name)
-        _logger.debug("running dartanalyzer on %s", file_name)
-        # run dartanalyzer in its own thread
-        # TODO(guillermooo): Disable quick list error navigation, since we are
-        # enabling output panel-based error navigation (via F4). We should
-        # choose one of the two and remove the other.
+
         if view.id() == sublime.active_window().active_view().id():
-            RunDartanalyzer(view, file_name, self.settings, show_popup=False,
+            file_name = view.file_name()
+            print("Dart lint: Running dartanalyzer on ", file_name)
+            _logger.debug("running dartanalyzer on %s", file_name)
+            # run dartanalyzer in its own thread
+            RunDartanalyzer(view, file_name, self.settings,
+                            show_popup=False,
                             force=True)
 
     def on_post_save(self, view):
