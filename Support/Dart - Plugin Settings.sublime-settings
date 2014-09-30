@@ -20,13 +20,13 @@
 	"dart_linter_on_save": true,
 	"dart_linter_show_popup_level": "WARNING",
 	// Dartlint gutter icons
-	"dart_linter_gutter_icon_error": "Packages/Dart/gutter/dartlint-simple-error.png",
-	"dart_linter_gutter_icon_warning": "Packages/Dart/gutter/dartlint-simple-warning.png",
-	"dart_linter_gutter_icon_info": "Packages/Dart/gutter/dartlint-simple-info.png",
+	// "dart_linter_gutter_icon_error": "Packages/Dart/gutter/dartlint-simple-error.png",
+	// "dart_linter_gutter_icon_warning": "Packages/Dart/gutter/dartlint-simple-warning.png",
+	// "dart_linter_gutter_icon_info": "Packages/Dart/gutter/dartlint-simple-info.png",
 	// Underline colors
-	"dart_linter_underline_color_error": "C7321C",
-	"dart_linter_underline_color_warning": "FAFA37",
-	"dart_linter_underline_color_info": "0000FC",
+	// "dart_linter_underline_color_error": "C7321C",
+	// "dart_linter_underline_color_warning": "FAFA37",
+	// "dart_linter_underline_color_info": "0000FC",
 
 	// Log level (for debugging).
 	//Can be one of: debug < info < warning < error < critical
