@@ -1,0 +1,43 @@
+Version 0.3500.14
+
+The Sublime Text Dart Package has been updated!
+
+==============================================================================
+*** IMPORTANT ****************************************************************
+
+This version adds telemetry to this plugin. Telemetry is enabled by default
+and collects data anonymously via Google Analytics.
+
+To disable telemetry, set dart_enable_telemetry to `false` in your user
+settings for the Dart plugin.
+
+******************************************************************************
+==============================================================================
+
+Other changes include disabling unused cusotmization options. These affect
+the current dartlint component. Color and icon customizations have always
+been ignored by the plugin, so the relevant options have been removed from
+the default settings file.
+
+The color for the warning underline is now yellow.
+
+Please restart Sublime Text.
+
+Full Documentation:
+
+Wiki: https://github.com/dart-lang/dart-sublime-bundle/wiki
+
+
+MAIN CHANGES
+------------
+
+	- Google Analytics integration (dart_enable_telemetry setting).
+	- Disable unused style settings.
+	- Use different default color for warnings.
+
+Reporting Bugs and Requesting New Features
+------------------------------------------
+
+Please report any bugs and request features here:
+
+* https://github.com/dart-lang/dart-sublime-bundle/issues

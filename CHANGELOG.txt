@@ -1,3 +1,9 @@
+0.3500.14 - 20141002
+
+	- Google Analytics integration (dart_enable_telemetry setting).
+	- Disable unused style settings.
+	- Use different default color for warnings.
+
 0.3500.13 - 20140929
 
 	- Add event infrastructure
