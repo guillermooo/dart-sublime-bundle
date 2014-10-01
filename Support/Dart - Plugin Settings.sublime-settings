@@ -14,6 +14,9 @@
 	// be a key in the dictionary.
 	"dart_user_browsers": { },
 
+	// If 'true', sends anonymous usage data about this plugin.
+	"dart_enable_telemetry": true,
+
 	// Dartlint plugin settings
 	"dart_linter_active": false,
 	"dart_linter_on_load": true,

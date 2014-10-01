@@ -1,6 +1,7 @@
 '''
 Google Analytics
 '''
+import sublime
 
 import uuid
 import os
@@ -19,6 +20,10 @@ class HitBase(object):
     def __init__(self):
         self._data = {}
         self._endpoint = "https://ssl.google-analytics.com/collect"
+
+        setts = sublime.load_settings(
+            'Dart - Plugin Settings.sublime-settings')
+        self._enabled = setts.get('dart_enable_telemetry') is True
 
         # Test tracking id: UA-55288482-1
         self.tracking_id = 'UA-55288482-1'
@@ -39,6 +44,8 @@ class HitBase(object):
         return ua.format(**data)
 
     def send(self, data):
+        if not self._enabled:
+            return
         payload = {
             'v': self.protocol_version,
             'tid': self.tracking_id,
