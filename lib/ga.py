@@ -11,6 +11,7 @@ import urllib.request
 import random
 
 from Dart import PluginLogger
+from Dart.lib.sdk import SDK
 
 
 _logger = PluginLogger(__name__)
@@ -35,11 +36,11 @@ class HitBase(object):
     @property
     def user_agent(self):
         # FIXME(guillermooo): This is probably wrong.
-        ua = "St-Dart-Plugin/{version} ({os}; {os}; {os}; {language})"
+        ua = "ST-Dart-Plugin/{version} ({os}; {os}; {os}; {language})"
         data = {
             'os': os.name,
             'language': os.environ.get('LANG', 'unknown'),
-            'version': '1.0',
+            'version': SDK().check_version().strip(),
         }
         return ua.format(**data)
 
