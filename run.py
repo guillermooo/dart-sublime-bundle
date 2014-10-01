@@ -18,7 +18,7 @@ from Dart.lib.sdk import SDK
 from Dart.lib.sublime import after
 from Dart.lib.subprocess import GenericBinary
 from Dart.lib.event import EventSource
-
+from Dart.lib import ga
 
 _logger = PluginLogger(__name__)
 
@@ -93,16 +93,23 @@ class ContextProvider(sublime_plugin.EventListener):
                 return value
 
 
-class DartSmartRunCommand(sublime_plugin.WindowCommand):
+class DartSmartRunCommand(DartBuildCommandBase):
     '''Runs the current file in the most appropriate way.
     '''
     last_run_file = (None, None)
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.add_event_handler(EventSource.ON_DART_RUN,
+                               DartSmartRunCommand.on_dart_run)
 
     def run(self, action='primary', force_update=False, kill_only=False):
         '''
         @action
           One of: primary, secondary
         '''
+
+        self.raise_event(self, EventSource.ON_DART_RUN)
 
         try:
             view = self.window.active_view()
@@ -129,6 +136,17 @@ class DartSmartRunCommand(sublime_plugin.WindowCommand):
             'file_name': DartSmartRunCommand.last_run_file[1],
             'kill_only': kill_only,
             })
+
+    # This class will be instantiated for each view/window, so we need to
+    # ensure that only one function will be registered as event handler.
+    # Therefore, we use a function whose id is the same across all instances.
+    @classmethod
+    def on_dart_run(cls, *args, **kwargs):
+        ga.Event(category='actions',
+                 action='on_dart_run',
+                 label='Running "Run" command',
+                 value=1,
+                 ).send()
 
 
 class DartRunFileCommand(DartBuildCommandBase):
@@ -290,12 +308,6 @@ class DartRunFileCommand(DartBuildCommandBase):
             return
 
         # TODO(guillermooo): improve event args
-        # TODO(guillermooo): if we want to raise an event for pub build, we
-        # need to create a command class for it; we cannot use the default
-        # build system.
-        self.raise_event(EventSource.ON_DART_RUN,
-            file_name=file_name,
-            working_dir=working_dir)
         self.execute(
             cmd=[SDK().path_to_dart, '--checked', file_name],
             working_dir=working_dir,

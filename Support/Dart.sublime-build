@@ -5,17 +5,9 @@
 
     "variants": [
         {
-            "cmd": ["pub", "build"],
             "name": "Dart: pub build",
-
-            "windows":
-            {
-                "cmd": ["pub.bat", "build"]
-            },
-            "osx":
-            {
-                "cmd": ["/bin/bash", "--login", "-c", "pub build"]
-            }
+            "target": "dart_pub_build",
+            "working_dir": "$project_path"
         },
 
         {

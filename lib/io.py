@@ -1,5 +1,7 @@
 import threading
 
+import os
+
 
 class AsyncStreamReader(threading.Thread):
     '''Reads a process stream from an alternate thread.
@@ -24,3 +26,8 @@ class AsyncStreamReader(threading.Thread):
                 return
 
             self.on_data(data)
+
+
+def touch(path):
+    with open(path, 'wb') as f:
+        f.close() 

@@ -6,13 +6,16 @@ import os
 import subprocess
 import threading
 
-from .lib.plat import is_windows
-from .lib.plat import supress_window
-from .lib.panels import OutputPanel
 from . import PluginLogger
-from .lib.sdk import SDK
+from .lib.panels import OutputPanel
 from .lib.path import is_pubspec
 from .lib.path import is_view_dart_script
+from .lib.plat import is_windows
+from .lib.plat import supress_window
+from .lib.sdk import SDK
+from Dart.lib import ga
+from Dart.lib.build.base import DartBuildCommandBase
+from Dart.lib.event import EventSource
 from Dart.lib.sublime import after
 
 
@@ -82,3 +85,28 @@ class PubThread(threading.Thread):
         panel = OutputPanel('dart.out')
         panel.write(self.format_data(data))
         panel.show()
+
+
+# We need a command because we want to use analytics. We can't simply use a
+# .sublime-build file.
+class DartPubBuildCommand(DartBuildCommandBase):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.add_event_handler(EventSource.ON_PUB_BUILD,
+                               DartPubBuildCommand.on_pub_build)
+
+    def run(self, working_dir=None, **kwargs):
+        assert working_dir is not None, 'wrong call'
+        self.raise_event(self, EventSource.ON_PUB_BUILD)
+        self.execute(**{'working_dir': working_dir,
+                        'shell_cmd': 'pub build',
+                        'preamble': 'Running pub build...\n',
+                        })
+
+    @classmethod
+    def on_pub_build(self, *args, **kwargs):
+        ga.Event(category='actions',
+                 action='on_pub_build',
+                 label='Running "pub build" command',
+                 value=1,
+                 ).send()
