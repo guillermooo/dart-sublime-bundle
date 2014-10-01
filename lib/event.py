@@ -6,6 +6,7 @@ _logger = PluginLogger(__name__)
 class EventSource(object):
     ON_PUB_BUILD = 'on_pub_build_event'
     ON_DART_RUN = 'on_dart_run_event'
+    ON_INSTALL = 'on_install_event'
 
     handlers = {
         ON_PUB_BUILD: [],
