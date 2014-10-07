@@ -62,11 +62,14 @@ class HitBase(object):
         encoded = encoded.encode('utf-8')
         r = urllib.request.Request(self._endpoint, data=encoded)
         r.add_header('User-Agent', self.user_agent)
-        resp = urllib.request.urlopen(r)
-        if 199 <= resp.status >= 300:
-            _logger.error(
-                'error sending analytics request. Code: %d', resp.status)
-            raise SyntaxError('bad request')
+        try:
+            resp = urllib.request.urlopen(r)
+            if 199 <= resp.status >= 300:
+                _logger.error(
+                    'error sending analytics request. Code: %d', resp.status)
+                raise SyntaxError('bad request')
+        except Exception as e:
+            _logger.error('error while collecting telemetry data: %s', e)
 
     @property
     def protocol_version(self):

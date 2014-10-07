@@ -56,6 +56,5 @@ class RunDartTests(sublime_plugin.WindowCommand):
 
             def run_and_display():
                 runner.run(suite)
-                display.show()
 
             threading.Thread(target=run_and_display).start()
