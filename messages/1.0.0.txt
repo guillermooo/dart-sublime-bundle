@@ -1,0 +1,36 @@
+Version 1.0.0
+
+  ___  _   _ _____   ____   ___ ___ _   _ _____    ___  _ 
+ / _ \| \ | | ____| |  _ \ / _ \_ _| \ | |_   _|  / _ \| |
+| | | |  \| |  _|   | |_) | | | | ||  \| | | |   | | | | |
+| |_| | |\  | |___  |  __/| |_| | || |\  | | |   | |_| |_|
+ \___/|_| \_|_____| |_|    \___/___|_| \_| |_|    \___/(_)
+
+ :-)
+                                                                           
+
+The Sublime Text Dart plugin reaches its first big milestone. Thank you to
+all who have contributed to get to this point!
+
+Guillermo
+
+==============================================================================
+
+You will notice that the repository has now been moved under my account in
+GitHub. This should have no impact for users.
+
+==============================================================================
+
+Please restart Sublime Text.
+
+Full Documentation:
+
+Wiki: https://github.com/dart-lang/dart-sublime-bundle/wiki
+
+
+Reporting Bugs and Requesting New Features
+------------------------------------------
+
+Please report any bugs and request features here:
+
+* https://github.com/dart-lang/dart-sublime-bundle/issues
