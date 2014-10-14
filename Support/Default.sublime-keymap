@@ -9,9 +9,28 @@
 	},
 
 	{
+		"keys": ["enter"], "command": "insert_snippet", "args": { "contents": "\n * $0\n */" },
+		"context": [
+			{ "key": "selector", "operator": "equal", "operand": "comment.block.dart", "match_all": true },
+			{ "key": "preceding_text", "match_all": true, "operator": "regex_match", "operand": "^\\s*/\\*\\*.*" },
+			{ "key": "auto_complete_visible", "operand": false },
+			{ "key": "setting.command_mode", "operand": false }
+			]
+	},
+
+	{
 		"keys": ["enter"], "command": "insert_snippet", "args": { "contents": "\n// $0" },
 		"context": [
 			{ "key": "preceding_text", "match_all": true, "operator": "regex_match", "operand": "^\\s*//.*" },
+			{ "key": "auto_complete_visible", "operand": false },
+			{ "key": "setting.command_mode", "operand": false }
+			]
+	},
+	
+	{
+		"keys": ["enter"], "command": "insert_snippet", "args": { "contents": "\n/// $0" },
+		"context": [
+			{ "key": "preceding_text", "match_all": true, "operator": "regex_match", "operand": "^\\s*///.*" },
 			{ "key": "auto_complete_visible", "operand": false },
 			{ "key": "setting.command_mode", "operand": false }
 			]

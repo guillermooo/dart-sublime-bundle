@@ -126,6 +126,18 @@
 						<key>1</key>
 						<dict>
 							<key>name</key>
+							<string>comment.line.triple-slash.dart</string>
+						</dict>
+					</dict>
+					<key>match</key>
+					<string>((///).*)$</string>
+				</dict>
+				<dict>
+					<key>captures</key>
+					<dict>
+						<key>1</key>
+						<dict>
+							<key>name</key>
 							<string>comment.line.double-slash.dart</string>
 						</dict>
 					</dict>
