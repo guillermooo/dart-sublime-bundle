@@ -330,7 +330,7 @@ class DartRunFileCommand(DartBuildCommandBase):
                 cmd.append('example')
             self.execute(cmd=cmd, working_dir=working_dir)
             DartRunFileCommand.is_server_running = True
-            self.start_default_browser()
+            self.start_default_browser(dart_view.path)
             return
 
         cmd=[sdk.path_to_pub, 'serve']
