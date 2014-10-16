@@ -30,4 +30,4 @@ class AsyncStreamReader(threading.Thread):
 
 def touch(path):
     with open(path, 'wb') as f:
-        f.close() 
+        f.close()
