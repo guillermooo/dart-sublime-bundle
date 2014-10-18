@@ -1,6 +1,5 @@
 *.cache
 *.pyc
-Dart.tmbundle/tests
 
 # Editor files
 *.sublime-workspace
