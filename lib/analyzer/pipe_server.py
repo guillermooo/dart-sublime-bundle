@@ -1,3 +1,7 @@
+# Copyright (c) 2014, Guillermo López-Anglada. Please see the AUTHORS file for details.
+# All rights reserved. Use of this source code is governed by a BSD-style
+# license that can be found in the LICENSE file.)
+
 '''Wraps a process to make it act as a pipe server. Takes care of supressing
 console windows under Windows and other housekeeping.
 '''

@@ -1,3 +1,7 @@
+# Copyright (c) 2014, Guillermo López-Anglada. Please see the AUTHORS file for details.
+# All rights reserved. Use of this source code is governed by a BSD-style
+# license that can be found in the LICENSE file.)
+
 '''This module is intended to run first when the different plugins load.
 
 It should perform a basic status check so that we can catch severe
