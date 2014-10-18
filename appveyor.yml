@@ -2,6 +2,9 @@ environment:
   global:
     PACKAGE: "Dart"
 
+  matrix:
+    - SUBLIME_TEXT_VERSION : "3"
+
 install:
   # TODO: Use Desired state configuration or a block script.
   - ps: start-filedownload "https://raw.githubusercontent.com/randy3k/UnitTesting/master/sbin/appveyor.ps1"
