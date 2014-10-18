@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>name</key>
+	<string>Dart Doc Comments</string>
+	<key>patterns</key>
+	<array>
+		<dict>
+			<key>begin</key>
+			<string>\*\b</string>
+			<key>end</key>
+			<string>\b\*</string>
+			<key>name</key>
+			<string>markup.italic.dart-doccomments</string>
+		</dict>
+		<dict>
+			<key>captures</key>
+			<dict>
+				<key>1</key>
+				<dict>
+					<key>name</key>
+					<string>string.other.link.title.dart-doccomments</string>
+				</dict>
+				<key>2</key>
+				<dict>
+					<key>name</key>
+					<string>markup.underline.link.dart-doccomments</string>
+				</dict>
+			</dict>
+			<key>match</key>
+			<string>\[(.*)\]\((.*)\)</string>
+			<key>name</key>
+			<string>mata.link.inline.dart-doccomments</string>
+		</dict>
+	</array>
+	<key>scopeName</key>
+	<string>text.dart-doccomments</string>
+	<key>uuid</key>
+	<string>d0da81c8-4db4-417e-8841-39af7029a5c6</string>
+</dict>
+</plist>

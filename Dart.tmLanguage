@@ -119,30 +119,59 @@
 					<string>\*/</string>
 					<key>name</key>
 					<string>comment.block.dart</string>
+					<key>patterns</key>
+					<array>
+						<dict>
+							<key>include</key>
+							<string>text.dart-doccomments</string>
+						</dict>
+					</array>
 				</dict>
 				<dict>
-					<key>captures</key>
+					<key>begin</key>
+					<string>(///)</string>
+					<key>beginCaptures</key>
 					<dict>
 						<key>1</key>
 						<dict>
 							<key>name</key>
-							<string>comment.line.triple-slash.dart</string>
+							<string>marker.dart</string>
 						</dict>
 					</dict>
-					<key>match</key>
-					<string>((///).*)$</string>
+					<key>end</key>
+					<string>$</string>
+					<key>name</key>
+					<string>comment.line.triple-slash.dart</string>
+					<key>patterns</key>
+					<array>
+						<dict>
+							<key>include</key>
+							<string>text.dart-doccomments</string>
+						</dict>
+					</array>
 				</dict>
 				<dict>
-					<key>captures</key>
+					<key>begin</key>
+					<string>(//)</string>
+					<key>beginCaptures</key>
 					<dict>
 						<key>1</key>
 						<dict>
 							<key>name</key>
-							<string>comment.line.double-slash.dart</string>
+							<string>marker.dart</string>
 						</dict>
 					</dict>
-					<key>match</key>
-					<string>((//).*)$</string>
+					<key>end</key>
+					<string>$</string>
+					<key>name</key>
+					<string>comment.line.double-slash.dart</string>
+					<key>patterns</key>
+					<array>
+						<dict>
+							<key>include</key>
+							<string>text.dart-doccomments</string>
+						</dict>
+					</array>
 				</dict>
 			</array>
 		</dict>
