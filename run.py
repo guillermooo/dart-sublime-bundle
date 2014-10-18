@@ -6,6 +6,7 @@ import sublime_plugin
 
 import os
 import time
+import re
 
 from Dart import PluginLogger
 from Dart.lib.build.base import DartBuildCommandBase
@@ -17,6 +18,7 @@ from Dart.lib.sdk import RunDartWithObservatory
 from Dart.lib.sdk import SDK
 from Dart.lib.sublime import after
 from Dart.lib.subprocess import GenericBinary
+from Dart.lib.sdk import PubServe
 from Dart.lib.event import EventSource
 from Dart.lib import ga
 
@@ -93,6 +95,33 @@ class ContextProvider(sublime_plugin.EventListener):
                 return value
 
 
+class PubServeListener(object):
+    '''Special listener to capture 'pub serve --port=0' port information.
+    Also starts Dartium.
+    '''
+    def __init__(self, instance, panel, path):
+        self.instance = instance
+        self.panel = panel
+        self.path = path
+
+    def on_data(self, text):
+        if not self.instance.port:
+            m = re.match('^Serving .*? on http://.*?:(\d+)', text)
+            if m:
+                self.instance.port = int(m.groups()[0])
+                _logger.debug('captured pub serve port: %d' % self.instance.port)
+                _logger.debug('starting dartium...')
+                self.panel.write('Starting Dartium...\n')
+                url = 'http://localhost:' + str(self.instance.port)
+                if self.path:
+                    url += '/' + path
+                Dartium().start(url)
+        self.panel.write(text)
+
+    def on_error(self, text):
+        self.panel.write(text)
+
+
 class DartSmartRunCommand(DartBuildCommandBase):
     '''Runs the current file in the most appropriate way.
     '''
@@ -155,6 +184,7 @@ class DartRunFileCommand(DartBuildCommandBase):
     Runs .dart and .html files.
     '''
     observatory = None
+    pub_serve = None
     is_server_running = False
     is_script_running = False
 
@@ -175,6 +205,18 @@ class DartRunFileCommand(DartBuildCommandBase):
             _logger.error('could not retrieve Observatory port')
             return
 
+    @property
+    def pub_serve_port(self):
+        try:
+            return DartRunFileCommand.pub_serve.port
+        except Exception:
+            _logger.error('could not retrieve pub serve port')
+            return
+
+    @pub_serve_port.setter
+    def pub_serve_port(self, value):
+        DartRunFileCommand.pub_serve.port = value
+
     def run(self, file_name=None, action='primary', kill_only=False):
         '''
         @action
@@ -185,10 +227,13 @@ class DartRunFileCommand(DartBuildCommandBase):
         '''
         assert kill_only or (file_name and not kill_only), 'wrong call'
 
-        # First, clean up any existing processes.
+        # First, clean up any existing prosesses.
         if DartRunFileCommand.is_server_running:
             self.execute(kill=True)
+            self.pub_serve.stop()
             DartRunFileCommand.is_server_running = False
+            if self.panel:
+                self.panel.write('[pub serve stopped]\n')
 
         self.stop_server_observatory()
 
@@ -287,7 +332,6 @@ class DartRunFileCommand(DartBuildCommandBase):
             self.panel.write('Running dart with Observatory.\n')
             self.panel.write('=' * 80)
             self.panel.write('\n')
-            self.panel.write('Starting Dartium...\n')
             self.panel.show()
             DartRunFileCommand.observatory = RunDartWithObservatory(
                                                            file_name,
@@ -333,16 +377,25 @@ class DartRunFileCommand(DartBuildCommandBase):
             self.start_default_browser(dart_view.path)
             return
 
-        cmd=[sdk.path_to_pub, 'serve']
-        if dart_view.is_example:
-            cmd.append('example')
-        self.execute(cmd=cmd, working_dir=working_dir)
-        DartRunFileCommand.is_server_running = True
+        self.panel = OutputPanel('dart.out')
+        self.panel.write('=' * 80)
+        self.panel.write('\n')
+        self.panel.write('Running pub serve...\n')
+        self.panel.write('=' * 80)
+        self.panel.write('\n')
+        self.panel.show()
 
-        url = 'http://localhost:8080'
-        if dart_view.url_path:
-            url = url + "/" + dart_view.url_path
-        after(1000, lambda: Dartium().start(url))
+        DartRunFileCommand.pub_serve = PubServe(
+                                        cwd=working_dir,
+                                        is_example=dart_view.is_example,
+                                        )
+        pub_serve_listener = PubServeListener(DartRunFileCommand.pub_serve,
+                                              self.panel,
+                                              dart_view.url_path)
+        DartRunFileCommand.pub_serve.listener = pub_serve_listener
+        DartRunFileCommand.pub_serve.start()
+
+        DartRunFileCommand.is_server_running = True
 
     def stop_server_observatory(self):
         if DartRunFileCommand.observatory:
@@ -351,7 +404,6 @@ class DartRunFileCommand(DartBuildCommandBase):
 
             if self.panel:
                 self.panel.write('[Observatory stopped]\n')
-
 
     def on_data(self, text):
         self.panel.write(text)

@@ -25,6 +25,8 @@ from Dart.lib.plat import supress_window
 from Dart.lib.path import to_platform_path
 from Dart.lib.io import AsyncStreamReader
 from Dart.lib.text import decode_and_clean
+from Dart.lib.subprocess import GenericBinary
+from Dart.lib.subprocess import killwin32
 
 
 _logger = PluginLogger(__name__)
@@ -238,6 +240,52 @@ class RunDartWithObservatory(object):
         if self.listener:
             self.listener.on_error(decode_and_clean(data_bytes))
 
+
+class PubServe(object):
+    def __init__(self, is_example=False, cwd=None, listener=None):
+        self.proc = None
+        self.port = None
+        self.listener = listener
+        self.is_example = is_example
+        self.cwd = cwd
+
+    def start(self):
+        _logger.debug('running pub serve...')
+        cmd = []
+        if not self.is_example:
+            cmd = [SDK().path_to_pub, 'serve', '--port=0']
+        else:
+            cmd = [SDK().path_to_pub, 'serve', 'example', '--port=0']
+        self.proc = Popen(cmd,
+                          stdout=PIPE,
+                          stderr=PIPE,
+                          cwd=self.cwd,
+                          startupinfo=supress_window()
+                          )
+
+        # TODO(guillermooo): add names and log these threads.
+        AsyncStreamReader(self.proc.stdout, self.on_data).start()
+        AsyncStreamReader(self.proc.stderr, self.on_error).start()
+
+    def stop(self):
+        if self.proc:
+            _logger.debug('stopping pub serve...')
+            if os.name == 'nt':
+                # self.proc.kill() won't work.
+                killwin32(self.proc)
+                self.proc = None
+                return
+            self.proc.kill()
+            self.proc = None
+
+    def on_data(self, data_bytes):
+        text = decode_and_clean(data_bytes)
+        if self.listener:
+            self.listener.on_data(text)
+
+    def on_error(self, data_bytes):
+        if self.listener:
+            self.listener.on_error(decode_and_clean(data_bytes))
 
 class Dartium(object):
     '''Wraps Dartium.
