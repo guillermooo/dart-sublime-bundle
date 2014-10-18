@@ -1,4 +1,4 @@
-# Copyright (c) 2014, Guillermo López-Anglada. Please see the AUTHORS file for details.
+# Copyright (c) 2014, Guillermo L?ez-Anglada. Please see the AUTHORS file for details.
 # All rights reserved. Use of this source code is governed by a BSD-style
 # license that can be found in the LICENSE file.)
 
@@ -39,3 +39,23 @@ class Test_DartSyntax_Comments(DartSyntaxTestCase):
 ''')
         scope = self.getNarrowestScopeNameAtRowCol(3, 3)
         self.assertEqual(scope, 'source.dart')
+
+
+class Test_DartSyntax_Doc_Comments(DartSyntaxTestCase):
+    def testDetectsLinkNames(self):
+        self.append('''
+/// check [this](out)
+0123456789
+          0123456789
+''')
+        scope = self.getNarrowestScopeNameAtRowCol(1, 11)
+        self.assertEqual(scope, 'string.other.link.title.dart-doccomments')
+
+    def testDetectsItalics(self):
+        self.append('''
+/// check *this* out
+0123456789
+          0123456789
+''')
+        scope = self.getNarrowestScopeNameAtRowCol(1, 11)
+        self.assertEqual(scope, 'markup.italic.dart-doccomments')
