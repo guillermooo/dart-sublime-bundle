@@ -8,3 +8,6 @@ dist/
 
 # other
 .idea
+
+# dev/temp files
+*.YAML-tmLanguage
