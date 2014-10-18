@@ -3,7 +3,7 @@ text=auto
 
 # These files need to have LF as line terminator, even on Windows.
 *.tmSnippet text eol=lf
-*.tmLanguage text eol=lf
+*.*tmLanguage text eol=lf
 messages.json text eol=lf
 *.py text eol=lf
 *.yaml text eol=lf
