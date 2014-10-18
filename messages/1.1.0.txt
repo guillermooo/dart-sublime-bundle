@@ -1,0 +1,38 @@
+Version 1.1.0
+
+The Sublime Text Dart Package has been updated!
+
+This version improves robustness of 'run' commands: it fixes existing bugs and
+makes 'pub serve' use the next available port (instead of using the harcoded
+8080 port).
+
+Commenting-related commands have also been improved: the Markdown dialect
+used in Dart comments should now be recognized thanks to a new (and minimal)
+syntax definition for doc comments. At the same time, pressing return in any
+commented out line should now continue the comment in the next line for all
+styles of comments: double slash, triple slash (recommended) and block
+comments.
+
+Please restart Sublime Text.
+
+Full Documentation:
+
+	- https://github.com/guillermooo/dart-sublime-bundle/wiki
+
+MAIN CHANGES
+------------
+
+	- Improve syntax highlighting for doc comments
+	- pub serve uses the next available port
+	- Fix method call in run command (add missing params)
+	- Add Pubspec.tmLanguage
+	- Improve key bindings for inserting comments
+	- Edit announcement template
+
+
+Reporting Bugs and Requesting New Features
+------------------------------------------
+
+Please report any bugs and request features here:
+
+* https://github.com/guillermooo/dart-sublime-bundle/issues

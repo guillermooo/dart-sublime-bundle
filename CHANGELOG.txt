@@ -1,3 +1,24 @@
+1.1.0 - 20141018
+
+	- Fix encoding: Windows-1252 => UTF-8
+	- Update appveyor config
+	- Edit readme
+	- Remove -hidden prefix from .tmLanguage extension
+	- Edit gitignore
+	- Add tests for doc comments syntax def
+	- Improve doc comments highlighting for remaining comment styles
+	- Improve syntax highlighting for doc comments
+	- Fix eol handling in repo
+	- Ignore more files
+	- Update license
+	- Pub serve uses the next available port
+	- Add tests for syntax def
+	- Change LICENSE
+	- Fix method call (add missing params)
+	- Add Pubspec.tmLanguage
+	- Improve key bindings for inserting comments
+	- Edit announcement template
+
 1.0.0 - 20141007
 
 	- some fixes
