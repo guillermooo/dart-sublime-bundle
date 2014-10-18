@@ -1,8 +1,8 @@
 # Dart – Sublime Text Package
 
 
-Operating System   | Compatibility | Status (maste)
------------------- | ------------- | --------------
+Operating System   | Compatibility | Status (master)
+------------------ | ------------- | ---------------
 Linux | Sublime Text 3 | [![Build Status](https://travis-ci.org/guillermooo/dart-sublime-bundle.svg?branch=master)](https://travis-ci.org/dart-lang/dart-sublime-bundle)
 OS X | Sublime Text 3 | -/-
 Windows | Sublime Text 3 | [![Build status](https://ci.appveyor.com/api/projects/status/8uhfb8yvrwod316r/branch/master?svg=true)](https://ci.appveyor.com/project/guillermooo/dart-sublime-bundle)
