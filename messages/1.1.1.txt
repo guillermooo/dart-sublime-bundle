@@ -1,0 +1,25 @@
+Version 1.1.1
+
+The Sublime Text Dart Package has been updated!
+
+This version includes bug fixes.
+
+Please restart Sublime Text.
+
+Full Documentation:
+
+	- https://github.com/guillermooo/dart-sublime-bundle/wiki
+
+
+MAIN CHANGES
+------------
+
+	- Run analyzer from pubspec.yaml's dir
+	- Fix variable name
+
+Reporting Bugs and Requesting New Features
+------------------------------------------
+
+Please report any bugs and request features here:
+
+* https://github.com/guillermooo/dart-sublime-bundle/issues
