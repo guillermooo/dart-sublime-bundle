@@ -23,12 +23,13 @@ import threading
 import queue
 
 from . import PluginLogger
+from .lib.panels import OutputPanel
 from .lib.path import extension_equals
 from .lib.path import is_dart_script
 from .lib.path import is_view_dart_script
 from .lib.plat import is_windows
 from .lib.plat import supress_window
-from .lib.panels import OutputPanel
+from .lib.pub_package import PubspecFile
 from .lib.sdk import SDK
 
 _logger = PluginLogger(__name__)
@@ -354,10 +355,19 @@ class DartLintThread(threading.Thread):
             analyzer_path += '.bat'
         options = '--machine'
         startupinfo = supress_window()
+
+        pubspec = PubspecFile.from_path(self.fileName)
+        if not pubspec:
+            _logger.error('no pubspec found for %s', self.fileName)
+            print('Dart: No pubspec found for {}'.format(self.fileName))
+            return
+
         proc = subprocess.Popen([analyzer_path, options, self.fileName],
                                 stdout=subprocess.PIPE,
                                 stderr=subprocess.PIPE,
-                                startupinfo=startupinfo)
+                                startupinfo=startupinfo,
+                                cwd=pubspec.parent,
+                                )
         try:
             outs, errs = proc.communicate(timeout=15)
         except TimeoutExpired as e:
