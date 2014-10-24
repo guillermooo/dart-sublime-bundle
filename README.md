@@ -6,10 +6,7 @@ Linux | Sublime Text 3 | [![Build Status](https://travis-ci.org/guillermooo/dart
 OS X | Sublime Text 3 | -/- | -/-
 Windows | Sublime Text 3 | [![Build status](https://ci.appveyor.com/api/projects/status/a54udvh1c2c2xah1/branch/master?svg=true)](https://ci.appveyor.com/project/guillermooo/dart-sublime-bundle/branch/master) | [![Build status](https://ci.appveyor.com/api/projects/status/a54udvh1c2c2xah1/branch/dev?svg=true)](https://ci.appveyor.com/project/guillermooo/dart-sublime-bundle/branch/dev)
 
-
-## Support This Project
-
-[![Gratipay](http://img.shields.io/gratipay/guillermooo.svg)](https://gratipay.com/guillermooo/)
+**Support this project:** [![Gratipay](http://img.shields.io/gratipay/guillermooo.svg)](https://gratipay.com/guillermooo/)
 
 
 ## Features
