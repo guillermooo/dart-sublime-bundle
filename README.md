@@ -1,5 +1,4 @@
-# Dart – Sublime Text Package
-
+# A Dart Plugin for Sublime Text 3
 
 Operating System   | Compatibility | Status (master) | Status (dev)
 ------------------ | ------------- | --------------- | ------------
@@ -32,17 +31,10 @@ Check our [wiki][docs] for full documentation on how to install and use this
 package.
 
 
----
-
-Looking for an IDE experience? Try [Dart Editor][2], the
-[Dart plugin for Eclipse][3], or the [Dart plugin for IntelliJ/WebStorm][4].
-
----
-
-
 ## License
 
-See [LICENSE!](LICENSE).
+See [LICENSE](LICENSE).
+
 
 [1]: http://news.dartlang.org/2013/02/using-dart-with-sublime-text.html
 [docs]: https://github.com/dart-lang/dart-sublime-bundle/wiki
