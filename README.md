@@ -4,7 +4,7 @@ Operating System   | Compatibility | Status (master) | Status (dev)
 ------------------ | ------------- | --------------- | ------------
 Linux | Sublime Text 3 | [![Build Status](https://travis-ci.org/guillermooo/dart-sublime-bundle.svg?branch=master)](https://travis-ci.org/dart-lang/dart-sublime-bundle) | [![Build Status](https://travis-ci.org/guillermooo/dart-sublime-bundle.svg?branch=dev)](https://travis-ci.org/dart-lang/dart-sublime-bundle)
 OS X | Sublime Text 3 | -/- | -/-
-Windows | Sublime Text 3 | [![Build status](https://ci.appveyor.com/api/projects/status/8uhfb8yvrwod316r/branch/master?svg=true)](https://ci.appveyor.com/project/guillermooo/dart-sublime-bundle) | [![Build status](https://ci.appveyor.com/api/projects/status/8uhfb8yvrwod316r/branch/dev?svg=true)](https://ci.appveyor.com/project/guillermooo/dart-sublime-bundle)
+Windows | Sublime Text 3 | [![Build status](https://ci.appveyor.com/api/projects/status/a54udvh1c2c2xah1/branch/master?svg=true)](https://ci.appveyor.com/project/guillermooo/dart-sublime-bundle/branch/master) | [![Build status](https://ci.appveyor.com/api/projects/status/a54udvh1c2c2xah1/branch/dev?svg=true)](https://ci.appveyor.com/project/guillermooo/dart-sublime-bundle/branch/dev)
 
 
 ## Support This Project
