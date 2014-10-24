@@ -118,7 +118,7 @@ class PubServeListener(object):
                 self.panel.write('Starting Dartium...\n')
                 url = 'http://localhost:' + str(self.instance.port)
                 if self.path:
-                    url += '/' + path
+                    url += '/' + self.path
                 Dartium().start(url)
         self.panel.write(text)
 
