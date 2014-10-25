@@ -130,15 +130,15 @@ class Test_CompletionsList(unittest.TestCase):
 
     def test_can_return_prefixed(self):
         cl = CompletionsList(items)
-        collected_a = cl.iter_with_prefix("set")
-        collected_b = cl.iter_with_prefix("win")
+        collected_a = cl.iter_prefixed("set")
+        collected_b = cl.iter_prefixed("win")
         self.assertEqual(list(collected_a), ["Setup", "setupact.log", "setuperr.log"])
         self.assertEqual(list(collected_b), ['WinStore', 'WinSxS', 'win.ini', 'WindowsUpdate.log', 'winhlp32.exe'])
 
     def test_can_be_casesensitive(self):
         cl = CompletionsList(items)
-        collected_a = cl.iter_with_prefix("set")
-        collected_b = cl.iter_with_prefix("set", casesensitive=True)
+        collected_a = cl.iter_prefixed("set")
+        collected_b = cl.iter_prefixed("set", casesensitive=True)
         self.assertNotEqual(list(collected_a), list(collected_b))
 
 
