@@ -5,9 +5,11 @@
 import sublime
 
 import unittest
+import os
 
 from Dart.lib.fs_completion import CompletionsList
 from Dart.lib.fs_completion import FileSystemCompletion
+
 
 items = [
     "addins",
