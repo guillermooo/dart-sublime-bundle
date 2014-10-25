@@ -3,6 +3,15 @@
 # license that can be found in the LICENSE file.)
 
 
+# TODO(guillermooo): get fsystem items async
+# TODO(guillermooo): set limits to the no. of returned items
+# TODO(guillermooo): handle OS errors like permissions, etc.
+# TODO(guillermooo): performance: maybe store items in a tree,
+# skip list or some sort of indexed structure that improves recall time,
+# like indexing by prefix:
+#               a, b, c, d, e, f, g ... ah, bh, ch, dh
+
+
 from collections import Counter
 import os
 import glob
