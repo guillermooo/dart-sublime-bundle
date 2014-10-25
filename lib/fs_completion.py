@@ -93,14 +93,12 @@ class FileSystemCompletion(object):
 
     def process_items(self, items):
         processed = []
-        is_dir = False
         for it in items:
-            if os.path.isdir(it):
-                is_dir = True
+            if not os.path.isdir(it):
+                continue
             leaf = os.path.split(it)[1]
-            leaf = leaf if (not is_dir) else (leaf + '/')
+            leaf += '/'
             processed.append(self.escape(leaf))
-            is_dir = False
         return processed
 
     @classmethod

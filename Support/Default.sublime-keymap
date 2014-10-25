@@ -109,8 +109,17 @@
 			{ "key": "dart_services_running" },
 			{ "key": "setting.command_mode", "operand": false }
 		]
-	}
+	},
 
 	// { "keys": ["ctrl+.", "ctrl+t"], "command": "dart_find_top_level_decls" },
 	// { "keys": ["ctrl+.", "ctrl+r"], "command": "dart_find_references" }
+
+	// file system navigation
+	{
+		"keys": ["tab"], "command": "dart_complete_fs",
+		"context":
+		[
+			{ "key": "selector", "operand": "text.dart-fs-navi" }
+		]
+	}
 ]
