@@ -102,9 +102,9 @@ class FileSystemCompletion(object):
         return processed
 
     @classmethod
-    def escape(self, name):
+    def escape(cls, name):
         return name.replace(' ', '\\ ')
 
     @classmethod
-    def unescape(self, name):
+    def unescape(cls, name):
         return name.replace('\\ ', ' ')
