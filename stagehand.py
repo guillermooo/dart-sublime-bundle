@@ -5,34 +5,50 @@
 import sublime
 import sublime_plugin
 
-import os
 from subprocess import check_output
+import json
+import os
 
-from Dart.lib.fs_completion import FileSystemCompletion
-from Dart.lib.sublime import after
-from Dart.lib.sdk import SDK
-from Dart.lib.plat import supress_window
+from Dart import PluginLogger
 from Dart.lib.collections import CircularArray
+from Dart.lib.fs_completion import FileSystemCompletion
+from Dart.lib.path import pushd
+from Dart.lib.plat import supress_window
+from Dart.lib.sdk import SDK
+
+
+_logger = PluginLogger(__name__)
 
 
 class DartStagehandWizard(sublime_plugin.WindowCommand):
-    options = [
-        'consoleapp',
-        'package',
-        'polymerapp',
-        'shelfapp',
-        'webapp',
-    ]
 
     def run(self):
-        self.window.show_quick_panel(DartStagehandWizard.options,
+        # We assume that stagehand won't be updated frequently during a single
+        # ST session. If it is, though, the user will need to restart ST in
+        # order to see potential new templates.
+        if not hasattr(self, 'options'):
+            self.options = self.get_templates()
+        self.window.show_quick_panel(self.options,
                                      self.on_done)
 
     def on_done(self, i):
         if i == -1:
             return
-        template = DartStagehandWizard.options[i]
+        template = self.options[i][0]
         self.window.run_command('dart_stagehand', {'template': template})
+
+    def get_templates(self):
+        sdk = SDK()
+        out = check_output([sdk.path_to_pub, 'global', 'run',
+                            'stagehand', '--machine'],
+                            startupinfo=supress_window()).decode('utf-8')
+        decoded = json.loads(out)
+        entries = []
+        for tpl in decoded:
+            entry = [tpl['name'], tpl['description'],
+                     "entrypoint: {}".format(tpl['entrypoint'])]
+            entries.append(entry)
+        return entries
 
 
 class DartStagehand(sublime_plugin.WindowCommand):
@@ -46,7 +62,7 @@ class DartStagehand(sublime_plugin.WindowCommand):
             return
         self.template = template
 
-        view = self.window.show_input_panel('', '',
+        view = self.window.show_input_panel('Please select a directory:', '',
                                             self.on_done,
                                             self.on_change,
                                             self.on_cancel)
@@ -74,11 +90,11 @@ class DartStagehand(sublime_plugin.WindowCommand):
 
         if not self.check_installed():
             self.install()
-            self.template = None
+            del self.template
             return
 
         self.generate(s, self.template)
-        self.template = None
+        del self.template
 
     def on_change(self, s):
         if DartStagehand.cancel_change_event:
@@ -90,7 +106,7 @@ class DartStagehand(sublime_plugin.WindowCommand):
         DartCompleteFs.cache = None
         DartCompleteFs.index = 0
         DartCompleteFs.user_interaction = False
-        self.template = None
+        del self.template
 
     def check_installed(self):
         sdk = SDK()
@@ -107,12 +123,23 @@ class DartStagehand(sublime_plugin.WindowCommand):
 
     def generate(self, path=None, template=None):
         assert path and template, 'wrong call'
-        sdk = SDK()
-        self.window.run_command('dart_exec', {
-            'cmd' : [sdk.path_to_pub, 'global', 'run',
-                     'stagehand', '-o', path, template],
-            'preamble': "Running stagehand...\n"
-            })
+
+        try:
+            if not os.path.exists(path):
+                os.mkdir(path)
+        except OSError as e:
+            _logger.error(e)
+            sublime.status_message('Dart: Error. Check console for details.')
+            return
+
+        with pushd(path):
+            sdk = SDK()
+            self.window.run_command('dart_exec', {
+                'cmd': [sdk.path_to_pub, 'global', 'run',
+                        'stagehand', template],
+                'preamble': "Running stagehand...\n",
+                'working_dir': path,
+                })
 
 
 class DartCompleteFs(sublime_plugin.TextCommand):
