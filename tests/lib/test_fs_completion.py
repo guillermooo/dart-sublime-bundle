@@ -137,7 +137,6 @@ class Test_CompletionsList(unittest.TestCase):
 
 
 class Test_FileSystemCompletion(unittest.TestCase):
-    def setUp(self):
     @unittest.skipIf(os.name != 'nt', 'because OS is not Windows')
     def test_can_return_items(self):
         fsc = FileSystemCompletion()
