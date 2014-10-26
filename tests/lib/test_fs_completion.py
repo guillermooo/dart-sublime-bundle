@@ -111,12 +111,6 @@ items = [
 
 
 class Test_CompletionsList(unittest.TestCase):
-    def setUp(self):
-        self.view = sublime.active_window().new_file()
-
-    def tearDown(self):
-        self.view.close()
-
     def test_is_iterable(self):
         cl = CompletionsList(items)
         collected = []
@@ -144,11 +138,6 @@ class Test_CompletionsList(unittest.TestCase):
 
 class Test_FileSystemCompletion(unittest.TestCase):
     def setUp(self):
-        self.view = sublime.active_window().new_file()
-
-    def tearDown(self):
-        self.view.close()
-
     @unittest.skipIf(os.name != 'nt', 'because OS is not Windows')
     def test_can_return_items(self):
         fsc = FileSystemCompletion()
