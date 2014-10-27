@@ -6,15 +6,21 @@ import sublime
 import sublime_plugin
 
 from subprocess import check_output
+from subprocess import Popen
+import glob
 import json
 import os
+import sys
 
 from Dart import PluginLogger
 from Dart.lib.collections import CircularArray
 from Dart.lib.fs_completion import FileSystemCompletion
+from Dart.lib.path import join_on_win
 from Dart.lib.path import pushd
 from Dart.lib.plat import supress_window
 from Dart.lib.sdk import SDK
+from Dart.lib.sublime import after
+
 
 
 _logger = PluginLogger(__name__)
@@ -133,6 +139,7 @@ class DartStagehand(sublime_plugin.WindowCommand):
             return
 
         with pushd(path):
+            was_empty_dir = len(glob.glob("*")) == 0
             sdk = SDK()
             self.window.run_command('dart_exec', {
                 'cmd': [sdk.path_to_pub, 'global', 'run',
@@ -140,6 +147,30 @@ class DartStagehand(sublime_plugin.WindowCommand):
                 'preamble': "Running stagehand...\n",
                 'working_dir': path,
                 })
+
+            if was_empty_dir:
+                after(2000, self.create_sublime_project, path)
+
+    def create_sublime_project(self, path):
+        parent, leaf = os.path.split(path)
+
+        data = {
+            'folders': [{
+                'follow_symlinks': True,
+                'path': '.'
+            }]
+        }
+
+        proj_file = os.path.join(path, leaf + '.sublime-project')
+        with open(proj_file, 'wt') as f:
+            f.write(json.dumps(data))
+
+        try:
+            Popen([sublime.executable_path(), proj_file],
+                  startupinfo=supress_window())
+        except Exception as e:
+            _logger.debug('could not open new project with subl[.exe]')
+            _logger.debug(e)
 
 
 class DartCompleteFs(sublime_plugin.TextCommand):
