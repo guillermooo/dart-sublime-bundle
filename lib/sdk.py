@@ -298,7 +298,7 @@ class Dartium(object):
         user_home = os.path.expanduser("~")
         self.args = (
             '--checked',
-            '--user-data-dir=' + os.path.join(user_home, '/.dartium'),
+            '--user-data-dir=' + os.path.join(user_home, '.dartium'),
             '--enable-experimental-web-platform-features',
             '--enable-html-imports',
             '--no-first-run',

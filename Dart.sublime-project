@@ -31,7 +31,8 @@
 
 				{
 					"name": "Dart: Test (This File Only)",
-					"target": "run_tests_for_active_view"
+					"target": "run_dart_tests",
+					"active_file_only": true
 				}
 			]
 		}
