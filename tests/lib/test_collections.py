@@ -8,21 +8,40 @@ import os
 from Dart.lib.collections import CircularArray
 
 
-class Test_CompletionsList(unittest.TestCase):
-    def testHasLength(self):
-        ca = CircularArray([0, 1, 2, 3, 4])
+class Test_CircularList(unittest.TestCase):
+    def testCanInstantiate(self):
+        ca = CircularArray(list(range(0, 5)))
         self.assertEqual(len(ca), 5)
 
-    def testIsCircular(self):
-        ca = CircularArray([0, 1, 2, 3, 4])
-        self.assertEqual(next(ca), 0)
-        self.assertEqual(next(ca), 1)
-        self.assertEqual(next(ca), 2)
-        self.assertEqual(next(ca), 3)
-        self.assertEqual(next(ca), 4)
-        self.assertEqual(next(ca), 0)
-        self.assertEqual(next(ca), 1)
-        self.assertEqual(next(ca), 2)
-        self.assertEqual(next(ca), 3)
-        self.assertEqual(next(ca), 4)
-        self.assertEqual(next(ca), 0)
+    def testForward(self):
+        ca = CircularArray(list(range(0, 5)))
+        self.assertEqual(ca.forward(), 0)
+        self.assertEqual(ca.forward(), 1)
+        self.assertEqual(ca.forward(), 2)
+        self.assertEqual(ca.forward(), 3)
+        self.assertEqual(ca.forward(), 4)
+        self.assertEqual(ca.forward(), 0)
+
+    def testBackward(self):
+        ca = CircularArray(list(range(0, 5)))
+        self.assertEqual(ca.backward(), 4)
+        self.assertEqual(ca.backward(), 3)
+        self.assertEqual(ca.backward(), 2)
+        self.assertEqual(ca.backward(), 1)
+        self.assertEqual(ca.backward(), 0)
+        self.assertEqual(ca.backward(), 4)
+
+    def xtestBidirectionality(self):
+        ca = CircularArray(list(range(0, 5)))
+        self.assertEqual(ca.backward(), 4)
+        self.assertEqual(ca.forward(), 0)
+        self.assertEqual(ca.backward(), 4)
+        self.assertEqual(ca.forward(), 0)
+        self.assertEqual(ca.forward(), 1)
+        self.assertEqual(ca.forward(), 2)
+        self.assertEqual(ca.forward(), 3)
+        self.assertEqual(ca.forward(), 4)
+        self.assertEqual(ca.backward(), 3)
+        self.assertEqual(ca.backward(), 2)
+        self.assertEqual(ca.backward(), 1)
+        self.assertEqual(ca.backward(), 0)
