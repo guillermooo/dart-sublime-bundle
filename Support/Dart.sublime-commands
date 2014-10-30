@@ -23,5 +23,7 @@
     { "caption": "Dart: Run Dart Analyzer", "command": "dart_analyzer" },
 
     { "caption": "Dart: Generate Documentation", "command": "dart_generate_docs" },
-    { "caption": "Dart: Serve Documentation", "command": "dart_serve_docs" }
+    { "caption": "Dart: Serve Documentation", "command": "dart_serve_docs" },
+
+    { "caption": "Dart: Stagehand", "command": "dart_stagehand_wizard" }
 ]

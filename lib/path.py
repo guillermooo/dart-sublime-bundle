@@ -165,9 +165,12 @@ def is_active(view):
 @contextmanager
 def pushd(to):
     old = os.getcwd()
-    os.chdir(to)
-    yield to
-    os.chdir(old)
+    try:
+        os.chdir(to)
+        # TODO(guillermooo): makes more sense to return 'old'
+        yield to
+    finally:
+        os.chdir(old)
 
 
 def join_on_win(original, append):
