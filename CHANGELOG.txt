@@ -1,3 +1,13 @@
+1.2.0 - 20141031
+
+	- Add tests
+	- Fix #405 - use $HOME/.dartium as user data path
+	- Add tests; refactor
+	- Add support code and tests for fs navigation
+	- Add syntax def for fs ui navigation buffer
+	- Add CircularArray data structure
+	- Add 'stagehand' command and navigation keys
+
 1.1.1 - 20141024
 
 	- Run analyzer from pubspec.yaml's dir
