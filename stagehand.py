@@ -185,7 +185,7 @@ class DartCompleteFs(sublime_plugin.TextCommand):
         DartCompleteFs.fs_completer = FileSystemCompletion(
                                 casesensitive=(sublime.platform() == 'linux'))
 
-    def run(self, edit):
+    def run(self, edit, reverse=False):
         path = self.view.substr(sublime.Region(0, self.view.size()))
 
         if not DartCompleteFs.cache or DartCompleteFs.user_interaction:
@@ -203,8 +203,9 @@ class DartCompleteFs(sublime_plugin.TextCommand):
             DartCompleteFs.index = 0
             return
 
-        content = os.path.join(DartCompleteFs.locked_dir,
-                               next(DartCompleteFs.cache))
+        item = DartCompleteFs.cache.forward() if not reverse \
+                                              else DartCompleteFs.cache.backward()
+        content = os.path.join(DartCompleteFs.locked_dir, item)
 
         self.view.erase(edit, sublime.Region(0, self.view.size()))
         # Change event of input panel runs async, so make sure it knows this

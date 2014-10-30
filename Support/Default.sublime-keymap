@@ -116,6 +116,7 @@
 
 	// File system UI navigation keys.
 	{ "keys": ["tab"], "command": "dart_complete_fs", "context": [{"key": "selector", "operand": "text.dart-fs-navi" }] },
+	{ "keys": ["shift+tab"], "command": "dart_complete_fs", "args": {"reverse": true}, "context": [{"key": "selector", "operand": "text.dart-fs-navi" }] },
 	{ "keys": ["ctrl+a"], "command": "move_to", "args": { "to": "bol" }, "context": [{"key": "selector", "operand": "text.dart-fs-navi" }] }, 
 	{ "keys": ["ctrl+e"], "command": "move_to", "args": { "to": "eol" }, "context": [{"key": "selector", "operand": "text.dart-fs-navi" }] },
 	{ "keys": ["ctrl+f"], "command": "move", "args": { "forward": true, "by": "characters", "count": 1 }, "context": [{"key": "selector", "operand": "text.dart-fs-navi" }] },

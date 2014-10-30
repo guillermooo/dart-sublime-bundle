@@ -3,19 +3,31 @@
 # license that can be found in the LICENSE file.)
 
 
-class CircularArray(object):
-    def __init__(self, items):
-        self._index = -1
-        self._items = items
+class CircularArray(list):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.index = None
 
-    def __iter__(self):
-        return self
+    def forward(self):
+        if self.index is None:
+            self.index = 0
+            return self[self.index]
 
-    def __next__(self):
-        self._index += 1
-        if self._index >= len(self._items):
-            self._index = 0
-        return self._items[self._index]
+        try:
+            self.index += 1
+            return self[self.index]
+        except IndexError:
+            self.index = 0
+            return self[self.index]
 
-    def __len__(self):
-        return len(self._items)
+    def backward(self):
+        if self.index is None:
+            self.index = -1
+            return self[self.index]
+
+        try:
+            self.index -= 1
+            return self[self.index]
+        except IndexError:
+            self.index = -1
+            return self[self.index]
