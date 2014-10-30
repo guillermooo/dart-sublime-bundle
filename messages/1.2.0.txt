@@ -1,0 +1,37 @@
+Version 1.2.0
+
+The Sublime Text Dart Package has been updated!
+
+This version adds integration with Stagehand. Stagehand helps you get up and
+running with your new project by generating a project skeleton.
+
+To use Stagehand:
+
+1) Select "Dart: Stagehand" from the command palette
+2) Select a template from the quick list (top)
+3) Select a target directory from the input panel (bottom)
+
+In (3), you can get file system completions by pressing "Tab" and "Shift+Tab".
+The file system navigation panel provided also detects shell-like keys,
+including Ctrl+a (go to BOL), Crl+e (go to EOL), Ctrl+f (move forward),
+Ctrl+b (move backward), Ctrl+k (kill to EOL).
+
+Please restart Sublime Text.
+
+Full Documentation:
+
+	- https://github.com/guillermooo/dart-sublime-bundle/wiki
+
+
+MAIN CHANGES
+------------
+
+	- Fix #405 - use $HOME/.dartium as user data path
+	- Add 'stagehand' command and navigation keys
+
+Reporting Bugs and Requesting New Features
+------------------------------------------
+
+Please report any bugs and request features here:
+
+* https://github.com/guillermooo/dart-sublime-bundle/issues
