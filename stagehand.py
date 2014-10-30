@@ -74,7 +74,7 @@ class DartStagehand(sublime_plugin.WindowCommand):
                                             self.on_cancel)
         view.settings().set('gutter', False)
         view.settings().set('rulers', None)
-        view.settings().set('is_vintageous_widget', True)
+        view.settings().set('is_plugin_widget', True)
         view.set_syntax_file('Packages/Dart/Support/Dart (File System Navigation).hidden-tmLanguage')
 
         path = os.path.expanduser('~')
