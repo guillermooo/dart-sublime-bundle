@@ -243,6 +243,9 @@ class DartFile(object):
         if project.path_to_bin and self.has_prefix(project.path_to_bin):
             return True
 
+        if project.path_to_test and self.has_prefix(project.path_to_test):
+            return True
+
         if (project.path_to_example and
             self.has_prefix(project.path_to_example)):
                 # TODO(guillermooo): improve detection of cli apps under
