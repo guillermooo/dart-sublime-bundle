@@ -18,21 +18,15 @@
 			</dict>
 			<dict>
 				<key>name</key>
-				<string>TM_COMMENT_START_2</string>
-				<key>value</key>
-				<string>/*</string>
-			</dict>
-			<dict>
-				<key>name</key>
-				<string>TM_COMMENT_END_2</string>
-				<key>value</key>
-				<string>*/</string>
-			</dict>
-			<dict>
-				<key>name</key>
 				<string>TM_COMMENT_DISABLE_INDENT</string>
 				<key>value</key>
 				<string>no</string>
+			</dict>
+			<dict>
+				<key>name</key>
+				<string>TM_LINE_TERMINATOR</string>
+				<key>value</key>
+				<string>;</string>
 			</dict>
 		</array>
 	</dict>
