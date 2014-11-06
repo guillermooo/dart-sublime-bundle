@@ -125,19 +125,17 @@ class InsertLineTerminator(sublime_plugin.TextCommand):
         if not meta:
             return
 
+        lt = ''
         for var in meta:
-            lt = var.get('TM_LINE_TERMINATOR')
-            if lt:
-               break
+            if var['name'] == 'TM_LINE_TERMINATOR':
+                lt = var['value']
+                break
         if not lt:
             return
 
         eol = self.view.line(self.view.sel()[0].b).b
         s = self.view.substr(self.view.line(eol))
-        print (repr (s))
-        print (repr (self.view.substr(eol)))
-        lt_pos = s.rindex(lt)
-        ws = s[lt_pos+1:]
-        if ws.strip():
-            return
-        self.view.insert(edit, eol - len(ws), lt)
+        try:
+            lt_pos = s.rindex(lt)
+        except ValueError:
+            self.view.insert(edit, eol, lt)
