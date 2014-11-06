@@ -4,9 +4,9 @@
 
 import os
 
-from Dart.sublime_plugin_lib.path import find_pubspec_path
+from Dart.lib.path import find_pubspec_path
 from Dart.out_there.yaml import load
-from Dart.sublime_plugin_lib.path import is_view_dart_script
+from Dart.lib.path import is_view_dart_script
 
 
 class DartProject(object):

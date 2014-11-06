@@ -25,9 +25,9 @@ from Dart.lib.analyzer.pipe_server import PipeServer
 from Dart.lib.analyzer.response import Response
 from Dart.lib.analyzer.response import ResponseMaker
 from Dart.lib.analyzer.response import ResponseType
-from Dart.sublime_plugin_lib.path import find_pubspec_path
+from Dart.lib.path import find_pubspec_path
 from Dart.sublime_plugin_lib.path import is_active
-from Dart.sublime_plugin_lib.path import is_view_dart_script
+from Dart.lib.path import is_view_dart_script
 from Dart.sublime_plugin_lib.plat import supress_window
 from Dart.lib.sdk import SDK
 from Dart.lib.analyzer.queue import AnalyzerQueue
