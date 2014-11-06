@@ -8,7 +8,6 @@
 import sublime
 
 from os.path import join
-
 import subprocess
 
 

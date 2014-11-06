@@ -7,8 +7,8 @@ import sublime
 import unittest
 import os
 
-from Dart.lib.fs_completion import CompletionsList
-from Dart.lib.fs_completion import FileSystemCompletion
+from Dart.sublime_plugin_lib.fs_completion import CompletionsList
+from Dart.sublime_plugin_lib.fs_completion import FileSystemCompletion
 
 
 items = [

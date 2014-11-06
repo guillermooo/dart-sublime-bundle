@@ -5,7 +5,7 @@
 import unittest
 import os
 
-from Dart.lib.collections import CircularArray
+from Dart.sublime_plugin_lib.collections import CircularArray
 
 
 class Test_CircularList(unittest.TestCase):

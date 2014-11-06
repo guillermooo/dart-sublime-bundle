@@ -6,12 +6,12 @@ import sublime
 
 import os
 
-from Dart import PluginLogger
-from Dart.lib.out_there.yaml import load
-from Dart.lib.path import find_file
-from Dart.lib.path import is_prefix
+from Dart.sublime_plugin_lib import PluginLogger
+from Dart.out_there.yaml import load
+from Dart.sublime_plugin_lib.path import find_file
+from Dart.sublime_plugin_lib.path import is_prefix
 from Dart.lib.path import is_view_dart_script
-from Dart.lib.path import to_platform_path
+from Dart.sublime_plugin_lib.path import to_platform_path
 
 
 _logger = PluginLogger(__name__)

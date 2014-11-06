@@ -9,8 +9,8 @@ import sublime_plugin
 import os
 
 from Dart.lib.pub_package import PubPackage
-from Dart.lib.panels import ErrorPanel
-from Dart import PluginLogger
+from Dart.sublime_plugin_lib.panels import ErrorPanel
+from Dart.sublime_plugin_lib import PluginLogger
 
 
 _logger = PluginLogger(__name__)

@@ -5,8 +5,8 @@
 import sublime
 import sublime_plugin
 
-from Dart import PluginLogger
-from Dart.lib.plat import supress_window
+from Dart.sublime_plugin_lib import PluginLogger
+from Dart.sublime_plugin_lib.plat import supress_window
 from Dart.lib.sdk import DartFormat
 
 from subprocess import PIPE
