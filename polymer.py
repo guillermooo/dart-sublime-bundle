@@ -9,7 +9,7 @@ import os
 
 from Dart.lib.pub_package import PubPackage
 from Dart.lib.base_cmds import PolymerCommand
-from Dart import PluginLogger
+from Dart.sublime_plugin_lib import PluginLogger
 
 
 _logger = PluginLogger(__name__)

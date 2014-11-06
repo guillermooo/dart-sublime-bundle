@@ -6,8 +6,8 @@ import sublime
 
 import unittest
 
-from Dart.lib.path import is_dart_script
-from Dart.lib.path import is_view_dart_script
+from Dart.sublime_plugin_lib.path import is_dart_script
+from Dart.sublime_plugin_lib.path import is_view_dart_script
 
 
 class Test_is_dart_script(unittest.TestCase):

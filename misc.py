@@ -8,9 +8,9 @@ import sublime
 import webbrowser
 import os
 
-from . import PluginLogger
-from .lib.sdk import SDK
-from .lib.panels import OutputPanel
+from Dart.sublime_plugin_lib import PluginLogger
+from Dart.lib.sdk import SDK
+from Dart.lib.panels import OutputPanel
 
 
 _logger = PluginLogger(__name__)

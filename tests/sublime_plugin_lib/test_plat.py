@@ -7,8 +7,8 @@ import sublime
 import unittest
 import os
 
-from Dart.lib.path import to_platform_path
-from Dart.lib.path import join_on_win
+from Dart.sublime_plugin_lib.path import to_platform_path
+from Dart.sublime_plugin_lib.path import join_on_win
 
 
 class Test_join_on_win(unittest.TestCase):

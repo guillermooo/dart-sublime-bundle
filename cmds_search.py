@@ -8,7 +8,7 @@
 import sublime
 import sublime_plugin
 
-from Dart import PluginLogger
+from Dart.sublime_plugin_lib import PluginLogger
 from Dart import analyzer
 
 

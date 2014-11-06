@@ -6,7 +6,7 @@ import sublime
 
 import os
 
-from Dart.lib.sublime import after
+from .sublime import after
 
 
 class OutputPanel(object):

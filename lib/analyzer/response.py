@@ -9,7 +9,7 @@ import sublime
 
 import queue
 
-from Dart import PluginLogger
+from Dart.sublime_plugin_lib import PluginLogger
 
 
 _logger = PluginLogger(__name__)
