@@ -117,3 +117,25 @@ class DartOpenSettingsCommand(sublime_plugin.WindowCommand):
         v.set_syntax_file('Packages/JavaScript/JSON.tmLanguage')
         v.set_scratch(True)
         v.set_read_only(True)
+
+
+class InsertLineTerminator(sublime_plugin.TextCommand):
+    def run(self, edit):
+        meta = self.view.meta_info('shellVariables', 0)
+        if not meta:
+            return
+
+        lt = ''
+        for var in meta:
+            if var['name'] == 'TM_LINE_TERMINATOR':
+                lt = var['value']
+                break
+        if not lt:
+            return
+
+        eol = self.view.line(self.view.sel()[0].b).b
+        s = self.view.substr(self.view.line(eol))
+        try:
+            lt_pos = s.rindex(lt)
+        except ValueError:
+            self.view.insert(edit, eol, lt)
