@@ -201,7 +201,7 @@ class DartFormat(object):
 
     def format(self, text):
         dart_fmt = TextFilter([self.path])
-        return dart_fmt.filter(text)
+        return dart_fmt.filter(text).rstrip()
 
 
 class RunDartWithObservatory(object):
