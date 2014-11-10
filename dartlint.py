@@ -23,12 +23,12 @@ import threading
 import queue
 
 from Dart.sublime_plugin_lib import PluginLogger
-from Dart.lib.panels import OutputPanel
+from Dart.sublime_plugin_lib.panels import OutputPanel
 from Dart.lib.path import extension_equals
 from Dart.lib.path import is_dart_script
 from Dart.lib.path import is_view_dart_script
-from Dart.lib.plat import is_windows
-from Dart.lib.plat import supress_window
+from Dart.sublime_plugin_lib.plat import is_windows
+from Dart.sublime_plugin_lib.plat import supress_window
 from Dart.lib.pub_package import PubspecFile
 from Dart.lib.sdk import SDK
 
