@@ -1,0 +1,40 @@
+Version 1.2.1
+
+The Sublime Text Dart Package has been updated!
+
+This version includes assorted fixes and small tweaks to existing funcionality.
+However, major changes have been done under the hood. Notably, most supporting
+code has been moved into its own library. If you experience any errors, please
+report them.
+
+Please restart Sublime Text.
+
+Full Documentation:
+
+	- https://github.com/guillermooo/dart-sublime-bundle/wiki
+
+
+MAIN CHANGES
+------------
+
+	- Dartfmt should not add extra lines
+	- Add command to insert line terminator
+
+	  	This command is disabled by default, but you can add assign it a key
+	  	binding to insert missing ';' more conveniently at the end of the line.
+
+	  	The command name is: insert_line_terminator
+
+	- Fix #416 - always use /// for comments
+	- Fix #418 - refactor supporting code into its own library
+	- Run files under 'tests' as if they were scripts
+
+		From now on, .dart files under the 'test' directory will be run as
+		dart scripts. This should make it easier to run tests during development.
+
+Reporting Bugs and Requesting New Features
+------------------------------------------
+
+Please report any bugs and request features here:
+
+* https://github.com/guillermooo/dart-sublime-bundle/issues
