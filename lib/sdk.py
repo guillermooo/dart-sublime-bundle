@@ -10,8 +10,6 @@ from os.path import realpath
 from subprocess import check_output
 from subprocess import PIPE
 
-from Dart.sublime_plugin_lib.path import join_on_win
-
 from subprocess import Popen
 from subprocess import STDOUT
 from subprocess import TimeoutExpired
