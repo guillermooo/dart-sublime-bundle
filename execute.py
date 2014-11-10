@@ -16,9 +16,9 @@ import time
 
 from Default.exec import ProcessListener
 from Default.exec import AsyncProcess
-from Dart.lib.sublime import after
+from Dart.sublime_plugin_lib.sublime import after
 
-from Dart.lib.panels import OutputPanel
+from Dart.sublime_plugin_lib.panels import OutputPanel
 
 
 class DartExecCommand(sublime_plugin.WindowCommand, ProcessListener):

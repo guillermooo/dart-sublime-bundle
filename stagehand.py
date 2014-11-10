@@ -12,14 +12,14 @@ import json
 import os
 import sys
 
-from Dart import PluginLogger
-from Dart.lib.collections import CircularArray
-from Dart.lib.fs_completion import FileSystemCompletion
-from Dart.lib.path import join_on_win
-from Dart.lib.path import pushd
-from Dart.lib.plat import supress_window
+from Dart.sublime_plugin_lib import PluginLogger
+from Dart.sublime_plugin_lib.collections import CircularArray
+from Dart.sublime_plugin_lib.fs_completion import FileSystemCompletion
+from Dart.sublime_plugin_lib.path import join_on_win
+from Dart.sublime_plugin_lib.path import pushd
+from Dart.sublime_plugin_lib.plat import supress_window
 from Dart.lib.sdk import SDK
-from Dart.lib.sublime import after
+from Dart.sublime_plugin_lib.sublime import after
 
 
 

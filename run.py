@@ -12,16 +12,16 @@ import os
 import time
 import re
 
-from Dart import PluginLogger
+from Dart.sublime_plugin_lib import PluginLogger
 from Dart.lib.build.base import DartBuildCommandBase
-from Dart.lib.panels import OutputPanel
+from Dart.sublime_plugin_lib.panels import OutputPanel
 from Dart.lib.pub_package import DartFile
 from Dart.lib.pub_package import find_pubspec
 from Dart.lib.sdk import Dartium
 from Dart.lib.sdk import RunDartWithObservatory
 from Dart.lib.sdk import SDK
-from Dart.lib.sublime import after
-from Dart.lib.subprocess import GenericBinary
+from Dart.sublime_plugin_lib.sublime import after
+from Dart.sublime_plugin_lib.subprocess import GenericBinary
 from Dart.lib.sdk import PubServe
 from Dart.lib.event import EventSource
 from Dart.lib import ga

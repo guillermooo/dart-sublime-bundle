@@ -2,7 +2,7 @@
 # All rights reserved. Use of this source code is governed by a BSD-style
 # license that can be found in the LICENSE file.)
 
-from Dart import PluginLogger
+from Dart.sublime_plugin_lib import PluginLogger
 
 _logger = PluginLogger(__name__)
 
@@ -14,9 +14,9 @@ class EventSource(object):
 
     handlers = {
         ON_PUB_BUILD: [],
-        ON_DART_RUN: [],        
+        ON_DART_RUN: [],
     }
-    
+
     def raise_event(self, source, name, *args, **kwargs):
         for handler in EventSource.handlers.get(name, []):
             handler(source.__class__.__qualname__, *args, **kwargs)

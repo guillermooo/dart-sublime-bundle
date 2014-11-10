@@ -10,17 +10,17 @@ import os
 import subprocess
 import threading
 
-from . import PluginLogger
-from .lib.panels import OutputPanel
-from .lib.path import is_pubspec
-from .lib.path import is_view_dart_script
-from .lib.plat import is_windows
-from .lib.plat import supress_window
-from .lib.sdk import SDK
 from Dart.lib import ga
 from Dart.lib.build.base import DartBuildCommandBase
 from Dart.lib.event import EventSource
-from Dart.lib.sublime import after
+from Dart.lib.path import is_pubspec
+from Dart.lib.path import is_view_dart_script
+from Dart.lib.sdk import SDK
+from Dart.sublime_plugin_lib import PluginLogger
+from Dart.sublime_plugin_lib.panels import OutputPanel
+from Dart.sublime_plugin_lib.plat import is_windows
+from Dart.sublime_plugin_lib.plat import supress_window
+from Dart.sublime_plugin_lib.sublime import after
 
 
 _logger = PluginLogger(__name__)

@@ -5,8 +5,8 @@
 from subprocess import Popen
 import os
 
-from Dart import PluginLogger
-from Dart.lib.plat import supress_window
+from . import PluginLogger
+from .plat import supress_window
 
 
 _logger = PluginLogger(__name__)

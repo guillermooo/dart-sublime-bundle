@@ -22,15 +22,15 @@ import subprocess
 import threading
 import queue
 
-from . import PluginLogger
-from .lib.panels import OutputPanel
-from .lib.path import extension_equals
-from .lib.path import is_dart_script
-from .lib.path import is_view_dart_script
-from .lib.plat import is_windows
-from .lib.plat import supress_window
-from .lib.pub_package import PubspecFile
-from .lib.sdk import SDK
+from Dart.sublime_plugin_lib import PluginLogger
+from Dart.sublime_plugin_lib.panels import OutputPanel
+from Dart.lib.path import extension_equals
+from Dart.lib.path import is_dart_script
+from Dart.lib.path import is_view_dart_script
+from Dart.sublime_plugin_lib.plat import is_windows
+from Dart.sublime_plugin_lib.plat import supress_window
+from Dart.lib.pub_package import PubspecFile
+from Dart.lib.sdk import SDK
 
 _logger = PluginLogger(__name__)
 

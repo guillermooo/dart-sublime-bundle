@@ -15,24 +15,24 @@ import queue
 import threading
 import time
 
-from Dart import PluginLogger
-from Dart.lib.sublime import after
-from Dart.lib.editor_context import EditorContext
-from Dart.lib.error import ConfigError
 from Dart.lib.analyzer import actions
 from Dart.lib.analyzer import requests
 from Dart.lib.analyzer.pipe_server import PipeServer
+from Dart.lib.analyzer.queue import AnalyzerQueue
+from Dart.lib.analyzer.queue import TaskPriority
 from Dart.lib.analyzer.response import Response
 from Dart.lib.analyzer.response import ResponseMaker
 from Dart.lib.analyzer.response import ResponseType
+from Dart.lib.editor_context import EditorContext
+from Dart.lib.error import ConfigError
 from Dart.lib.path import find_pubspec_path
-from Dart.lib.path import is_active
 from Dart.lib.path import is_view_dart_script
-from Dart.lib.plat import supress_window
 from Dart.lib.sdk import SDK
-from Dart.lib.analyzer.queue import AnalyzerQueue
-from Dart.lib.analyzer.queue import TaskPriority
-from Dart.lib.panels import OutputPanel
+from Dart.sublime_plugin_lib import PluginLogger
+from Dart.sublime_plugin_lib.panels import OutputPanel
+from Dart.sublime_plugin_lib.path import is_active
+from Dart.sublime_plugin_lib.plat import supress_window
+from Dart.sublime_plugin_lib.sublime import after
 
 
 _logger = PluginLogger(__name__)

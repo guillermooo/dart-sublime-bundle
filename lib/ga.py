@@ -14,7 +14,7 @@ import urllib.parse
 import urllib.request
 import random
 
-from Dart import PluginLogger
+from Dart.sublime_plugin_lib import PluginLogger
 from Dart.lib.sdk import SDK
 
 

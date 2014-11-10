@@ -10,9 +10,9 @@ from subprocess import Popen
 from subprocess import PIPE
 import threading
 
-from Dart import PluginLogger
-from Dart.lib.plat import supress_window
-from Dart.lib.path import pushd
+from Dart.sublime_plugin_lib import PluginLogger
+from Dart.sublime_plugin_lib.plat import supress_window
+from Dart.sublime_plugin_lib.path import pushd
 
 
 _logger = PluginLogger(__name__)

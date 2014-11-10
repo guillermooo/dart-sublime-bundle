@@ -10,8 +10,6 @@ from os.path import realpath
 from subprocess import check_output
 from subprocess import PIPE
 
-from Dart.lib.path import join_on_win
-
 from subprocess import Popen
 from subprocess import STDOUT
 from subprocess import TimeoutExpired
@@ -19,18 +17,18 @@ import os
 import re
 import threading
 
-from Dart import PluginLogger
+from Dart.sublime_plugin_lib import PluginLogger
 from Dart.lib.error import ConfigError
 from Dart.lib.error import FatalConfigError
-from Dart.lib.filter import TextFilter
-from Dart.lib.path import join_on_win
-from Dart.lib.plat import is_windows
-from Dart.lib.plat import supress_window
-from Dart.lib.path import to_platform_path
-from Dart.lib.io import AsyncStreamReader
-from Dart.lib.text import decode_and_clean
-from Dart.lib.subprocess import GenericBinary
-from Dart.lib.subprocess import killwin32
+from Dart.sublime_plugin_lib.filter import TextFilter
+from Dart.sublime_plugin_lib.path import join_on_win
+from Dart.sublime_plugin_lib.plat import is_windows
+from Dart.sublime_plugin_lib.plat import supress_window
+from Dart.sublime_plugin_lib.path import to_platform_path
+from Dart.sublime_plugin_lib.io import AsyncStreamReader
+from Dart.sublime_plugin_lib.text import decode_and_clean
+from Dart.sublime_plugin_lib.subprocess import GenericBinary
+from Dart.sublime_plugin_lib.subprocess import killwin32
 
 
 _logger = PluginLogger(__name__)
@@ -201,7 +199,7 @@ class DartFormat(object):
 
     def format(self, text):
         dart_fmt = TextFilter([self.path])
-        return dart_fmt.filter(text)
+        return dart_fmt.filter(text).rstrip()
 
 
 class RunDartWithObservatory(object):

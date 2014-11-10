@@ -9,9 +9,9 @@ import json
 
 import threading
 
-from Dart import PluginLogger
-from Dart.lib.path import is_active
-from Dart.lib.path import is_active_path
+from Dart.sublime_plugin_lib import PluginLogger
+from Dart.sublime_plugin_lib.path import is_active
+from Dart.sublime_plugin_lib.path import is_active_path
 
 
 _logger = PluginLogger(__name__)

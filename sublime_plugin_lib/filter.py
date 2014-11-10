@@ -7,10 +7,10 @@ from subprocess import PIPE
 from subprocess import TimeoutExpired
 import threading
 
-from Dart import PluginLogger
-from Dart.lib.plat import supress_window
-from Dart.lib.text import clean
-from Dart.lib.text import decode
+from . import PluginLogger
+from .plat import supress_window
+from .text import clean
+from .text import decode
 
 
 _logger = PluginLogger(__name__)

@@ -5,7 +5,7 @@
 import os
 
 from Dart.lib.path import find_pubspec_path
-from Dart.lib.out_there.yaml import load
+from Dart.out_there.yaml import load
 from Dart.lib.path import is_view_dart_script
 
 
