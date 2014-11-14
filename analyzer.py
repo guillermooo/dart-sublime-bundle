@@ -457,18 +457,13 @@ class ResponseHandler(threading.Thread):
                     after(0, actions.show_errors, notifications.ErrorsNotification(resp.data.copy()))
                     continue
 
-
                 # elif resp.type == 'server.status':
                 #     after(0, sublime.status_message,
                 #           'Dart: {}'.format(resp.status.message))
                 #     continue
 
         except Exception as e:
-            _logger.debug(e)
-            print('Dart: exception while handling response.')
-            print('========================================')
-            print(e)
-            print('========================================')
+            _logger.error(e)
 
 
 class RequestHandler(threading.Thread):
