@@ -7,6 +7,7 @@
 
 import sublime
 
+from Dart.lib.analyzer.api.types import AnalysisErrorSeverity
 from Dart.sublime_plugin_lib import PluginLogger
 from Dart.sublime_plugin_lib.panels import OutputPanel
 
@@ -30,32 +31,58 @@ def show_errors(errors):
         _logger.debug('different view active - aborting')
         return
 
-    if len(errors) == 0:
+    analysis_errs = list(errors.errors)
+    if analysis_errs == 0:
         clear_ui()
         return
 
+    infos = [ae for ae in analysis_errs if (ae.severity == AnalysisErrorSeverity.INFO)]
+    warns = [ae for ae in analysis_errs if (ae.severity == AnalysisErrorSeverity.WARNING)]
+    erros = [ae for ae in analysis_errs if (ae.severity == AnalysisErrorSeverity.ERROR)]
+
+    def error_to_region(view, error):
+        '''Converts location data to region data.
+        '''
+        pt = view.text_point(error.location['startLine'] - 1,
+                             error.location['startColumn'] - 1)
+        return sublime.Region(pt, pt + error.location['length'])
+
+    info_regs = [error_to_region(v, item) for item in infos]
+    warn_regs = [error_to_region(v, item) for item in warns]
+    errs_regs = [error_to_region(v, item) for item in erros]
+
     _logger.debug('displaying errors to the user')
 
-    v.add_regions('dart.infos', list(errors.infos_to_regions(v)),
+    v.add_regions('dart.infos', info_regs,
         scope='dartlint.mark.info',
         icon="Packages/Dart/gutter/dartlint-simple-info.png",
         flags=_flags)
 
-    v.add_regions('dart.warnings', list(errors.warnings_to_regions(v)),
+    v.add_regions('dart.warnings', warn_regs,
         scope='dartlint.mark.warning',
         icon="Packages/Dart/gutter/dartlint-simple-warning.png",
         flags=_flags)
 
-    v.add_regions('dart.errors', list(errors.errors_to_regions(v)),
+    v.add_regions('dart.errors', errs_regs,
         scope='dartlint.mark.error',
         icon='Packages/Dart/gutter/dartlint-simple-error.png',
         flags=_flags)
 
-    # TODO(guillermooo): Add a logger attrib to the OutputPanel.
+    def to_compact_text(error):
+        return ("{error.severity}|{error.type}|{loc[file]}|"
+                "{loc[startLine]}|{loc[startColumn]}|{error.message}").format(
+                                                error=error, loc=error.location)
+
+    info_patts = [to_compact_text(item) for item in infos]
+    warn_patts = [to_compact_text(item) for item in warnings]
+    errs_patts = [to_compact_text(item) for item in errs]
+
+    all_errs = set(errs_patts + warn_patts + info_patts)
+
     panel = OutputPanel('dart.analyzer')
     errors_pattern = r'^\w+\|\w+\|(.+)\|(\d+)\|(\d+)\|(.+)$'
     panel.set('result_file_regex', errors_pattern)
-    panel.write('\n'.join(set(errors.to_compact_text())))
+    panel.write('\n'.join(all_errs))
 
 
 def clear_ui():
