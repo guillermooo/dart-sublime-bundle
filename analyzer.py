@@ -446,6 +446,7 @@ class ResponseHandler(threading.Thread):
         try:
             for resp in response_maker.make():
 
+                # todo: add an _internal_messages queue instead of using the responses queue.
                 if (resp.type == ResponseType.INTERNAL and
                     resp.internal_request == _SIGNAL_STOP):
                         _logger.info(
@@ -490,6 +491,7 @@ class ResponseHandler(threading.Thread):
 
                     continue
 
+                # XXX change stuff here XXX
                 if resp.type == ResponseType.ERRORS:
                     _logger.info('error data received from server')
                     # Make sure the right type is passed to the async

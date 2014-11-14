@@ -390,6 +390,7 @@ def is_errors_response(data):
 
 
 def response_classifier(data):
+    # XXX: replace here XXX
     if is_errors_response(data):
         return ErrorInfoCollection(data)
     if is_result_response(data):
