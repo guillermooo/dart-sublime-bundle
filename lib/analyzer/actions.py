@@ -7,7 +7,10 @@
 
 import sublime
 
+import os
+
 from Dart.lib.analyzer.api.types import AnalysisErrorSeverity
+from Dart.lib.analyzer.api.types import Location
 from Dart.sublime_plugin_lib import PluginLogger
 from Dart.sublime_plugin_lib.panels import OutputPanel
 
@@ -27,7 +30,8 @@ def show_errors(errors):
     '''
     v = sublime.active_window().active_view()
     # TODO(guillermooo): Use tokens to identify requests:file.
-    if errors.file != v.file_name():
+    # todo (pp): notifications don't have id; process all
+    if os.path.realpath(errors.file) != os.path.realpath(v.file_name()):
         _logger.debug('different view active - aborting')
         return
 
@@ -43,9 +47,10 @@ def show_errors(errors):
     def error_to_region(view, error):
         '''Converts location data to region data.
         '''
-        pt = view.text_point(error.location['startLine'] - 1,
-                             error.location['startColumn'] - 1)
-        return sublime.Region(pt, pt + error.location['length'])
+        loc = Location(error.location)
+        pt = view.text_point(loc.startLine - 1,
+                             loc.startColumn - 1)
+        return sublime.Region(pt, pt + loc.length)
 
     info_regs = [error_to_region(v, item) for item in infos]
     warn_regs = [error_to_region(v, item) for item in warns]
@@ -69,13 +74,13 @@ def show_errors(errors):
         flags=_flags)
 
     def to_compact_text(error):
-        return ("{error.severity}|{error.type}|{loc[file]}|"
-                "{loc[startLine]}|{loc[startColumn]}|{error.message}").format(
-                                                error=error, loc=error.location)
+        return ("{error.severity}|{error.type}|{loc.file}|"
+                "{loc.startLine}|{loc.startColumn}|{error.message}").format(
+                                                error=error, loc=Location(error.location))
 
     info_patts = [to_compact_text(item) for item in infos]
-    warn_patts = [to_compact_text(item) for item in warnings]
-    errs_patts = [to_compact_text(item) for item in errs]
+    warn_patts = [to_compact_text(item) for item in warns]
+    errs_patts = [to_compact_text(item) for item in erros]
 
     all_errs = set(errs_patts + warn_patts + info_patts)
 
