@@ -30,32 +30,60 @@ def show_errors(errors):
         _logger.debug('different view active - aborting')
         return
 
-    if len(errors) == 0:
+    analysis_errs = list(errors.errors)
+    if analysis_errs == 0:
         clear_ui()
         return
 
+    infos = [ae for ae in analysis_errs if ae.severity == 'INFO']
+    warnings = [ae for ae in analysis_errs if ae.severity == 'WARNING']
+    errs = [ae for ae in analysis_errs if ae.severity == 'ERROR']
+
+    def to_region(view, data):
+        pt = view.text_point(data.location['startLine'] - 1, data.location['startColumn'] - 1)
+        return sublime.Region(pt, pt + data.location['length'])
+
+    info_regs = [to_region(v, d) for d in infos]
+    warnings_regs = [to_region(v, d) for d in warnings]
+    errs_regs = [to_region(v, d) for d in errs]
+
+    print("FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF")
+    print (info_regs)
+    print (warnings_regs)
+    print (errs_regs)
+
     _logger.debug('displaying errors to the user')
 
-    v.add_regions('dart.infos', list(errors.infos_to_regions(v)),
+    v.add_regions('dart.infos', info_regs,
         scope='dartlint.mark.info',
         icon="Packages/Dart/gutter/dartlint-simple-info.png",
         flags=_flags)
 
-    v.add_regions('dart.warnings', list(errors.warnings_to_regions(v)),
+    v.add_regions('dart.warnings', warnings_regs,
         scope='dartlint.mark.warning',
         icon="Packages/Dart/gutter/dartlint-simple-warning.png",
         flags=_flags)
 
-    v.add_regions('dart.errors', list(errors.errors_to_regions(v)),
+    v.add_regions('dart.errors', errs_regs,
         scope='dartlint.mark.error',
         icon='Packages/Dart/gutter/dartlint-simple-error.png',
         flags=_flags)
 
-    # TODO(guillermooo): Add a logger attrib to the OutputPanel.
-    panel = OutputPanel('dart.analyzer')
-    errors_pattern = r'^\w+\|\w+\|(.+)\|(\d+)\|(\d+)\|(.+)$'
-    panel.set('result_file_regex', errors_pattern)
-    panel.write('\n'.join(set(errors.to_compact_text())))
+
+    # def to_compact_text(data):
+    #     return "{foo.severity}|{foo.type}|{foo.file}|{foo.row}|{foo.column}|{foo.message}".format(foo=data)
+
+    # infos_patts = [to_compact_text(d) for d in infos]
+    # warnings_patts = [to_compact_text(d) for d in warnings]
+    # errs_patts = [to_compact_text(d) for d in errs]
+
+    # all_errs = + errs_patts + warnings_patts + infos_patts 
+
+    # # TODO(guillermooo): Add a logger attrib to the OutputPanel.
+    # panel = OutputPanel('dart.analyzer')
+    # errors_pattern = r'^\w+\|\w+\|(.+)\|(\d+)\|(\d+)\|(.+)$'
+    # panel.set('result_file_regex', errors_pattern)
+    # panel.write('\n'.join(set(all_errs)))
 
 
 def clear_ui():

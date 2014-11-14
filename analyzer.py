@@ -20,9 +20,8 @@ from Dart.lib.analyzer import requests
 from Dart.lib.analyzer.pipe_server import PipeServer
 from Dart.lib.analyzer.queue import AnalyzerQueue
 from Dart.lib.analyzer.queue import TaskPriority
-from Dart.lib.analyzer.response import Response
 from Dart.lib.analyzer.response import ResponseMaker
-from Dart.lib.analyzer.response import ResponseType
+from Dart.lib.analyzer.api import notifications
 from Dart.lib.editor_context import EditorContext
 from Dart.lib.error import ConfigError
 from Dart.lib.path import find_pubspec_path
@@ -446,64 +445,23 @@ class ResponseHandler(threading.Thread):
         try:
             for resp in response_maker.make():
 
-                # todo: add an _internal_messages queue instead of using the responses queue.
-                if (resp.type == ResponseType.INTERNAL and
-                    resp.internal_request == _SIGNAL_STOP):
-                        _logger.info(
-                            'ResponseHandler is exiting by internal request')
-                        return
-
-                elif resp.type == ResponseType.INTERNAL:
-                    _logger.debug('got internal response: %s', resp)
+                if resp is None:
                     continue
-
-                if resp.type == ResponseType.RESULT_ID:
-                    _logger.debug('changing search id: %s -> %s', resp.id, resp.result_id)
-                    g_editor_context.search_id = resp.result_id
-                    if resp.result:
-                        _logger.debug('^********************************************')
-                        print("FOUND RESULT", resp.result.to_encoded_pos())
-                        _logger.debug('^********************************************')
-                        # g_editor_context.append_search_results([resp.result])
-                    continue
-
-                if resp.type == ResponseType.UNKNOWN:
-                    _logger.debug('received unknown type of response: %s', resp)
-                    continue
-
-                if resp.type == 'search.results':
-                    _logger.info('received search results')
-                    # TODO(guillermooo): pass only result id.
-                    if g_editor_context.check_token('search', resp.result_id):
-                        _logger.debug('^********************************************')
-                        _logger.debug('search results: %s', resp.search_results.results)
-                        _logger.debug('^********************************************')
-
-                        rrr = [t.to_encoded_pos() for t in list(resp.search_results.results)]
-                        for r in rrr:
-                            print("//////////////////////////////////////", r)
-                        out = OutputPanel('foo.bar')
-                        out.write('\n'.join(rrr))
-                        out.show()
-                        # g_editor_context.append_search_results(resp.search_results.results)
-                    else:
-                        _logger.debug('expired token')
-
-                    continue
-
+                
                 # XXX change stuff here XXX
-                if resp.type == ResponseType.ERRORS:
+                if isinstance(resp, notifications.ErrorsNotification):
                     _logger.info('error data received from server')
                     # Make sure the right type is passed to the async
                     # code. `resp` may point to a different object when
                     # the async code finally has a chance to run.
-                    after(0, actions.show_errors, resp.copy())
+                    after(0, actions.show_errors, notifications.ErrorsNotification(resp.data.copy()))
                     continue
 
-                elif resp.type == 'server.status':
-                    after(0, sublime.status_message,
-                          'Dart: {}'.format(resp.status.message))
-                    continue
+
+                # elif resp.type == 'server.status':
+                #     after(0, sublime.status_message,
+                #           'Dart: {}'.format(resp.status.message))
+                #     continue
 
         except Exception as e:
             _logger.debug(e)
