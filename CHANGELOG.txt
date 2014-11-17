@@ -1,3 +1,11 @@
+1.2.2 - 20141117
+
+	- Improve highlighting of doccomments
+	- Highlight List and Map type (Thansk @plachat3)
+	- Refactor analysis server code
+	- Use generated api classes for the analysis server
+	- Add missing import
+
 1.2.1 - 20141110
 
 	- Remove duplicated import
