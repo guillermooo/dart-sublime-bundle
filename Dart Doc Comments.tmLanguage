@@ -7,10 +7,8 @@
 	<key>patterns</key>
 	<array>
 		<dict>
-			<key>begin</key>
-			<string>\*\b</string>
-			<key>end</key>
-			<string>\b\*</string>
+			<key>match</key>
+			<string>\*[\w \t]+\*</string>
 			<key>name</key>
 			<string>markup.italic.dart-doccomments</string>
 		</dict>
