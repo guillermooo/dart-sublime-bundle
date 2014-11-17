@@ -1,0 +1,40 @@
+Version 1.2.2
+
+The Sublime Text Dart Package has been updated!
+
+This version includes assorted fixes and experimental features.
+
+Please restart Sublime Text.
+
+Full Documentation:
+
+	- https://github.com/guillermooo/dart-sublime-bundle/wiki
+
+
+MAIN CHANGES
+------------
+
+	- Improve highlighting of doccomments
+	- Highlight List and Map type (Thansk @plachat3)
+
+	- Refactor analysis server code
+	- Use generated api classes for the analysis server
+
+	  The analysis server API is now generated from the API machine-readable
+	  spec. This should make it easier to improve the integration with the
+	  analysis server from now on.
+
+	  The functionality provided by the analysis server should be considered
+	  unstable and in alpha state at best, but you can get error checking
+	  today by setting `dart_enable_experimental_editor_features` to `true`
+	  in your Dart user settings.
+
+	- Add missing import
+
+
+Reporting Bugs and Requesting New Features
+------------------------------------------
+
+Please report any bugs and request features here:
+
+* https://github.com/guillermooo/dart-sublime-bundle/issues
