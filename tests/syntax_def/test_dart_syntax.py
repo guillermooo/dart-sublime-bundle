@@ -53,7 +53,7 @@ class Test_DartSyntax_Doc_Comments(DartSyntaxTestCase):
         scope = self.getNarrowestScopeNameAtRowCol(1, 11)
         self.assertEqual(scope, 'string.other.link.title.dart-doccomments')
 
-    @unittest.skip('because if causes greediness issues')
+    @unittest.skip('because it causes greediness issues')
     def testDetectsItalics(self):
         self.append('''
 /// check *this* out
