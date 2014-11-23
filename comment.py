@@ -1,5 +1,8 @@
 # Patched version of {Sublime Text}/Packages/Default/comment.py
 # Enables forcing block comments with no end marker.
+# 
+# NOTE: Delete this command if Sublime Text ever implements the ability of
+# using block comments/alternate comments without an end marker.
 
 import sublime, sublime_plugin
 

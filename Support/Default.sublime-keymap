@@ -111,6 +111,14 @@
 		]
 	},
 
+	{
+		"keys": ["ctrl+shift+/"], "command": "dart_toggle_comment", "args": { "block": true },
+		"context": [
+			{ "key": "selector", "operator": "equal", "operand": "source.dart", "match_all": true },
+			{ "key": "setting.command_mode", "operand": false }
+			]
+	},
+
 	// { "keys": ["ctrl+.", "ctrl+t"], "command": "dart_find_top_level_decls" },
 	// { "keys": ["ctrl+.", "ctrl+r"], "command": "dart_find_references" }
 
