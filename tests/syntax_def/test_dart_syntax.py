@@ -2,6 +2,8 @@
 # All rights reserved. Use of this source code is governed by a BSD-style
 # license that can be found in the LICENSE file.)
 
+import unittest
+
 from Dart.tests import DartSyntaxTestCase
 
 
@@ -51,6 +53,7 @@ class Test_DartSyntax_Doc_Comments(DartSyntaxTestCase):
         scope = self.getNarrowestScopeNameAtRowCol(1, 11)
         self.assertEqual(scope, 'string.other.link.title.dart-doccomments')
 
+    @unittest.skip('because it causes greediness issues')
     def testDetectsItalics(self):
         self.append('''
 /// check *this* out
