@@ -1,3 +1,11 @@
+1.2.3 - 20141124
+
+	- Clean up scripts; add publish script
+	- Add custom 'toggle comment' command
+	- Fix typo
+	- Disable test
+	- Fix #433 - greedy comments
+
 1.2.2 - 20141117
 
 	- Improve highlighting of doccomments
