@@ -19,7 +19,7 @@
 			"shell_cmd": "\"$project_path/scripts/build.sh\"",
 			"windows":
 			{
-				"shell_cmd": "powershell -noninteractive -file \"$project_path\\scripts\\Build-Folder.ps1\""
+				"shell_cmd": "powershell -noninteractive -file \"$project_path\\scripts\\build.ps1\""
 			},
 			"working_dir": "${project_path}",
 
