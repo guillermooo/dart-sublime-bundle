@@ -19,15 +19,6 @@
 	},
 
 	{
-		"keys": ["enter"], "command": "insert_snippet", "args": { "contents": "\n// $0" },
-		"context": [
-			{ "key": "preceding_text", "match_all": true, "operator": "regex_match", "operand": "^\\s*//.*" },
-			{ "key": "auto_complete_visible", "operand": false },
-			{ "key": "setting.command_mode", "operand": false }
-			]
-	},
-	
-	{
 		"keys": ["enter"], "command": "insert_snippet", "args": { "contents": "\n/// $0" },
 		"context": [
 			{ "key": "preceding_text", "match_all": true, "operator": "regex_match", "operand": "^\\s*///.*" },
@@ -109,6 +100,14 @@
 			{ "key": "dart_services_running" },
 			{ "key": "setting.command_mode", "operand": false }
 		]
+	},
+
+	{
+		"keys": ["ctrl+shift+/"], "command": "dart_toggle_comment", "args": { "block": true },
+		"context": [
+			{ "key": "selector", "operator": "equal", "operand": "source.dart", "match_all": true },
+			{ "key": "setting.command_mode", "operand": false }
+			]
 	},
 
 	// { "keys": ["ctrl+.", "ctrl+t"], "command": "dart_find_top_level_decls" },
