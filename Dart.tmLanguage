@@ -71,6 +71,10 @@
 		</dict>
 		<dict>
 			<key>include</key>
+			<string>#decl-enum</string>
+		</dict>
+		<dict>
+			<key>include</key>
 			<string>#decl-function</string>
 		</dict>
 		<dict>
@@ -229,6 +233,41 @@
 							<string>[A-Za-z_][A-Za-z0-9_]*</string>
 							<key>name</key>
 							<string>class.name.dart</string>
+						</dict>
+					</array>
+				</dict>
+			</array>
+		</dict>
+		<key>decl-enum</key>
+		<dict>
+			<key>patterns</key>
+			<array>
+				<dict>
+					<key>begin</key>
+					<string>\benum\b</string>
+					<key>beginCaptures</key>
+					<dict>
+						<key>0</key>
+						<dict>
+							<key>name</key>
+							<string>keyword.declaration.dart</string>
+						</dict>
+					</dict>
+					<key>end</key>
+					<string>(?={)</string>
+					<key>name</key>
+					<string>meta.declaration.enum.dart</string>
+					<key>patterns</key>
+					<array>
+						<dict>
+							<key>include</key>
+							<string>#keywords</string>
+						</dict>
+						<dict>
+							<key>match</key>
+							<string>[A-Za-z_][A-Za-z0-9_]*</string>
+							<key>name</key>
+							<string>enum.name.dart</string>
 						</dict>
 					</array>
 				</dict>
