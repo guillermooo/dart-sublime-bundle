@@ -5,7 +5,7 @@
 	<key>name</key>
 	<string>Symbol List</string>
 	<key>scope</key>
-	<string>source.dart meta.declaration.typedef.dart, source.dart meta.declaration.class.dart, source.dart meta.declaration.function.dart</string>
+	<string>source.dart meta.declaration.typedef.dart, source.dart meta.declaration.class.dart, source.dart meta.declaration.function.dart, source.dart meta.declaration.enum.dart</string>
 	<key>settings</key>
 	<dict>
 		<key>showInSymbolList</key>
@@ -17,6 +17,7 @@
 		s/^\s*(get)\s+(\w+)/$1 $2/g;
 		s/^\s*typedef(\s+\w+)?\s+(\w+)/typedef $1 $2/g;
 		s/^\s*class(\s+\w+)/class $1/g;
+		s/^\s*enum(\s+\w+)/enum $1/g;
 		s/^\s*(\w+) (\w+)\((.{0,40})/$1 $2\($3\)/g;
 		s/^\s*(\w+)\((.{0,40})/$1\($2\)/g;
 		</string>

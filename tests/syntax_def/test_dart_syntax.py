@@ -62,3 +62,19 @@ class Test_DartSyntax_Doc_Comments(DartSyntaxTestCase):
 ''')
         scope = self.getNarrowestScopeNameAtRowCol(1, 11)
         self.assertEqual(scope, 'markup.italic.dart-doccomments')
+
+class Test_DartSyntax_Enums(DartSyntaxTestCase):
+    def testEnumDeclaration(self):
+        self.append('''
+enum Foo {
+    BAR,
+    BAZ
+}
+''')
+        scope = self.getNarrowestScopeNameAtRowCol(1, 1)
+        self.assertEqual(scope, 'keyword.declaration.dart')
+        scope = self.getNarrowestScopeNameAtRowCol(1, 5)
+        self.assertEqual(scope, 'enum.name.dart')
+        scope = self.getNarrowestScopeNameAtRowCol(2, 6)
+        self.assertEqual(scope, 'source.dart')
+
