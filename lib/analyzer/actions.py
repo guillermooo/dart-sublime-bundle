@@ -2,7 +2,8 @@
 # All rights reserved. Use of this source code is governed by a BSD-style
 # license that can be found in the LICENSE file.)
 
-"""Actions performed using the analyzer's responses.
+"""
+Actions performed inside ST3 based on the analysis server's responses.
 """
 
 import sublime
@@ -18,7 +19,13 @@ from Dart.sublime_plugin_lib.panels import OutputPanel
 _logger = PluginLogger(__name__)
 
 
-_flags = (sublime.DRAW_SQUIGGLY_UNDERLINE | sublime.DRAW_NO_FILL |
+DAS_SCOPE_ERROR = 'invalid'
+DAS_SCOPE_INFO = 'comment'
+DAS_SCOPE_WARNING = 'constant.numeric'
+
+
+_flags = (sublime.DRAW_SQUIGGLY_UNDERLINE |
+          sublime.DRAW_NO_FILL |
           sublime.DRAW_NO_OUTLINE)
 
 
@@ -35,14 +42,14 @@ def show_errors(errors):
         _logger.debug('different view active - aborting')
         return
 
-    analysis_errs = list(errors.errors)
-    if analysis_errs == 0:
+    analysis_errors = list(errors.errors)
+    if analysis_errors == 0:
         clear_ui()
         return
 
-    infos = [ae for ae in analysis_errs if (ae.severity == AnalysisErrorSeverity.INFO)]
-    warns = [ae for ae in analysis_errs if (ae.severity == AnalysisErrorSeverity.WARNING)]
-    erros = [ae for ae in analysis_errs if (ae.severity == AnalysisErrorSeverity.ERROR)]
+    infos = [ae for ae in analysis_errors if (ae.severity == AnalysisErrorSeverity.INFO)]
+    warns = [ae for ae in analysis_errors if (ae.severity == AnalysisErrorSeverity.WARNING)]
+    erros = [ae for ae in analysis_errors if (ae.severity == AnalysisErrorSeverity.ERROR)]
 
     def error_to_region(view, error):
         '''Converts location data to region data.
@@ -59,17 +66,17 @@ def show_errors(errors):
     _logger.debug('displaying errors to the user')
 
     v.add_regions('dart.infos', info_regs,
-        scope='dartlint.mark.info',
+        scope=DAS_SCOPE_INFO,
         icon="Packages/Dart/gutter/dartlint-simple-info.png",
         flags=_flags)
 
     v.add_regions('dart.warnings', warn_regs,
-        scope='dartlint.mark.warning',
+        scope=DAS_SCOPE_WARNING,
         icon="Packages/Dart/gutter/dartlint-simple-warning.png",
         flags=_flags)
 
     v.add_regions('dart.errors', errs_regs,
-        scope='dartlint.mark.error',
+        scope=DAS_SCOPE_ERROR,
         icon='Packages/Dart/gutter/dartlint-simple-error.png',
         flags=_flags)
 

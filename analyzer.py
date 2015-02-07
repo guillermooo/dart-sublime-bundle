@@ -17,7 +17,7 @@ import time
 
 from Dart.lib.analyzer import actions
 from Dart.lib.analyzer import requests
-from Dart.lib.analyzer.api import notifications
+from Dart.lib.analyzer.api.notifications import AnalysisErrorsNotification
 from Dart.lib.analyzer.pipe_server import PipeServer
 from Dart.lib.analyzer.queue import AnalyzerQueue
 from Dart.lib.analyzer.queue import TaskPriority
@@ -449,13 +449,13 @@ class ResponseHandler(threading.Thread):
                     continue
                 
                 # XXX change stuff here XXX
-                if isinstance(resp, notifications.AnalysisErrorsNotification):
+                if isinstance(resp, AnalysisErrorsNotification):
                     _logger.info('error data received from server')
                     # Make sure the right type is passed to the async
                     # code. `resp` may point to a different object when
                     # the async code finally has a chance to run.
                     after(0, actions.show_errors,
-                          notifications.AnalysisErrorsNotification(
+                          AnalysisErrorsNotification(
                                 resp.data.copy()))
                     continue
 
