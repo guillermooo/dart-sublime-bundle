@@ -9,8 +9,8 @@ import sublime
 
 import os
 
-from Dart.lib.analyzer.api.types import AnalysisErrorSeverity
-from Dart.lib.analyzer.api.types import Location
+from Dart.lib.analyzer.api.api_types import AnalysisErrorSeverity
+from Dart.lib.analyzer.api.api_types import Location
 from Dart.sublime_plugin_lib import PluginLogger
 from Dart.sublime_plugin_lib.panels import OutputPanel
 
@@ -47,7 +47,7 @@ def show_errors(errors):
     def error_to_region(view, error):
         '''Converts location data to region data.
         '''
-        loc = Location(error.location)
+        loc = error.location
         pt = view.text_point(loc.startLine - 1,
                              loc.startColumn - 1)
         return sublime.Region(pt, pt + loc.length)
@@ -76,7 +76,7 @@ def show_errors(errors):
     def to_compact_text(error):
         return ("{error.severity}|{error.type}|{loc.file}|"
                 "{loc.startLine}|{loc.startColumn}|{error.message}").format(
-                                                error=error, loc=Location(error.location))
+                                                error=error, loc=error.location)
 
     info_patts = [to_compact_text(item) for item in infos]
     warn_patts = [to_compact_text(item) for item in warns]

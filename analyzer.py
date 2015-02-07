@@ -17,11 +17,11 @@ import time
 
 from Dart.lib.analyzer import actions
 from Dart.lib.analyzer import requests
+from Dart.lib.analyzer.api import notifications
 from Dart.lib.analyzer.pipe_server import PipeServer
 from Dart.lib.analyzer.queue import AnalyzerQueue
 from Dart.lib.analyzer.queue import TaskPriority
 from Dart.lib.analyzer.response import ResponseMaker
-from Dart.lib.analyzer.api import notifications
 from Dart.lib.editor_context import EditorContext
 from Dart.lib.error import ConfigError
 from Dart.lib.path import find_pubspec_path
@@ -449,12 +449,14 @@ class ResponseHandler(threading.Thread):
                     continue
                 
                 # XXX change stuff here XXX
-                if isinstance(resp, notifications.ErrorsNotification):
+                if isinstance(resp, notifications.AnalysisErrorsNotification):
                     _logger.info('error data received from server')
                     # Make sure the right type is passed to the async
                     # code. `resp` may point to a different object when
                     # the async code finally has a chance to run.
-                    after(0, actions.show_errors, notifications.ErrorsNotification(resp.data.copy()))
+                    after(0, actions.show_errors,
+                          notifications.AnalysisErrorsNotification(
+                                resp.data.copy()))
                     continue
 
                 # elif resp.type == 'server.status':
