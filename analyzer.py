@@ -74,8 +74,8 @@ def init():
 def plugin_loaded():
     sdk = SDK()
 
-    # if not sdk.enable_experimental_features:
-    #     return
+    if not sdk.enable_analysis_server:
+        return
     try:
         sdk.path_to_analysis_snapshot
     except ConfigError as e:
@@ -84,7 +84,7 @@ def plugin_loaded():
         return
 
     # FIXME(guillermooo): Ignoring, then de-ignoring this package throws
-    # errors. (Potential ST3 bug.)
+    # errors. (Potential ST3 bug: https://github.com/SublimeTextIssues/Core/issues/386)
     # Make ST more responsive on startup.
     sublime.set_timeout(init, START_DELAY)
 

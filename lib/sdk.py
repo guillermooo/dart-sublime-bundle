@@ -54,12 +54,12 @@ class SDK(object):
             raise FatalConfigError(msg)
 
     @property
-    def enable_experimental_features(self):
-        return (self.setts.get('dart_enable_experimental_editor_features') is True)
+    def enable_analysis_server(self):
+        return (self.setts.get('dart_enable_analysis_server') is True)
 
     @property
     def path_to_analysis_snapshot(self):
-        if not self.enable_experimental_features:
+        if not self.enable_analysis_server:
             return None
 
         path = os.path.join(self.path_to_bin_dir,
