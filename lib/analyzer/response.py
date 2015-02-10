@@ -10,14 +10,14 @@ import sublime
 import queue
 
 from Dart.sublime_plugin_lib import PluginLogger
-from Dart.lib.analyzer.api.notifications import ErrorsNotification
+from Dart.lib.analyzer.api.notifications import AnalysisErrorsNotification
 
 
 _logger = PluginLogger(__name__)
 
 
 class ResponseMaker(object):
-    '''Transforms raw notification and responses into `ServerResponse`s.
+    '''Transforms raw notifications and responses into `ServerResponse`s.
     '''
 
     def __init__(self, source):
@@ -25,9 +25,6 @@ class ResponseMaker(object):
 
     def make(self):
         '''Makes `ServerResponse`s forever.
-
-        Note: This will potentially saturate a process, so make sure to pause
-        if the yielded value is `None`.
         '''
         while True:
             try:
@@ -38,7 +35,8 @@ class ResponseMaker(object):
                 yield
                 continue
 
-            if data.get('_internal') is not None:
+            if data.get('_internal'):
+                _logger.info('ResponseMaker exiting by internal request')
                 yield data
                 break
 
@@ -59,8 +57,12 @@ def is_errors_response(data):
     return data.get('event') == 'analysis.errors'
 
 
+def is_internal_response(data):
+    return '_internal' in data
+
+
 def response_classifier(data):
     # XXX: replace here XXX
     if is_errors_response(data):
-        return ErrorsNotification(data)
+        return AnalysisErrorsNotification(data)
     return None

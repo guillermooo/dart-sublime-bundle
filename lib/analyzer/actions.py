@@ -2,15 +2,16 @@
 # All rights reserved. Use of this source code is governed by a BSD-style
 # license that can be found in the LICENSE file.)
 
-"""Actions performed using the analyzer's responses.
+"""
+Actions performed inside ST3 based on the analysis server's responses.
 """
 
 import sublime
 
 import os
 
-from Dart.lib.analyzer.api.types import AnalysisErrorSeverity
-from Dart.lib.analyzer.api.types import Location
+from Dart.lib.analyzer.api.api_types import AnalysisErrorSeverity
+from Dart.lib.analyzer.api.api_types import Location
 from Dart.sublime_plugin_lib import PluginLogger
 from Dart.sublime_plugin_lib.panels import OutputPanel
 
@@ -18,7 +19,17 @@ from Dart.sublime_plugin_lib.panels import OutputPanel
 _logger = PluginLogger(__name__)
 
 
-_flags = (sublime.DRAW_SQUIGGLY_UNDERLINE | sublime.DRAW_NO_FILL |
+DAS_SCOPE_ERROR = 'invalid'
+DAS_SCOPE_INFO = 'comment'
+DAS_SCOPE_WARNING = 'constant.numeric'
+
+DAS_UI_REGIONS_INFOS = 'dart.infos'
+DAS_UI_REGIONS_WARNINGS = 'dart.warnings'
+DAS_UI_REGIONS_ERRORS = 'dart.errors'
+
+
+_flags = (sublime.DRAW_SQUIGGLY_UNDERLINE |
+          sublime.DRAW_NO_FILL |
           sublime.DRAW_NO_OUTLINE)
 
 
@@ -35,19 +46,19 @@ def show_errors(errors):
         _logger.debug('different view active - aborting')
         return
 
-    analysis_errs = list(errors.errors)
-    if analysis_errs == 0:
+    analysis_errors = list(errors.errors)
+    if analysis_errors == 0:
         clear_ui()
         return
 
-    infos = [ae for ae in analysis_errs if (ae.severity == AnalysisErrorSeverity.INFO)]
-    warns = [ae for ae in analysis_errs if (ae.severity == AnalysisErrorSeverity.WARNING)]
-    erros = [ae for ae in analysis_errs if (ae.severity == AnalysisErrorSeverity.ERROR)]
+    infos = [ae for ae in analysis_errors if (ae.severity == AnalysisErrorSeverity.INFO)]
+    warns = [ae for ae in analysis_errors if (ae.severity == AnalysisErrorSeverity.WARNING)]
+    erros = [ae for ae in analysis_errors if (ae.severity == AnalysisErrorSeverity.ERROR)]
 
     def error_to_region(view, error):
         '''Converts location data to region data.
         '''
-        loc = Location(error.location)
+        loc = error.location
         pt = view.text_point(loc.startLine - 1,
                              loc.startColumn - 1)
         return sublime.Region(pt, pt + loc.length)
@@ -58,25 +69,25 @@ def show_errors(errors):
 
     _logger.debug('displaying errors to the user')
 
-    v.add_regions('dart.infos', info_regs,
-        scope='dartlint.mark.info',
+    v.add_regions(DAS_UI_REGIONS_INFOS, info_regs,
+        scope=DAS_SCOPE_INFO,
         icon="Packages/Dart/gutter/dartlint-simple-info.png",
         flags=_flags)
 
-    v.add_regions('dart.warnings', warn_regs,
-        scope='dartlint.mark.warning',
+    v.add_regions(DAS_UI_REGIONS_WARNINGS, warn_regs,
+        scope=DAS_SCOPE_WARNING,
         icon="Packages/Dart/gutter/dartlint-simple-warning.png",
         flags=_flags)
 
-    v.add_regions('dart.errors', errs_regs,
-        scope='dartlint.mark.error',
+    v.add_regions(DAS_UI_REGIONS_ERRORS, errs_regs,
+        scope=DAS_SCOPE_ERROR,
         icon='Packages/Dart/gutter/dartlint-simple-error.png',
         flags=_flags)
 
     def to_compact_text(error):
         return ("{error.severity}|{error.type}|{loc.file}|"
                 "{loc.startLine}|{loc.startColumn}|{error.message}").format(
-                                                error=error, loc=Location(error.location))
+                                                error=error, loc=error.location)
 
     info_patts = [to_compact_text(item) for item in infos]
     warn_patts = [to_compact_text(item) for item in warns]
@@ -95,6 +106,6 @@ def clear_ui():
     '''
     _logger.debug('erasing errors from view')
     v = sublime.active_window().active_view()
-    v.erase_regions('dart.errors')
-    v.erase_regions('dart.warnings')
-    v.erase_regions('dart.infos')
+    v.erase_regions(DAS_UI_REGIONS_ERRORS)
+    v.erase_regions(DAS_UI_REGIONS_WARNINGS)
+    v.erase_regions(DAS_UI_REGIONS_INFOS)

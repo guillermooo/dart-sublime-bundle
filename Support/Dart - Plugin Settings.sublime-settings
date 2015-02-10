@@ -17,7 +17,10 @@
 	// If 'true', sends anonymous usage data about this plugin.
 	"dart_enable_telemetry": true,
 
-	// Dartlint plugin settings
+	// If 'true', the analysis server will run in the background.
+	"dart_enable_analysis_server": true,
+
+	// Dartlint plugin settings - DEPRECATED
 	"dart_linter_active": false,
 	"dart_linter_on_load": true,
 	"dart_linter_on_save": true,

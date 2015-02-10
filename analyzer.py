@@ -2,9 +2,6 @@
 # All rights reserved. Use of this source code is governed by a BSD-style
 # license that can be found in the LICENSE file.)
 
-import sublime
-import sublime_plugin
-
 from collections import defaultdict
 from datetime import datetime
 from subprocess import PIPE
@@ -15,13 +12,22 @@ import queue
 import threading
 import time
 
+import sublime
+import sublime_plugin
+
 from Dart.lib.analyzer import actions
 from Dart.lib.analyzer import requests
+from Dart.lib.analyzer.api.api_types import AddContentOverlay
+from Dart.lib.analyzer.api.api_types import RemoveContentOverlay
+from Dart.lib.analyzer.api.notifications import AnalysisErrorsNotification
+from Dart.lib.analyzer.api.requests import AnalysisSetAnalysisRootsRequest
+from Dart.lib.analyzer.api.requests import AnalysisSetPriorityFilesRequest
+from Dart.lib.analyzer.api.requests import AnalysisUpdateContentRequest
 from Dart.lib.analyzer.pipe_server import PipeServer
 from Dart.lib.analyzer.queue import AnalyzerQueue
+from Dart.lib.analyzer.queue import RequestsQueue
 from Dart.lib.analyzer.queue import TaskPriority
 from Dart.lib.analyzer.response import ResponseMaker
-from Dart.lib.analyzer.api import notifications
 from Dart.lib.editor_context import EditorContext
 from Dart.lib.error import ConfigError
 from Dart.lib.path import find_pubspec_path
@@ -74,7 +80,7 @@ def init():
 def plugin_loaded():
     sdk = SDK()
 
-    if not sdk.enable_experimental_features:
+    if not sdk.enable_analysis_server:
         return
     try:
         sdk.path_to_analysis_snapshot
@@ -84,8 +90,8 @@ def plugin_loaded():
         return
 
     # FIXME(guillermooo): Ignoring, then de-ignoring this package throws
-    # errors.
-    # Make ST more responsive on startup --- also helps the logger get ready.
+    # errors. (Potential ST3 bug: https://github.com/SublimeTextIssues/Core/issues/386)
+    # Make ST more responsive on startup.
     sublime.set_timeout(init, START_DELAY)
 
 
@@ -191,6 +197,7 @@ class StdoutWatcher(threading.Thread):
         super().__init__()
         self.path = path
         self.server = server
+        self.name = 'StdoutWatcher-thread'
 
     def start(self):
         _logger.info("starting StdoutWatcher")
@@ -203,7 +210,14 @@ class StdoutWatcher(threading.Thread):
             return
 
         while True:
-            data = self.server.stdout.readline().decode('utf-8')
+            try:
+                data = self.server.stdout.readline().decode('utf-8')
+            except Exception as e:
+                msg = 'error in thread' + self.name + '\n'
+                msg += str(e)
+                _logger.error(msg)
+                continue
+
             _logger.debug('data read from server: %s', repr(data))
 
             if not data:
@@ -213,8 +227,7 @@ class StdoutWatcher(threading.Thread):
                     return
 
                 _logger.debug("StdoutWatcher - no data")
-                time.sleep(.1)
-                continue
+                return
 
             decoded = json.loads(data)
             # TODO(guillermooo): Some notifications need to have a HIGHEST
@@ -255,7 +268,7 @@ class AnalysisServer(object):
             if AnalysisServer._request_id >= AnalysisServer.MAX_ID:
                 AnalysisServer._request_id = -1
             AnalysisServer._request_id += 1
-            return AnalysisServer._request_id
+            return str(AnalysisServer._request_id)
 
     @staticmethod
     def ping():
@@ -267,7 +280,7 @@ class AnalysisServer(object):
     def __init__(self):
         self.roots = []
         self.priority_files = []
-        self.requests = AnalyzerQueue('requests')
+        self.requests = RequestsQueue('requests')
         self.responses = AnalyzerQueue('responses')
 
         reqh = RequestHandler(self)
@@ -349,7 +362,7 @@ class AnalysisServer(object):
         sublime.set_timeout_async(t.start, 0)
 
     def stop(self):
-        req = requests.shut_down(AnalysisServer.MAX_ID + 100)
+        req = requests.shut_down(str(AnalysisServer.MAX_ID + 100))
         self.requests.put(req, priority=TaskPriority.HIGHEST, block=False)
         self.requests.put({'_internal': _SIGNAL_STOP}, block=False)
         self.responses.put({'_internal': _SIGNAL_STOP}, block=False)
@@ -363,63 +376,63 @@ class AnalysisServer(object):
             self.stdin.flush()
 
     def send_set_roots(self, included=[], excluded=[]):
-        _, _, token = self.new_token()
-        req = requests.set_roots(token, included, excluded)
+        req = AnalysisSetAnalysisRootsRequest(self.get_request_id(),
+                included, excluded)
         _logger.info('sending set_roots request')
         self.requests.put(req, block=False)
 
-    def send_find_top_level_decls(self, view, pattern):
-        w_id, v_id, token = self.new_token()
-        req = requests.find_top_level_decls(token, pattern)
-        _logger.info('sending top level decls request')
-        # TODO(guillermooo): Abstract this out.
-        # track this type of req as it may expire
-        g_req_to_resp['search']["{}:{}".format(w_id, v_id)] = token
-        g_editor_context.search_id = token
-        self.requests.put(req,
-                          view=view,
-                          priority=TaskPriority.HIGHEST,
-                          block=False)
+    # def send_find_top_level_decls(self, view, pattern):
+    #     w_id, v_id, token = self.new_token()
+    #     req = requests.find_top_level_decls(token, pattern)
+    #     _logger.info('sending top level decls request')
+    #     # TODO(guillermooo): Abstract this out.
+    #     # track this type of req as it may expire
+    #     g_req_to_resp['search']["{}:{}".format(w_id, v_id)] = token
+    #     g_editor_context.search_id = token
+    #     self.requests.put(req,
+    #                       view=view,
+    #                       priority=TaskPriority.HIGHEST,
+    #                       block=False)
 
-    def send_find_element_refs(self, view, potential=False):
-        if not view:
-            return
+    # def send_find_element_refs(self, view, potential=False):
+    #     if not view:
+    #         return
 
-        _, _, token = self.new_token()
-        fname = view.file_name()
-        offset = view.sel()[0].b
-        req = requests.find_element_refs(token, fname, offset, potential)
-        _logger.info('sending find_element_refs request')
-        g_editor_context.search_id = token
-        self.requests.put(req, view=view, priority=TaskPriority.HIGHEST,
-                          block=False)
+    #     _, _, token = self.new_token()
+    #     fname = view.file_name()
+    #     offset = view.sel()[0].b
+    #     req = requests.find_element_refs(token, fname, offset, potential)
+    #     _logger.info('sending find_element_refs request')
+    #     g_editor_context.search_id = token
+    #     self.requests.put(req, view=view, priority=TaskPriority.HIGHEST,
+    #                       block=False)
 
     def send_add_content(self, view):
-        w_id, v_id, token = self.new_token()
-        data = {'type': 'add', 'content': view.substr(sublime.Region(0,
-                                                            view.size()))}
-        files = {view.file_name(): data}
-        req = requests.update_content(token, files)
+        content = view.substr(sublime.Region(0, view.size()))
+        req = AnalysisUpdateContentRequest(self.get_request_id(),
+                {view.file_name(): AddContentOverlay(content)})
         _logger.info('sending update content request - add')
         # track this type of req as it may expire
-        self.requests.put(req, view=view, priority=TaskPriority.HIGH,
+        # TODO: when this file is saved, we must remove the overlays.
+        self.requests.put(req,
+                          view=view,
+                          priority=TaskPriority.HIGH,
                           block=False)
 
     def send_remove_content(self, view):
-        w_id, v_id, token = self.new_token()
-        files = {view.file_name(): {"type": "remove"}}
-        req = requests.update_content(token, files)
+        req = AnalysisUpdateContentRequest(self.get_request_id(),
+                {view.file_name(): RemoveContentOverlay()})
         _logger.info('sending update content request - delete')
-        self.requests.put(req, view=view, priority=TaskPriority.HIGH,
+        self.requests.put(req,
+                          view=view,
+                          priority=TaskPriority.HIGH,
                           block=False)
 
     def send_set_priority_files(self, files):
         if files == self.priority_files:
             return
 
-        w_id, v_id, token = self.new_token()
-        _logger.info('sending set priority files request')
-        req = requests.set_priority_files(token, files)
+        req = AnalysisSetPriorityFilesRequest(self.get_request_id(), files)
         self.requests.put(req, priority=TaskPriority.HIGH, block=False)
 
 
@@ -429,6 +442,7 @@ class ResponseHandler(threading.Thread):
     def __init__(self, server):
         super().__init__()
         self.server = server
+        self.name = 'ResponseHandler-thread'
 
     def run(self):
         _logger.info('starting ResponseHandler')
@@ -447,14 +461,21 @@ class ResponseHandler(threading.Thread):
 
                 if resp is None:
                     continue
+
+                if isinstance(resp, dict):
+                    if resp.get('_internal') == _SIGNAL_STOP:
+                        _logger.info('ResponseHandler exiting by internal request.')
+                        return
                 
                 # XXX change stuff here XXX
-                if isinstance(resp, notifications.ErrorsNotification):
+                if isinstance(resp, AnalysisErrorsNotification):
                     _logger.info('error data received from server')
                     # Make sure the right type is passed to the async
                     # code. `resp` may point to a different object when
                     # the async code finally has a chance to run.
-                    after(0, actions.show_errors, notifications.ErrorsNotification(resp.data.copy()))
+                    after(0, actions.show_errors,
+                          AnalysisErrorsNotification(resp.data.copy())
+                          )
                     continue
 
                 # elif resp.type == 'server.status':
@@ -463,7 +484,9 @@ class ResponseHandler(threading.Thread):
                 #     continue
 
         except Exception as e:
-            _logger.error(e)
+            msg = 'error in thread' + self.name + '\n'
+            msg += str(e)
+            _logger.error(msg)
 
 
 class RequestHandler(threading.Thread):
@@ -472,6 +495,7 @@ class RequestHandler(threading.Thread):
     def __init__(self, server):
         super().__init__()
         self.server = server
+        self.name = 'RequestHandler-thread'
 
     def run(self):
         _logger.info('starting RequestHandler')
@@ -494,3 +518,7 @@ class RequestHandler(threading.Thread):
                 self.server.write(item)
             except queue.Empty:
                 pass
+            except Exception as e:
+                msg = 'error in thread ' + self.name + '\n'
+                msg += str(e)
+                _logger.error(msg)
