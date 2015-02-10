@@ -81,3 +81,11 @@ class AnalyzerQueue(queue.PriorityQueue):
             prio, data = super().get(block, timeout)
             _logger.debug("getting in %s: %s", self.name, repr(data))
             return json.loads(data)
+
+
+class RequestsQueue(AnalyzerQueue):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+    def put(self, data, *args, **kwargs):
+        super().put(data.toJson(), *args, **kwargs)

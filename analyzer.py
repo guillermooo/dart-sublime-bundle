@@ -2,9 +2,6 @@
 # All rights reserved. Use of this source code is governed by a BSD-style
 # license that can be found in the LICENSE file.)
 
-import sublime
-import sublime_plugin
-
 from collections import defaultdict
 from datetime import datetime
 from subprocess import PIPE
@@ -15,13 +12,20 @@ import queue
 import threading
 import time
 
+import sublime
+import sublime_plugin
+
 from Dart.lib.analyzer import actions
 from Dart.lib.analyzer import requests
-from Dart.lib.analyzer.api.notifications import AnalysisErrorsNotification
-from Dart.lib.analyzer.api.requests import AnalysisUpdateContentRequest
 from Dart.lib.analyzer.api.api_types import AddContentOverlay
+from Dart.lib.analyzer.api.api_types import RemoveContentOverlay
+from Dart.lib.analyzer.api.notifications import AnalysisErrorsNotification
+from Dart.lib.analyzer.api.requests import AnalysisSetAnalysisRootsRequest
+from Dart.lib.analyzer.api.requests import AnalysisSetPriorityFilesRequest
+from Dart.lib.analyzer.api.requests import AnalysisUpdateContentRequest
 from Dart.lib.analyzer.pipe_server import PipeServer
 from Dart.lib.analyzer.queue import AnalyzerQueue
+from Dart.lib.analyzer.queue import RequestsQueue
 from Dart.lib.analyzer.queue import TaskPriority
 from Dart.lib.analyzer.response import ResponseMaker
 from Dart.lib.editor_context import EditorContext
@@ -276,7 +280,7 @@ class AnalysisServer(object):
     def __init__(self):
         self.roots = []
         self.priority_files = []
-        self.requests = AnalyzerQueue('requests')
+        self.requests = RequestsQueue('requests')
         self.responses = AnalyzerQueue('responses')
 
         reqh = RequestHandler(self)
@@ -372,65 +376,63 @@ class AnalysisServer(object):
             self.stdin.flush()
 
     def send_set_roots(self, included=[], excluded=[]):
-        _, _, token = self.new_token()
-        req = requests.set_roots(token, included, excluded)
+        req = AnalysisSetAnalysisRootsRequest(self.get_request_id(),
+                included, excluded)
         _logger.info('sending set_roots request')
         self.requests.put(req, block=False)
 
-    def send_find_top_level_decls(self, view, pattern):
-        w_id, v_id, token = self.new_token()
-        req = requests.find_top_level_decls(token, pattern)
-        _logger.info('sending top level decls request')
-        # TODO(guillermooo): Abstract this out.
-        # track this type of req as it may expire
-        g_req_to_resp['search']["{}:{}".format(w_id, v_id)] = token
-        g_editor_context.search_id = token
-        self.requests.put(req,
-                          view=view,
-                          priority=TaskPriority.HIGHEST,
-                          block=False)
+    # def send_find_top_level_decls(self, view, pattern):
+    #     w_id, v_id, token = self.new_token()
+    #     req = requests.find_top_level_decls(token, pattern)
+    #     _logger.info('sending top level decls request')
+    #     # TODO(guillermooo): Abstract this out.
+    #     # track this type of req as it may expire
+    #     g_req_to_resp['search']["{}:{}".format(w_id, v_id)] = token
+    #     g_editor_context.search_id = token
+    #     self.requests.put(req,
+    #                       view=view,
+    #                       priority=TaskPriority.HIGHEST,
+    #                       block=False)
 
-    def send_find_element_refs(self, view, potential=False):
-        if not view:
-            return
+    # def send_find_element_refs(self, view, potential=False):
+    #     if not view:
+    #         return
 
-        _, _, token = self.new_token()
-        fname = view.file_name()
-        offset = view.sel()[0].b
-        req = requests.find_element_refs(token, fname, offset, potential)
-        _logger.info('sending find_element_refs request')
-        g_editor_context.search_id = token
-        self.requests.put(req, view=view, priority=TaskPriority.HIGHEST,
-                          block=False)
+    #     _, _, token = self.new_token()
+    #     fname = view.file_name()
+    #     offset = view.sel()[0].b
+    #     req = requests.find_element_refs(token, fname, offset, potential)
+    #     _logger.info('sending find_element_refs request')
+    #     g_editor_context.search_id = token
+    #     self.requests.put(req, view=view, priority=TaskPriority.HIGHEST,
+    #                       block=False)
 
     def send_add_content(self, view):
         content = view.substr(sublime.Region(0, view.size()))
-        add_content_overlay = AddContentOverlay(content)
-        req = AnalysisUpdateContentRequest(
-                self.get_request_id(),
-                {view.file_name(): add_content_overlay}
-                )
+        req = AnalysisUpdateContentRequest(self.get_request_id(),
+                {view.file_name(): AddContentOverlay(content)})
         _logger.info('sending update content request - add')
         # track this type of req as it may expire
         # TODO: when this file is saved, we must remove the overlays.
-        self.requests.put(req.toJson(), view=view, priority=TaskPriority.HIGH,
+        self.requests.put(req,
+                          view=view,
+                          priority=TaskPriority.HIGH,
                           block=False)
 
     def send_remove_content(self, view):
-        w_id, v_id, token = self.new_token()
-        files = {view.file_name(): {"type": "remove"}}
-        req = requests.update_content(token, files)
+        req = AnalysisUpdateContentRequest(self.get_request_id(),
+                {view.file_name(): RemoveContentOverlay()})
         _logger.info('sending update content request - delete')
-        self.requests.put(req, view=view, priority=TaskPriority.HIGH,
+        self.requests.put(req,
+                          view=view,
+                          priority=TaskPriority.HIGH,
                           block=False)
 
     def send_set_priority_files(self, files):
         if files == self.priority_files:
             return
 
-        w_id, v_id, token = self.new_token()
-        _logger.info('sending set priority files request')
-        req = requests.set_priority_files(token, files)
+        req = AnalysisSetPriorityFilesRequest(self.get_request_id(), files)
         self.requests.put(req, priority=TaskPriority.HIGH, block=False)
 
 
