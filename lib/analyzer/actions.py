@@ -23,6 +23,10 @@ DAS_SCOPE_ERROR = 'invalid'
 DAS_SCOPE_INFO = 'comment'
 DAS_SCOPE_WARNING = 'constant.numeric'
 
+DAS_UI_REGIONS_INFOS = 'dart.infos'
+DAS_UI_REGIONS_WARNINGS = 'dart.warnings'
+DAS_UI_REGIONS_ERRORS = 'dart.errors'
+
 
 _flags = (sublime.DRAW_SQUIGGLY_UNDERLINE |
           sublime.DRAW_NO_FILL |
@@ -65,17 +69,17 @@ def show_errors(errors):
 
     _logger.debug('displaying errors to the user')
 
-    v.add_regions('dart.infos', info_regs,
+    v.add_regions(DAS_UI_REGIONS_INFOS, info_regs,
         scope=DAS_SCOPE_INFO,
         icon="Packages/Dart/gutter/dartlint-simple-info.png",
         flags=_flags)
 
-    v.add_regions('dart.warnings', warn_regs,
+    v.add_regions(DAS_UI_REGIONS_WARNINGS, warn_regs,
         scope=DAS_SCOPE_WARNING,
         icon="Packages/Dart/gutter/dartlint-simple-warning.png",
         flags=_flags)
 
-    v.add_regions('dart.errors', errs_regs,
+    v.add_regions(DAS_UI_REGIONS_ERRORS, errs_regs,
         scope=DAS_SCOPE_ERROR,
         icon='Packages/Dart/gutter/dartlint-simple-error.png',
         flags=_flags)
@@ -102,6 +106,6 @@ def clear_ui():
     '''
     _logger.debug('erasing errors from view')
     v = sublime.active_window().active_view()
-    v.erase_regions('dart.errors')
-    v.erase_regions('dart.warnings')
-    v.erase_regions('dart.infos')
+    v.erase_regions(DAS_UI_REGIONS_ERRORS)
+    v.erase_regions(DAS_UI_REGIONS_WARNINGS)
+    v.erase_regions(DAS_UI_REGIONS_INFOS)

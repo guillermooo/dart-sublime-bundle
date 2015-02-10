@@ -74,8 +74,8 @@ def init():
 def plugin_loaded():
     sdk = SDK()
 
-    if not sdk.enable_experimental_features:
-        return
+    # if not sdk.enable_experimental_features:
+    #     return
     try:
         sdk.path_to_analysis_snapshot
     except ConfigError as e:
@@ -84,8 +84,8 @@ def plugin_loaded():
         return
 
     # FIXME(guillermooo): Ignoring, then de-ignoring this package throws
-    # errors.
-    # Make ST more responsive on startup --- also helps the logger get ready.
+    # errors. (Potential ST3 bug.)
+    # Make ST more responsive on startup.
     sublime.set_timeout(init, START_DELAY)
 
 
@@ -191,6 +191,7 @@ class StdoutWatcher(threading.Thread):
         super().__init__()
         self.path = path
         self.server = server
+        self.name = 'StdoutWatcher-thread'
 
     def start(self):
         _logger.info("starting StdoutWatcher")
@@ -203,7 +204,14 @@ class StdoutWatcher(threading.Thread):
             return
 
         while True:
-            data = self.server.stdout.readline().decode('utf-8')
+            try:
+                data = self.server.stdout.readline().decode('utf-8')
+            except Exception as e:
+                msg = 'error in thread' + self.name + '\n'
+                msg += str(e)
+                _logger.error(msg)
+                continue
+
             _logger.debug('data read from server: %s', repr(data))
 
             if not data:
@@ -213,8 +221,7 @@ class StdoutWatcher(threading.Thread):
                     return
 
                 _logger.debug("StdoutWatcher - no data")
-                time.sleep(.1)
-                continue
+                return
 
             decoded = json.loads(data)
             # TODO(guillermooo): Some notifications need to have a HIGHEST
@@ -349,7 +356,7 @@ class AnalysisServer(object):
         sublime.set_timeout_async(t.start, 0)
 
     def stop(self):
-        req = requests.shut_down(AnalysisServer.MAX_ID + 100)
+        req = requests.shut_down(str(AnalysisServer.MAX_ID + 100))
         self.requests.put(req, priority=TaskPriority.HIGHEST, block=False)
         self.requests.put({'_internal': _SIGNAL_STOP}, block=False)
         self.responses.put({'_internal': _SIGNAL_STOP}, block=False)
@@ -429,6 +436,7 @@ class ResponseHandler(threading.Thread):
     def __init__(self, server):
         super().__init__()
         self.server = server
+        self.name = 'ResponseHandler-thread'
 
     def run(self):
         _logger.info('starting ResponseHandler')
@@ -447,6 +455,11 @@ class ResponseHandler(threading.Thread):
 
                 if resp is None:
                     continue
+
+                if isinstance(resp, dict):
+                    if resp.get('_internal') == _SIGNAL_STOP:
+                        _logger.info('ResponseHandler exiting by internal request.')
+                        return
                 
                 # XXX change stuff here XXX
                 if isinstance(resp, AnalysisErrorsNotification):
@@ -455,8 +468,8 @@ class ResponseHandler(threading.Thread):
                     # code. `resp` may point to a different object when
                     # the async code finally has a chance to run.
                     after(0, actions.show_errors,
-                          AnalysisErrorsNotification(
-                                resp.data.copy()))
+                          AnalysisErrorsNotification(resp.data.copy())
+                          )
                     continue
 
                 # elif resp.type == 'server.status':
@@ -465,7 +478,9 @@ class ResponseHandler(threading.Thread):
                 #     continue
 
         except Exception as e:
-            _logger.error(e)
+            msg = 'error in thread' + self.name + '\n'
+            msg += str(e)
+            _logger.error(msg)
 
 
 class RequestHandler(threading.Thread):
@@ -474,6 +489,7 @@ class RequestHandler(threading.Thread):
     def __init__(self, server):
         super().__init__()
         self.server = server
+        self.name = 'RequestHandler-thread'
 
     def run(self):
         _logger.info('starting RequestHandler')
@@ -496,3 +512,7 @@ class RequestHandler(threading.Thread):
                 self.server.write(item)
             except queue.Empty:
                 pass
+            except Exception as e:
+                msg = 'error in thread ' + self.name + '\n'
+                msg += str(e)
+                _logger.error(msg)
