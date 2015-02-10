@@ -1,0 +1,41 @@
+Version 1.3.0
+
+The Sublime Text Dart Package has been updated!
+
+This version includes initial integration with the analysis server available
+in the SDK. The analysis server provides multiple language services for code
+editors. In this release, the Sublime Text Dart plugin will run the server
+in the background and display errors in the code. The analysis server is
+enabled by default.
+
+See the notes below for more details.
+
+Please restart Sublime Text.
+
+Full Documentation:
+
+	- https://github.com/guillermooo/dart-sublime-bundle/wiki
+
+
+MAIN CHANGES
+------------
+
+	- Enable analysis server by default
+
+	To disable the analysis server, use this in your Dart plugin settings:
+
+	    "dart_enable_analysis_server": false
+
+	Then, restart Sublime Text.
+
+	- Add enum support
+	- Remove key binding to insert '///'
+
+	Doc comment markers need to be inserted manually.
+
+Reporting Bugs and Requesting New Features
+------------------------------------------
+
+Please report any bugs and request features here:
+
+* https://github.com/guillermooo/dart-sublime-bundle/issues
