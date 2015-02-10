@@ -24,8 +24,8 @@ class ServerGetVersionRequest(Request):
   def toJson(self):
     return {
       "id": self.op_id,
+      "method": self.method,
       "params": {
-        "method": self.method,
       }
     }
 
@@ -45,8 +45,8 @@ class ServerShutdownRequest(Request):
   def toJson(self):
     return {
       "id": self.op_id,
+      "method": self.method,
       "params": {
-        "method": self.method,
       }
     }
 
@@ -67,8 +67,8 @@ class ServerSetSubscriptionsRequest(Request):
   def toJson(self):
     return {
       "id": self.op_id,
+      "method": self.method,
       "params": {
-        "method": self.method,
         "subscriptions": self.subscriptions,
       }
     }
@@ -104,8 +104,8 @@ class AnalysisGetErrorsRequest(Request):
   def toJson(self):
     return {
       "id": self.op_id,
+      "method": self.method,
       "params": {
-        "method": self.method,
         "file": self.file,
       }
     }
@@ -126,8 +126,8 @@ class AnalysisGetHoverRequest(Request):
   def toJson(self):
     return {
       "id": self.op_id,
+      "method": self.method,
       "params": {
-        "method": self.method,
         "file": self.file,
         "offset": self.offset,
       }
@@ -161,8 +161,8 @@ class AnalysisGetNavigationRequest(Request):
   def toJson(self):
     return {
       "id": self.op_id,
+      "method": self.method,
       "params": {
-        "method": self.method,
         "file": self.file,
         "offset": self.offset,
         "length": self.length,
@@ -183,8 +183,8 @@ class AnalysisReanalyzeRequest(Request):
   def toJson(self):
     return {
       "id": self.op_id,
+      "method": self.method,
       "params": {
-        "method": self.method,
       }
     }
 
@@ -222,8 +222,8 @@ class AnalysisSetAnalysisRootsRequest(Request):
   def toJson(self):
     return {
       "id": self.op_id,
+      "method": self.method,
       "params": {
-        "method": self.method,
         "included": self.included,
         "excluded": self.excluded,
         "packageRoots": self.packageRoots,
@@ -259,8 +259,8 @@ class AnalysisSetPriorityFilesRequest(Request):
   def toJson(self):
     return {
       "id": self.op_id,
+      "method": self.method,
       "params": {
-        "method": self.method,
         "files": self.files,
       }
     }
@@ -299,8 +299,8 @@ class AnalysisSetSubscriptionsRequest(Request):
   def toJson(self):
     return {
       "id": self.op_id,
+      "method": self.method,
       "params": {
-        "method": self.method,
         "subscriptions": self.subscriptions,
       }
     }
@@ -323,9 +323,9 @@ class AnalysisUpdateContentRequest(Request):
   def toJson(self):
     return {
       "id": self.op_id,
+      "method": self.method,
       "params": {
-        "method": self.method,
-        "files": {(k, v.toJson()) for (k, v) in self.files},
+        "files": {k: v.toJson() for (k, v) in self.files.items()},
       }
     }
 
@@ -345,8 +345,8 @@ class AnalysisUpdateOptionsRequest(Request):
   def toJson(self):
     return {
       "id": self.op_id,
+      "method": self.method,
       "params": {
-        "method": self.method,
         "options": self.options.toJson(),
       }
     }
@@ -366,8 +366,8 @@ class CompletionGetSuggestionsRequest(Request):
   def toJson(self):
     return {
       "id": self.op_id,
+      "method": self.method,
       "params": {
-        "method": self.method,
         "file": self.file,
         "offset": self.offset,
       }
@@ -392,8 +392,8 @@ class SearchFindElementReferencesRequest(Request):
   def toJson(self):
     return {
       "id": self.op_id,
+      "method": self.method,
       "params": {
-        "method": self.method,
         "file": self.file,
         "offset": self.offset,
         "includePotential": self.includePotential,
@@ -417,8 +417,8 @@ class SearchFindMemberDeclarationsRequest(Request):
   def toJson(self):
     return {
       "id": self.op_id,
+      "method": self.method,
       "params": {
-        "method": self.method,
         "name": self.name,
       }
     }
@@ -442,8 +442,8 @@ class SearchFindMemberReferencesRequest(Request):
   def toJson(self):
     return {
       "id": self.op_id,
+      "method": self.method,
       "params": {
-        "method": self.method,
         "name": self.name,
       }
     }
@@ -465,8 +465,8 @@ class SearchFindTopLevelDeclarationsRequest(Request):
   def toJson(self):
     return {
       "id": self.op_id,
+      "method": self.method,
       "params": {
-        "method": self.method,
         "pattern": self.pattern,
       }
     }
@@ -486,8 +486,8 @@ class SearchGetTypeHierarchyRequest(Request):
   def toJson(self):
     return {
       "id": self.op_id,
+      "method": self.method,
       "params": {
-        "method": self.method,
         "file": self.file,
         "offset": self.offset,
       }
@@ -517,8 +517,8 @@ class EditFormatRequest(Request):
   def toJson(self):
     return {
       "id": self.op_id,
+      "method": self.method,
       "params": {
-        "method": self.method,
         "file": self.file,
         "selectionOffset": self.selectionOffset,
         "selectionLength": self.selectionLength,
@@ -542,8 +542,8 @@ class EditGetAssistsRequest(Request):
   def toJson(self):
     return {
       "id": self.op_id,
+      "method": self.method,
       "params": {
-        "method": self.method,
         "file": self.file,
         "offset": self.offset,
         "length": self.length,
@@ -566,8 +566,8 @@ class EditGetAvailableRefactoringsRequest(Request):
   def toJson(self):
     return {
       "id": self.op_id,
+      "method": self.method,
       "params": {
-        "method": self.method,
         "file": self.file,
         "offset": self.offset,
         "length": self.length,
@@ -589,8 +589,8 @@ class EditGetFixesRequest(Request):
   def toJson(self):
     return {
       "id": self.op_id,
+      "method": self.method,
       "params": {
-        "method": self.method,
         "file": self.file,
         "offset": self.offset,
       }
@@ -614,8 +614,8 @@ class EditGetRefactoringRequest(Request):
   def toJson(self):
     return {
       "id": self.op_id,
+      "method": self.method,
       "params": {
-        "method": self.method,
         "kind": self.kind,
         "file": self.file,
         "offset": self.offset,
@@ -645,8 +645,8 @@ class EditSortMembersRequest(Request):
   def toJson(self):
     return {
       "id": self.op_id,
+      "method": self.method,
       "params": {
-        "method": self.method,
         "file": self.file,
       }
     }
@@ -667,8 +667,8 @@ class ExecutionCreateContextRequest(Request):
   def toJson(self):
     return {
       "id": self.op_id,
+      "method": self.method,
       "params": {
-        "method": self.method,
         "contextRoot": self.contextRoot,
       }
     }
@@ -688,8 +688,8 @@ class ExecutionDeleteContextRequest(Request):
   def toJson(self):
     return {
       "id": self.op_id,
+      "method": self.method,
       "params": {
-        "method": self.method,
         "id": self.item_id,
       }
     }
@@ -712,8 +712,8 @@ class ExecutionMapUriRequest(Request):
   def toJson(self):
     return {
       "id": self.op_id,
+      "method": self.method,
       "params": {
-        "method": self.method,
         "id": self.item_id,
         "file": self.file,
         "uri": self.uri,
@@ -737,8 +737,8 @@ class ExecutionSetSubscriptionsRequest(Request):
   def toJson(self):
     return {
       "id": self.op_id,
+      "method": self.method,
       "params": {
-        "method": self.method,
         "subscriptions": self.subscriptions,
       }
     }

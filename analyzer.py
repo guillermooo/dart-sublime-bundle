@@ -18,6 +18,8 @@ import time
 from Dart.lib.analyzer import actions
 from Dart.lib.analyzer import requests
 from Dart.lib.analyzer.api.notifications import AnalysisErrorsNotification
+from Dart.lib.analyzer.api.requests import AnalysisUpdateContentRequest
+from Dart.lib.analyzer.api.api_types import AddContentOverlay
 from Dart.lib.analyzer.pipe_server import PipeServer
 from Dart.lib.analyzer.queue import AnalyzerQueue
 from Dart.lib.analyzer.queue import TaskPriority
@@ -262,7 +264,7 @@ class AnalysisServer(object):
             if AnalysisServer._request_id >= AnalysisServer.MAX_ID:
                 AnalysisServer._request_id = -1
             AnalysisServer._request_id += 1
-            return AnalysisServer._request_id
+            return str(AnalysisServer._request_id)
 
     @staticmethod
     def ping():
@@ -402,14 +404,16 @@ class AnalysisServer(object):
                           block=False)
 
     def send_add_content(self, view):
-        w_id, v_id, token = self.new_token()
-        data = {'type': 'add', 'content': view.substr(sublime.Region(0,
-                                                            view.size()))}
-        files = {view.file_name(): data}
-        req = requests.update_content(token, files)
+        content = view.substr(sublime.Region(0, view.size()))
+        add_content_overlay = AddContentOverlay(content)
+        req = AnalysisUpdateContentRequest(
+                self.get_request_id(),
+                {view.file_name(): add_content_overlay}
+                )
         _logger.info('sending update content request - add')
         # track this type of req as it may expire
-        self.requests.put(req, view=view, priority=TaskPriority.HIGH,
+        # TODO: when this file is saved, we must remove the overlays.
+        self.requests.put(req.toJson(), view=view, priority=TaskPriority.HIGH,
                           block=False)
 
     def send_remove_content(self, view):
