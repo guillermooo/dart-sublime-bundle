@@ -339,7 +339,7 @@ class AnalysisServer(object):
 
         _logger.info('starting AnalysisServer')
 
-        AnalysisServer.server = PipeServer(['dart',
+        AnalysisServer.server = PipeServer([sdk.path_to_dart,
                             sdk.path_to_analysis_snapshot,
                            '--sdk={0}'.format(sdk.path)])
         AnalysisServer.server.start(working_dir=sdk.path)
