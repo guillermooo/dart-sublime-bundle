@@ -17,11 +17,24 @@ class EditorContext(object):
     def __init__(self):
         self._search_id = None
         self.results_panel = None
+        self._navigation_info = None
 
     @property
     def search_id(self):
         with EditorContext.search_id_lock:
             return self._search_id
+
+    @property
+    def navigation_info(self):
+        with EditorContext.search_id_lock:
+            return self._navigation_info
+
+    @navigation_info.setter
+    def navigation_info(self, value):
+        with EditorContext.search_id_lock:
+            if self._navigation_info == value:
+                return
+            self._navigation_info = value
 
     @search_id.setter
     def search_id(self, value):
