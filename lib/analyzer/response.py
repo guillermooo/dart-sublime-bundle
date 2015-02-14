@@ -11,6 +11,7 @@ import queue
 
 from Dart.sublime_plugin_lib import PluginLogger
 from Dart.lib.analyzer.api.notifications import AnalysisErrorsNotification
+from Dart.lib.analyzer.api.notifications import AnalysisNavigationNotification
 
 
 _logger = PluginLogger(__name__)
@@ -57,6 +58,10 @@ def is_errors_response(data):
     return data.get('event') == 'analysis.errors'
 
 
+def is_navigation_notification(data):
+    return data.get('event') == 'analysis.navigation'
+
+
 def is_internal_response(data):
     return '_internal' in data
 
@@ -65,4 +70,10 @@ def response_classifier(data):
     # XXX: replace here XXX
     if is_errors_response(data):
         return AnalysisErrorsNotification(data)
-    return None
+
+    if is_navigation_notification(data):
+        print ('analysis.navigation data:')
+        print (data)
+        print ('analysis.navigation keys:', data['params'].keys())
+        # return AnalysisNavigationNotification(data)
+        return

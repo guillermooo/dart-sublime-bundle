@@ -18,11 +18,14 @@ import sublime_plugin
 from Dart.lib.analyzer import actions
 from Dart.lib.analyzer import requests
 from Dart.lib.analyzer.api.api_types import AddContentOverlay
+from Dart.lib.analyzer.api.api_types import AnalysisService
 from Dart.lib.analyzer.api.api_types import RemoveContentOverlay
 from Dart.lib.analyzer.api.notifications import AnalysisErrorsNotification
+from Dart.lib.analyzer.api.notifications import AnalysisNavigationNotification
 from Dart.lib.analyzer.api.requests import AnalysisSetAnalysisRootsRequest
 from Dart.lib.analyzer.api.requests import AnalysisSetPriorityFilesRequest
 from Dart.lib.analyzer.api.requests import AnalysisUpdateContentRequest
+from Dart.lib.analyzer.api.requests import AnalysisSetSubscriptionsRequest
 from Dart.lib.analyzer.pipe_server import PipeServer
 from Dart.lib.analyzer.queue import AnalyzerQueue
 from Dart.lib.analyzer.queue import RequestsQueue
@@ -185,6 +188,7 @@ class ActivityTracker(sublime_plugin.EventListener):
 
             if is_active(view):
                 g_server.send_set_priority_files([view.file_name()])
+                g_server.send_set_subscriptions([view.file_name()])
 
                 if view.is_dirty():
                     g_server.send_add_content(view)
@@ -435,6 +439,12 @@ class AnalysisServer(object):
         req = AnalysisSetPriorityFilesRequest(self.get_request_id(), files)
         self.requests.put(req, priority=TaskPriority.HIGH, block=False)
 
+    def send_set_subscriptions(self, files):
+        subs = {}
+        subs[AnalysisService.NAVIGATION] = files
+        req = AnalysisSetSubscriptionsRequest(self.get_request_id(), subs)
+        self.requests.put(req, priority=TaskPriority.HIGH, block=False)
+
 
 class ResponseHandler(threading.Thread):
     """ Handles responses from the response queue.
@@ -476,6 +486,11 @@ class ResponseHandler(threading.Thread):
                     after(0, actions.show_errors,
                           AnalysisErrorsNotification(resp.data.copy())
                           )
+                    continue
+
+                if isinstance(resp, AnalysisNavigationNotification):
+                    _logger.info('navigation data received from server')
+                    g_editor_context.navigation_info = resp
                     continue
 
                 # elif resp.type == 'server.status':
