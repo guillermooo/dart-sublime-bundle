@@ -5,12 +5,14 @@
 """Responses from the analyzer.
 """
 
-import sublime
-
 import queue
 
+import sublime
+
 from Dart.sublime_plugin_lib import PluginLogger
+
 from Dart.lib.analyzer.api.notifications import AnalysisErrorsNotification
+from Dart.lib.analyzer.api.responses import ServerGetVersionResponse
 
 
 _logger = PluginLogger(__name__)
@@ -49,6 +51,10 @@ def is_result_id_response(data):
     return data.get('result', {}).get('id')
 
 
+def is_server_version_response(data):
+    return data.get('result', {}).get('version')
+
+
 def is_result_response(data):
     return data.get('event') == 'search.results'
 
@@ -65,4 +71,8 @@ def response_classifier(data):
     # XXX: replace here XXX
     if is_errors_response(data):
         return AnalysisErrorsNotification(data)
+
+    if is_server_version_response(data):
+        return ServerGetVersionResponse(data)
+
     return None
