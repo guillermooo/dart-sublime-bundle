@@ -15,6 +15,12 @@ import time
 import sublime
 import sublime_plugin
 
+from Dart.sublime_plugin_lib import PluginLogger
+from Dart.sublime_plugin_lib.panels import OutputPanel
+from Dart.sublime_plugin_lib.path import is_active
+from Dart.sublime_plugin_lib.plat import supress_window
+from Dart.sublime_plugin_lib.sublime import after
+
 from Dart.lib.analyzer import actions
 from Dart.lib.analyzer import requests
 from Dart.lib.analyzer.api.api_types import AddContentOverlay
@@ -23,6 +29,8 @@ from Dart.lib.analyzer.api.notifications import AnalysisErrorsNotification
 from Dart.lib.analyzer.api.requests import AnalysisSetAnalysisRootsRequest
 from Dart.lib.analyzer.api.requests import AnalysisSetPriorityFilesRequest
 from Dart.lib.analyzer.api.requests import AnalysisUpdateContentRequest
+from Dart.lib.analyzer.api.requests import ServerGetVersionRequest
+from Dart.lib.analyzer.api.responses import ServerGetVersionResponse
 from Dart.lib.analyzer.pipe_server import PipeServer
 from Dart.lib.analyzer.queue import AnalyzerQueue
 from Dart.lib.analyzer.queue import RequestsQueue
@@ -33,11 +41,6 @@ from Dart.lib.error import ConfigError
 from Dart.lib.path import find_pubspec_path
 from Dart.lib.path import is_view_dart_script
 from Dart.lib.sdk import SDK
-from Dart.sublime_plugin_lib import PluginLogger
-from Dart.sublime_plugin_lib.panels import OutputPanel
-from Dart.sublime_plugin_lib.path import is_active
-from Dart.sublime_plugin_lib.plat import supress_window
-from Dart.sublime_plugin_lib.sublime import after
 
 
 _logger = PluginLogger(__name__)
@@ -112,15 +115,33 @@ class ActivityTracker(sublime_plugin.EventListener):
     edits_lock = threading.RLock()
 
     def increment_edits(self, view):
+        # XXX: It seems that this function gets called twice for each edit to a buffer.
         with ActivityTracker.edits_lock:
             ActivityTracker.edits[view.id()] += 1
         sublime.set_timeout(lambda: self.check_idle(view), 750)
 
     def decrement_edits(self, view):
         with ActivityTracker.edits_lock:
-            ActivityTracker.edits[view.id()] -= 1
+            if ActivityTracker.edits[view.id()] > 0:
+                ActivityTracker.edits[view.id()] -= 1
+
+    def on_load(self, view):
+        # reverting seems to fire this event
+        if not is_view_dart_script(view):
+            return
+
+        with ActivityTracker.edits_lock:
+            ActivityTracker.edits[view.id()] = 0
+
+        if AnalysisServer.ping():
+            g_server.send_remove_content(view)
 
     def on_idle(self, view):
+        if not is_view_dart_script(view):
+            # _logger.debug('on_post_save - not a dart file %s',
+            #               view.file_name())
+            return
+
         # _logger.debug("active view was idle; could send requests")
         if AnalysisServer.ping():
             if view.is_dirty() and is_active(view):
@@ -140,6 +161,11 @@ class ActivityTracker(sublime_plugin.EventListener):
             # _logger.debug(
             #     'aborting because file does not exist on disk: %s',
             #     view.file_name())
+            return
+
+        # if we've `revert`ed the buffer, it'll be clean
+        if not view.is_dirty():
+            self.on_load(view)
             return
 
         self.increment_edits(view)
@@ -335,6 +361,8 @@ class AnalysisServer(object):
         if AnalysisServer.ping():
             return
 
+        self.send_get_version()
+
         sdk = SDK()
 
         _logger.info('starting AnalysisServer')
@@ -379,6 +407,11 @@ class AnalysisServer(object):
         req = AnalysisSetAnalysisRootsRequest(self.get_request_id(),
                 included, excluded)
         _logger.info('sending set_roots request')
+        self.requests.put(req, block=False)
+
+    def send_get_version(self):
+        req = ServerGetVersionRequest(self.get_request_id())
+        _logger.info('sending get version request')
         self.requests.put(req, block=False)
 
     # def send_find_top_level_decls(self, view, pattern):
@@ -476,6 +509,11 @@ class ResponseHandler(threading.Thread):
                     after(0, actions.show_errors,
                           AnalysisErrorsNotification(resp.data.copy())
                           )
+                    continue
+
+                if isinstance(resp, ServerGetVersionResponse):
+                    # _logger.info('error data received from server')
+                    print('Dart: Analysis Server version:', resp.version)
                     continue
 
                 # elif resp.type == 'server.status':
