@@ -834,21 +834,57 @@
 			<key>patterns</key>
 			<array>
 				<dict>
-					<key>captures</key>
+					<key>begin</key>
+					<string>(\$)(\{)</string>
+					<key>beginCaptures</key>
 					<dict>
+						<key>1</key>
+						<dict>
+							<key>name</key>
+							<string>keyword.other.dart</string>
+						</dict>
 						<key>2</key>
 						<dict>
 							<key>name</key>
-							<string>variable.parameter.dart</string>
+							<string>keyword.other.dart</string>
 						</dict>
-						<key>3</key>
+					</dict>
+					<key>end</key>
+					<string>(\})</string>
+					<key>endCaptures</key>
+					<dict>
+						<key>1</key>
+						<dict>
+							<key>name</key>
+							<string>keyword.other.dart</string>
+						</dict>
+					</dict>
+					<key>name</key>
+					<string>interpolation.dart</string>
+					<key>patterns</key>
+					<array>
+						<dict>
+							<key>include</key>
+							<string>$self</string>
+						</dict>
+					</array>
+				</dict>
+				<dict>
+					<key>captures</key>
+					<dict>
+						<key>1</key>
+						<dict>
+							<key>name</key>
+							<string>keyword.other.dart</string>
+						</dict>
+						<key>2</key>
 						<dict>
 							<key>name</key>
 							<string>variable.parameter.dart</string>
 						</dict>
 					</dict>
 					<key>match</key>
-					<string>\$((\w+)|\{(\w+)\})</string>
+					<string>(\$)(\w+)</string>
 				</dict>
 				<dict>
 					<key>match</key>
