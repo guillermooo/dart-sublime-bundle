@@ -146,8 +146,9 @@ class SDK(object):
                 raise ConfigError()
             return full_path
         except Exception as e:
-            _logger.error(e)
-            raise ConfigError('could not find Dartium')
+            msg = 'could not find Dartium in directory: %s\n***\n' + full_path
+            msg += str(e)
+            _logger.error(msg)
 
     @property
     def path_to_default_user_browser(self):
