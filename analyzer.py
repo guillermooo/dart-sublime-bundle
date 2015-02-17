@@ -126,7 +126,6 @@ class ActivityTracker(sublime_plugin.EventListener):
                 ActivityTracker.edits[view.id()] -= 1
 
     def on_load(self, view):
-        # reverting seems to fire this event
         if not is_view_dart_script(view):
             return
 
@@ -138,8 +137,6 @@ class ActivityTracker(sublime_plugin.EventListener):
 
     def on_idle(self, view):
         if not is_view_dart_script(view):
-            # _logger.debug('on_post_save - not a dart file %s',
-            #               view.file_name())
             return
 
         # _logger.debug("active view was idle; could send requests")
@@ -512,7 +509,6 @@ class ResponseHandler(threading.Thread):
                     continue
 
                 if isinstance(resp, ServerGetVersionResponse):
-                    # _logger.info('error data received from server')
                     print('Dart: Analysis Server version:', resp.version)
                     continue
 
