@@ -5,6 +5,7 @@
 import sublime
 import sublime_plugin
 
+from subprocess import CalledProcessError
 from subprocess import check_output
 from subprocess import Popen
 import glob
@@ -12,13 +13,14 @@ import json
 import os
 import sys
 
+from Dart.lib.sdk import SDK
 from Dart.sublime_plugin_lib import PluginLogger
 from Dart.sublime_plugin_lib.collections import CircularArray
 from Dart.sublime_plugin_lib.fs_completion import FileSystemCompletion
+from Dart.sublime_plugin_lib.panels import ErrorPanel
 from Dart.sublime_plugin_lib.path import join_on_win
 from Dart.sublime_plugin_lib.path import pushd
 from Dart.sublime_plugin_lib.plat import supress_window
-from Dart.lib.sdk import SDK
 from Dart.sublime_plugin_lib.sublime import after
 
 
@@ -34,6 +36,8 @@ class DartStagehandWizard(sublime_plugin.WindowCommand):
         # order to see potential new templates.
         if not hasattr(self, 'options'):
             self.options = self.get_templates()
+        if not self.options:
+            return
         self.window.show_quick_panel(self.options,
                                      self.on_done)
 
@@ -45,9 +49,25 @@ class DartStagehandWizard(sublime_plugin.WindowCommand):
 
     def get_templates(self):
         sdk = SDK()
-        out = check_output([sdk.path_to_pub, 'global', 'run',
-                            'stagehand', '--machine'],
-                            startupinfo=supress_window()).decode('utf-8')
+
+        try:
+            out = check_output([sdk.path_to_pub, 'global', 'run', 'stagehand', '--machine'],
+                    startupinfo=supress_window()).decode('utf-8')
+        except CalledProcessError as e:
+            error_panel = ErrorPanel()
+            error_panel.write('\n')
+            error_panel.write('Could not run Stagehand.\n')
+            error_panel.write('\n')
+            error_panel.write('Stagehand is a tool to help you get started with new projects.\n')
+            error_panel.write('\n')
+            error_panel.write('To enable Stagehand, run the following command from a terminal:\n')
+            error_panel.write('\n')
+            error_panel.write('$ pub global activate stagehand')
+            error_panel.show()
+            msg = 'Could not run stagehand:\n {0}'.format(str(e))
+            _logger.debug(msg)
+            return None
+
         decoded = json.loads(out)
         entries = []
         for tpl in decoded:
