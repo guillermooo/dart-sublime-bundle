@@ -1,0 +1,36 @@
+Version 1.3.2
+
+The Sublime Text Dart Package has been updated!
+
+This version includes smoother integration with the analysis server. Also,
+the server's version will be printed to the console after establishing a
+connection on startup.
+
+The syntax definition has received minor tweaks: interpolated expressions in
+strings should new be easier to spot.
+
+See the summary of changes below or the separte changelog file fore more
+details.
+
+Please restart Sublime Text.
+
+Full Documentation:
+
+	- https://github.com/guillermooo/dart-sublime-bundle/wiki
+
+
+MAIN CHANGES
+------------
+
+	- fix #456 - better content syncing with analysis server
+	- show server version in console
+	- improve some error messages
+	- highlight $ in interpolated vars; higlight subexprs
+	- handle error when Stagehand isn't available on the system
+
+Reporting Bugs and Requesting New Features
+------------------------------------------
+
+Please report any bugs and request features here:
+
+* https://github.com/guillermooo/dart-sublime-bundle/issues
