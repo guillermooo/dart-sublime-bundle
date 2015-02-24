@@ -3,7 +3,7 @@
 
 # required on Windows to tell the package where to copy files
 package-dev.config
-bin/dev_tools/**/packages
+bin/deployment_tool/**/packages
 
 # Editor files
 *.sublime-workspace
