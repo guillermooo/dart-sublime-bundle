@@ -1,6 +1,10 @@
 *.cache
 *.pyc
 
+# required on Windows to tell the package where to copy files
+package-dev.config
+bin/dev_tools/**/packages
+
 # Editor files
 *.sublime-workspace
 dist/
