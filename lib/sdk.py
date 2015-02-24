@@ -41,33 +41,36 @@ class SDK(object):
     def __init__(self):
         self.setts = sublime.load_settings('Dart - Plugin Settings.sublime-settings')
 
-        p = os.path.expandvars(os.path.expanduser(self.setts.get('dart_sdk_path') or ''))
-        try:
-            if not p or not os.path.exists(
-                os.path.join(p, 'bin', join_on_win('dart', '.exe'))):
-                    msg = 'wrong path in dart_sdk_path: {}'.format(p or '(none)')
-                    raise FatalConfigError(msg)
-            self._path = p
+        path = self.setts.get('dart_sdk_path')
+        if not path:
+            raise FatalConfigError('missing "dart_sdk_path" setting')
 
-        except (TypeError, AttributeError):
-            msg = 'invalid value of dart_sdk_path: {}'.format(p)
+        path = os.path.expandvars(os.path.expanduser(path))
+        try:
+            if not os.path.exists(
+                os.path.join(path, 'bin', join_on_win('dart', '.exe'))):
+                    msg = 'wrong path in "dart_sdk_path": {}'.format(path)
+                    raise FatalConfigError(msg)
+            self._path = path
+        except Exception:
+            msg = 'invalid value of "dart_sdk_path": {}'.format(p or '(none)')
             raise FatalConfigError(msg)
 
     @property
     def enable_analysis_server(self):
-        return (self.setts.get('dart_enable_analysis_server') is True)
+        return self.setts.get('dart_enable_analysis_server') is True
 
     @property
     def path_to_analysis_snapshot(self):
         if not self.enable_analysis_server:
             return None
 
-        path = os.path.join(self.path_to_bin_dir,
-                            'snapshots',
-                            'analysis_server.dart.snapshot')
+        path = os.path.join(self.path_to_bin_dir, 'snapshots',
+                'analysis_server.dart.snapshot')
 
         if not os.path.exists(path):
-            raise ConfigError('no analysis server found. are you using the dev channel?')
+            raise ConfigError(
+                'no analysis server found. Are you using a recent sdk?')
 
         return path
 
