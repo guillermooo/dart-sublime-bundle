@@ -6,10 +6,7 @@ import 'dart:convert';
 
 import 'package:path/path.dart' as path;
 
-// final String pathToGlobalConfig = r'~\package-dev.config';
-// final String pathToLocalConfig = path.join(topLevel, 'package-dev.config');
-// final String pathToDataOnOSX = '~/Library/Application Support/Sublime Text 3/';
-// final String pathToDataOnLinux = '~/.config/sublime-text-3/';
+import 'file_utils.dart';
 
 /// Represents the Sublime Text package project.
 ///
@@ -28,7 +25,7 @@ class Environment {
 
   /// Path to the Sublime Text Data/Packages/Dart directory.
   String get destination =>
-      toWindowsPath(path.join(pathToData, 'Packages/Dart'));
+      expand_variables(toWindowsPath(path.join(pathToData, 'Packages/Dart')));
 
 
   Environment(String root)

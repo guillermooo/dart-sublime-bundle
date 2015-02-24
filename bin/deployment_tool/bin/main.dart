@@ -25,9 +25,9 @@ int deploy() {
   var environment = new Environment(topLevel);
 
   try {
-    new Directory(environment.destination)
-        ..deleteSync(recursive: true)
-        ..createSync();
+    var directory = new Directory(environment.destination);
+    if (directory.existsSync()) directory.deleteSync(recursive: true);
+    directory.createSync();
   } catch (Exception) {
     print(
         'cannot delete/create destination directory: ${environment.destination}');
