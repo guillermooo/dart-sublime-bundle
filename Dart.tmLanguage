@@ -868,6 +868,69 @@
 				</dict>
 			</array>
 		</dict>
+		<key>regexp</key>
+		<dict>
+			<key>patterns</key>
+			<array>
+				<dict>
+					<key>match</key>
+					<string>\\.</string>
+					<key>name</key>
+					<string>constant.character.escaped.regexp</string>
+				</dict>
+				<dict>
+					<key>begin</key>
+					<string>\(</string>
+					<key>contentName</key>
+					<string>meta.capture.regexp</string>
+					<key>end</key>
+					<string>\)</string>
+					<key>patterns</key>
+					<array>
+						<dict>
+							<key>match</key>
+							<string>\?:</string>
+							<key>name</key>
+							<string>ignore.capture.regexp</string>
+						</dict>
+						<dict>
+							<key>include</key>
+							<string>#regexp</string>
+						</dict>
+					</array>
+				</dict>
+				<dict>
+					<key>match</key>
+					<string>\*|\+|\?|\.|\|</string>
+					<key>name</key>
+					<string>keyword.other.regexp</string>
+				</dict>
+				<dict>
+					<key>match</key>
+					<string>\^|\$</string>
+					<key>name</key>
+					<string>keyword.other.regexp</string>
+				</dict>
+				<dict>
+					<key>match</key>
+					<string>\.</string>
+					<key>name</key>
+					<string>constant.other.regexp</string>
+				</dict>
+				<dict>
+					<key>match</key>
+					<string>\[.-.\]</string>
+					<key>name</key>
+					<string>constant.other.regexp</string>
+				</dict>
+				<dict>
+					<key>match</key>
+					<string>\{(?:\d+)?,(?:\d+)?\}</string>
+					<key>name</key>
+					<string>keyword.other.regexp</string>
+				</dict>
+			</array>
+		</dict>
 		<key>string-interp</key>
 		<dict>
 			<key>patterns</key>
@@ -888,6 +951,8 @@
 							<string>keyword.other.dart</string>
 						</dict>
 					</dict>
+					<key>contentName</key>
+					<string>source.dart</string>
 					<key>end</key>
 					<string>(\})</string>
 					<key>endCaptures</key>
@@ -1051,6 +1116,10 @@
 					<string>string.quoted.single.dart</string>
 					<key>patterns</key>
 					<array>
+						<dict>
+							<key>include</key>
+							<string>#regexp</string>
+						</dict>
 						<dict>
 							<key>match</key>
 							<string>\n</string>
