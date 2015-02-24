@@ -41,11 +41,11 @@ class SDK(object):
     def __init__(self):
         self.setts = sublime.load_settings('Dart - Plugin Settings.sublime-settings')
 
+        p = os.path.expandvars(os.path.expanduser(self.setts.get('dart_sdk_path') or ''))
         try:
-            p = os.path.expandvars(os.path.expanduser(self.setts.get('dart_sdk_path')))
-            if not os.path.exists(
+            if not p or not os.path.exists(
                 os.path.join(p, 'bin', join_on_win('dart', '.exe'))):
-                    msg = 'wrong path in dart_sdk_path: {}'.format(p)
+                    msg = 'wrong path in dart_sdk_path: {}'.format(p or '(none)')
                     raise FatalConfigError(msg)
             self._path = p
 
