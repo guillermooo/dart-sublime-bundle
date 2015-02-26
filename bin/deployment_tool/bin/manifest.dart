@@ -28,6 +28,7 @@ List<Glob> included = [
     changelogFile,
     readmeFile,
     tmLanguageFiles,
+    snippetsDirectory,
     gutterDirectory,
     libDirectory,
     outthereDirectory,
