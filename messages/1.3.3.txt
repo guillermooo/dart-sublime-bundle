@@ -1,0 +1,29 @@
+Version 1.3.3
+
+The Sublime Text Dart Package has been updated!
+
+This version includes fixes and minor new features.
+
+Please restart Sublime Text.
+
+Full Documentation:
+
+	- https://github.com/guillermooo/dart-sublime-bundle/wiki
+
+
+MAIN CHANGES
+------------
+
+	- do not require 'pub' to be on PATH for get and build
+	- assorted fixes
+	- start highligting some regexp items in syntax definition
+	- improve init error message if bad config
+	- add new 'Dart: Pub Get' command that is runnable from any file in a
+	  pub package
+
+Reporting Bugs and Requesting New Features
+------------------------------------------
+
+Please report any bugs and request features here:
+
+* https://github.com/guillermooo/dart-sublime-bundle/issues
