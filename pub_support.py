@@ -15,6 +15,7 @@ from Dart.lib.build.base import DartBuildCommandBase
 from Dart.lib.event import EventSource
 from Dart.lib.path import is_pubspec
 from Dart.lib.path import is_view_dart_script
+from Dart.lib.pub_package import PubPackage
 from Dart.lib.sdk import SDK
 from Dart.sublime_plugin_lib import PluginLogger
 from Dart.sublime_plugin_lib.panels import OutputPanel
@@ -34,61 +35,44 @@ class PubspecListener(sublime_plugin.EventListener):
         if not is_pubspec(view):
             return
 
+        # XXX: This event handler seems to run twice at least on Windows. This
+        #      apparently causes an error in pub. Issue has been reported to
+        #      SublimeHq just in case.
         _logger.debug("running pub with %s", view.file_name())
-        RunPub(view, view.file_name())
+        view.window().run_command('dart_pub_get', {
+            'file_name': view.file_name()
+            })
 
 
-def RunPub(view, file_name):
-    # FIXME: Infefficient. We should store the path to the sdk away.
-    dartsdk_path = SDK().path
+# TODO(guillermooo): unify Pub commands.
+class DartPubGetCommand(DartBuildCommandBase):
 
-    if not dartsdk_path:
-        _logger.debug("`dartsdk_path` missing; aborting pub")
-        return
+    def run(self, file_name=None, command='get'):
+        if command == 'get':
+            self.dart_pub_get(file_name)
 
-    PubThread(view.window(), dartsdk_path, file_name).start()
+    def dart_pub_get(self, path_to_pubspec):
+        path_to_pubspec = path_to_pubspec or self.window.active_view().file_name()
+        if not path_to_pubspec:
+            _logger.error('no pubspec specified for "pub get"')
+            return
 
+        package = PubPackage.from_path(path_to_pubspec)
+        if not package:
+            _logger.info("can't 'pub get' if project hasn't a pubspec.yaml file")
+            return
+        path_to_pubspec = package.pubspec.path
 
-# TODO(guillermooo): Perhaps we can replace this with Default.exec.AsyncProc.
-class PubThread(threading.Thread):
-    def __init__(self, window, dartsdk_path, file_name):
-        super(PubThread, self).__init__()
-        self.daemon = True
-        self.window = window
-        self.dartsdk_path = dartsdk_path
-        self.file_name = file_name
+        sdk = SDK()
 
-    def run(self):
-        working_directory = os.path.dirname(self.file_name)
-        pub_path = join(self.dartsdk_path, 'bin', 'pub')
+        if not sdk.path_to_pub:
+            _logger.debug("`sdk.path_to_pub` missing; aborting pub")
+            return
 
-        if is_windows():
-            pub_path += '.bat'
-
-        print('pub get %s' % self.file_name)
-        proc = subprocess.Popen([pub_path, 'get'],
-                                cwd=working_directory,
-                                stdout=subprocess.PIPE,
-                                stderr=subprocess.STDOUT,
-                                startupinfo=supress_window())
-
-        out, errs = proc.communicate()
-        data = out.decode('utf-8')
-
-        if proc.returncode != 0:
-            errs = errs.decode('utf-8')
-            _logger.error("error running pub: %s\n%s", self.file_name, errs)
-            data = 'error running pub: %s\n%s' % (self.file_name, errs)
-
-        after(50, lambda: self.callback(data))
-
-    def format_data(self, data):
-        return data.replace('\r', '')
-
-    def callback(self, data):
-        panel = OutputPanel('dart.out')
-        panel.write(self.format_data(data))
-        panel.show()
+        self.execute(**{'working_dir': os.path.dirname(path_to_pubspec),
+                        'cmd': [sdk.path_to_pub, 'get'],
+                        'preamble': 'Running pub get...\n',
+                        })
 
 
 # We need a command because we want to use analytics. We can't simply use a
@@ -102,8 +86,9 @@ class DartPubBuildCommand(DartBuildCommandBase):
     def run(self, working_dir=None, **kwargs):
         assert working_dir is not None, 'wrong call'
         self.raise_event(self, EventSource.ON_PUB_BUILD)
+        sdk = SDK()
         self.execute(**{'working_dir': working_dir,
-                        'shell_cmd': 'pub build',
+                        'cmd': [sdk.path_to_pub, 'build'],
                         'preamble': 'Running pub build...\n',
                         })
 
