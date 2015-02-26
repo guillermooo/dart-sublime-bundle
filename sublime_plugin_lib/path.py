@@ -9,6 +9,8 @@ import os
 from os.path import join
 from contextlib import contextmanager
 
+import sublime
+
 from .plat import is_windows
 
 
@@ -95,6 +97,9 @@ def to_platform_path(original, append):
 def is_active_path(path):
     """Returns `True` if the current view's path equals @path.
     """
+    view = sublime.active_window().active_view()
+    if not view:
+        return
     group_id = view.window().active_group()
     group_view = view.window().active_view_in_group(group_id)
     return os.path.realpath(group_view.file_name()) == os.path.realpath(path)
