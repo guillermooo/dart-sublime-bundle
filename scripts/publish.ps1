@@ -30,6 +30,7 @@ push-location "$script:scriptDir\.."
             & git checkout master
             remove-item -recurse -force ".git" -erroraction silentlycontinue
             remove-item -recurse -force "scripts" -erroraction silentlycontinue
+            remove-item -recurse -force "bin" -erroraction silentlycontinue
             remove-item -recurse -force "tests" -erroraction silentlycontinue
             remove-item -recurse -force "dist" -erroraction silentlycontinue
             remove-item "travis.sh" -erroraction silentlycontinue
