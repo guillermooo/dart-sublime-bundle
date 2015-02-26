@@ -876,26 +876,26 @@
 					<key>match</key>
 					<string>\\.</string>
 					<key>name</key>
-					<string>constant.character.escaped.regexp</string>
+					<string>constant.character.escaped.regex.dart</string>
 				</dict>
 				<dict>
 					<key>begin</key>
 					<string>\(</string>
 					<key>contentName</key>
-					<string>meta.capture.regexp</string>
+					<string>meta.capture.regex.dart</string>
 					<key>end</key>
 					<string>\)</string>
 					<key>patterns</key>
 					<array>
 						<dict>
 							<key>match</key>
-							<string>\?:</string>
+							<string>\?(:|=|!)</string>
 							<key>name</key>
-							<string>ignore.capture.regexp</string>
+							<string>ignore.capture.regex.dart</string>
 						</dict>
 						<dict>
 							<key>include</key>
-							<string>#regexp</string>
+							<string>#regex.dart</string>
 						</dict>
 					</array>
 				</dict>
@@ -903,31 +903,50 @@
 					<key>match</key>
 					<string>\*|\+|\?|\.|\|</string>
 					<key>name</key>
-					<string>keyword.other.regexp</string>
+					<string>keyword.other.regex.dart</string>
 				</dict>
 				<dict>
 					<key>match</key>
 					<string>\^|\$</string>
 					<key>name</key>
-					<string>keyword.other.regexp</string>
+					<string>keyword.other.regex.dart</string>
 				</dict>
 				<dict>
 					<key>match</key>
 					<string>\.</string>
 					<key>name</key>
-					<string>constant.other.regexp</string>
+					<string>constant.other.regex.dart</string>
 				</dict>
 				<dict>
-					<key>match</key>
-					<string>\[.-.\]</string>
+					<key>begin</key>
+					<string>\[(\^)?</string>
+					<key>beginCaptures</key>
+					<dict>
+						<key>1</key>
+						<dict>
+							<key>name</key>
+							<string>keyword.other.negation.regex.dart</string>
+						</dict>
+					</dict>
+					<key>end</key>
+					<string>\]</string>
 					<key>name</key>
-					<string>constant.other.regexp</string>
+					<string>constant.character.range.regex.dart</string>
+					<key>patterns</key>
+					<array>
+						<dict>
+							<key>match</key>
+							<string>\\.</string>
+							<key>name</key>
+							<string>constant.character.escaped.regex.dart</string>
+						</dict>
+					</array>
 				</dict>
 				<dict>
 					<key>match</key>
 					<string>\{(?:\d+)?,(?:\d+)?\}</string>
 					<key>name</key>
-					<string>keyword.other.regexp</string>
+					<string>keyword.other.regex.dart</string>
 				</dict>
 			</array>
 		</dict>
@@ -1079,10 +1098,8 @@
 					<key>patterns</key>
 					<array>
 						<dict>
-							<key>match</key>
-							<string>\n</string>
-							<key>name</key>
-							<string>invalid.string.newline</string>
+							<key>include</key>
+							<string>#regexp</string>
 						</dict>
 					</array>
 				</dict>
@@ -1095,12 +1112,6 @@
 					<string>string.interpolated.single.dart</string>
 					<key>patterns</key>
 					<array>
-						<dict>
-							<key>match</key>
-							<string>\n</string>
-							<key>name</key>
-							<string>invalid.string.newline</string>
-						</dict>
 						<dict>
 							<key>include</key>
 							<string>#string-interp</string>
@@ -1119,12 +1130,6 @@
 						<dict>
 							<key>include</key>
 							<string>#regexp</string>
-						</dict>
-						<dict>
-							<key>match</key>
-							<string>\n</string>
-							<key>name</key>
-							<string>invalid.string.newline</string>
 						</dict>
 					</array>
 				</dict>
