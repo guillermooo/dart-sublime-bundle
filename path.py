@@ -5,10 +5,11 @@
 '''Helper functions for path management.
 '''
 
-from contextlib import contextmanager
-from os.path import join
-import glob
 import os
+from os.path import join
+from contextlib import contextmanager
+
+import sublime
 
 from .plat import is_windows
 
@@ -49,33 +50,9 @@ def find_in_path(name, win_ext=''):
             return os.path.realpath(path)
 
 
-def find_file_by_extension(start, extension):
-    '''Finds a file in a directory hierarchy starting from @start and
-    walking upwards.
-
-    @start
-      The directory to start from.
-
-    @extension
-      Sought extension.
-    '''
-    if not os.path.exists(start):
-        return
-
-    pattern = os.path.join(start, "*." + extension)
-    file_name = glob.glob(pattern)
-    if file_name:
-        return file_name[0]
-
-    if os.path.dirname(start) == start:
-        return
-
-    return find_file(os.path.dirname(start), extension)
-
-
 def find_file(start, fname):
     '''Finds a file in a directory hierarchy starting from @start and
-    walking upwards.
+    walking backwards.
 
     @start
       The directory to start from.
@@ -120,6 +97,9 @@ def to_platform_path(original, append):
 def is_active_path(path):
     """Returns `True` if the current view's path equals @path.
     """
+    view = sublime.active_window().active_view()
+    if not view:
+        return
     group_id = view.window().active_group()
     group_view = view.window().active_view_in_group(group_id)
     return os.path.realpath(group_view.file_name()) == os.path.realpath(path)
