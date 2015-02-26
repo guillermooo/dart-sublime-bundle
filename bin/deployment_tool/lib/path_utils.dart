@@ -12,7 +12,8 @@ final RegExp variableNameRegExp = new RegExp(r'^[\$%](.*?)%?$');
 /// Expands environment variables in [filePath].
 ///
 /// On Windows, $NAME as well as %NAME% variables will be expanded.
-/// The '~' symbol will also be expanded on all platforms.
+/// The '~' symbol will also be expanded on all platforms, but only if
+/// it is the first component in [filePath].
 String expand_variables(String filePath) {
   assert(filePath != null);
   var segments = path.split(filePath);
@@ -29,7 +30,10 @@ String expand_variables(String filePath) {
     }
   }
 
-  if (expanded[0] == '~') expanded[0] = Platform.environment['HOME'];
+  if (expanded[0] == '~') {
+    var home = Platform.isWindows ? 'USERPROFILE' : 'HOME';
+    expanded[0] = Platform.environment[home];
+  }
 
   return path.normalize(expanded.join(path.separator));
 }
