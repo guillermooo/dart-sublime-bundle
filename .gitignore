@@ -1,16 +1,14 @@
 *.cache
 *.pyc
 
-# required on Windows to tell the package where to copy files
-package-dev.config
-bin/deployment_tool/**/packages
-
-# Editor files
+# Editor files.
 *.sublime-workspace
+
+# Required on Windows to tell the build script where to copy files.
+# Must include a "pathToData" key.
+package-dev.json
+bin/deployment_tool/**/packages
 dist/
 
-# other
-.idea
-
-# dev/temp files
+# Development/temporary files.
 *.YAML-tmLanguage

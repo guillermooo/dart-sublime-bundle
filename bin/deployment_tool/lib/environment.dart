@@ -31,8 +31,8 @@ class Environment {
   Environment(String root)
   :
     this.root = root,
-    this.pathToGlobalConfig = r'~\package-dev.config',
-    this.pathToLocalConfig = path.join(root, 'package-dev.config'),
+    this.pathToGlobalConfig = r'~\package-dev.json',
+    this.pathToLocalConfig = path.join(root, 'package-dev.json'),
     this.pathToDataOnOSX = '~/Library/Application Support/Sublime Text 3/',
     this.pathToDataOnLinux = '~/.config/sublime-text-3/'
   {
@@ -62,7 +62,7 @@ class Environment {
     var localDataFile = new File(path.join(pathToLocalConfig));
     var localData = localDataFile.existsSync() ?
         JSON.decode(localDataFile.readAsStringSync()) :
-        throw 'file package-dev.config required at "$root"';
+        throw 'file package-dev.json required at "$root"';
 
     var data = globalData..addAll(localData);
     if (!data.containsKey(key) && required) throw 'key $key is required';
