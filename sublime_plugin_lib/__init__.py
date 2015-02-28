@@ -13,7 +13,7 @@ class PluginLogger(object):
     """
     def __init__(self, name):
         logger = logging.getLogger(name)
-        logger.setLevel(logging.DEBUG)
+        logger.setLevel(logging.ERROR)
         self.logger = logger
 
     def debug(self, msg, *args, **kwargs):
