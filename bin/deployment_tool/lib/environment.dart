@@ -5,8 +5,7 @@ import 'dart:io';
 import 'dart:convert';
 
 import 'package:path/path.dart' as path;
-
-import 'path_utils.dart';
+import 'package:path_for_server/path_for_server.dart';
 
 /// Represents the Sublime Text package project.
 ///

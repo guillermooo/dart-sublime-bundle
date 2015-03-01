@@ -45,11 +45,11 @@ int deploy() {
   return 0;
 }
 
-int main() {
-  var environment = new Environment(topLevel);
+// TODO(guillermooo): Use grinder to collect files too.
+main() {
   print('''Copying files
   from: ${environment.root}
   to: ${environment.destination}
 ...''');
-  return deploy();
+  exit(deploy());
 }
