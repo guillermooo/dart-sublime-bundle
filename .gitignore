@@ -12,3 +12,6 @@ dist/
 
 # Development/temporary files.
 *.YAML-tmLanguage
+
+# Dart
+**/.pub

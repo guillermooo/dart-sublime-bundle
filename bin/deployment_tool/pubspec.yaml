@@ -1,13 +1,13 @@
 name: sublime_dart_plugin_tools
 version: 0.0.1
-description: A minimal command-line application.
-#author: <your name> <email@example.com>
-#homepage: https://www.example.com
+description: Tools to build the Sublime Text Dart plugin.
+author: Guillermo López-Anglada <guillermo.lopez@outlook.com>
 environment:
   sdk: '>=1.0.0 <2.0.0'
 dependencies:
+  glob: '>=1.0.4 <2.0.0'
   path: '>=1.0.0 <2.0.0'
-  # yaml: '>=1.0.0 <2.0.0'
-  glob: any
+  path_for_server: '>=0.0.2 <0.1.0'
 dev_dependencies:
+  grinder: any
   unittest: any
