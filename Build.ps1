@@ -1,7 +1,7 @@
 param([switch]$Release)
 
 function abort_if_failure {
-	if ($LASTEXITCODE -eq 0) {
+	if ($LASTEXITCODE -ne 0) {
 		"aborting build process ($(split-path $MyInvocation.ScriptName -leaf))"
 		exit 1	
 	}
