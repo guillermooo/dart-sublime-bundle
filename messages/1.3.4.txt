@@ -1,0 +1,24 @@
+Version 1.3.4
+
+The Sublime Text Dart Package has been updated!
+
+This version includes fixes.
+
+Please restart Sublime Text.
+
+Full Documentation:
+
+	- https://github.com/guillermooo/dart-sublime-bundle/wiki
+
+
+MAIN CHANGES
+------------
+
+	* set default logging level to 'ERROR'
+
+Reporting Bugs and Requesting New Features
+------------------------------------------
+
+Please report any bugs and request features here:
+
+* https://github.com/guillermooo/dart-sublime-bundle/issues

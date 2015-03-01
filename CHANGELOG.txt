@@ -1,3 +1,20 @@
+1.3.4 - 20150301
+
+	- fix bool test
+	- remove old files
+	- use grind.dart for all tasks
+	- update Buils.ps1 script
+	- add new grind.dart file
+	- refactor exising .dart scripts to use new deps
+	- ignore files
+	- add new deps
+	- update build script (Windows)
+	- add check to verify default logging error
+	- disable logging by default
+	- rename package-dev.config to package-dev.json
+	- remove uneeded files
+	- highlight more regex items
+
 1.3.3 - 20150226
 
 	- do not require 'pub' to be on PATH
