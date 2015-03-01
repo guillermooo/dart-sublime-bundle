@@ -1,8 +1,8 @@
 param([switch]$Release)
 
 function abort_if_failure {
-	if ($LASTEXITCODE -ne 0) {
-		"aborting build process"
+	if ($LASTEXITCODE -eq 0) {
+		"aborting build process ($(split-path $MyInvocation.ScriptName -leaf))"
 		exit 1	
 	}
 }
@@ -12,8 +12,11 @@ if ($Release) {
 	abort_if_failure
 }
 
-# Deploy files.
-& dart -c $PSScriptRoot\bin\deployment_tool\bin\main.dart
+push-location "$PSScriptRoot\bin\deployment_tool\"
+	# Deploy files.
+	& pub global run grinder deploy
+pop-location
+abort_if_failure
 
 # TODO(guillermooo):
 # Restart Sublime Text
