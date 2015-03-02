@@ -8,7 +8,7 @@ function abort_if_failure {
 }
 
 if ($Release) {
-	& dart -c $PSScriptRoot\bin\deployment_tool\bin\perform_checks.dart
+	& pub global run grinder release
 	abort_if_failure
 }
 
