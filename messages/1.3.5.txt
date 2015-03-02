@@ -1,0 +1,25 @@
+Version 1.3.5
+
+The Sublime Text Dart Package has been updated!
+
+This version includes minor fixes and tweaks.
+
+Please restart Sublime Text.
+
+Full Documentation:
+
+	- https://github.com/guillermooo/dart-sublime-bundle/wiki
+
+
+MAIN CHANGES
+------------
+
+	- better feedback when running server-app files
+	- disable dartlint if the analysis server is enabled
+
+Reporting Bugs and Requesting New Features
+------------------------------------------
+
+Please report any bugs and request features here:
+
+* https://github.com/guillermooo/dart-sublime-bundle/issues
