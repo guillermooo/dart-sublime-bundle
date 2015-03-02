@@ -223,7 +223,8 @@ class DartLint(sublime_plugin.EventListener):
 
     def load_settings(self, view):
         self.settings = sublime.load_settings('Dart - Plugin Settings.sublime-settings')
-        self.do_lint = self.settings.get('dart_linter_active')
+        # If the analysis server is active, prevent the linter from running.
+        self.do_lint = self.settings.get('dart_linter_active') and not self.settings.get('dart_enable_analysis_server')
         self.do_save = self.settings.get('dart_linter_on_save')
         self.do_load = self.settings.get('dart_linter_on_load')
         self.do_modify = self.settings.get('dartlint_on_modify')
