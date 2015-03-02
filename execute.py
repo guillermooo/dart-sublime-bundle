@@ -33,7 +33,7 @@ class DartExecCommand(sublime_plugin.WindowCommand, ProcessListener):
             quiet=False,
             kill=False,
             word_wrap=True,
-            syntax="Packages/Text/Plain text.tmLanguage",
+            syntax='',
             preamble='',
             panel_name='dart.out',
             # Catches "path" and "shell"
@@ -59,14 +59,16 @@ class DartExecCommand(sublime_plugin.WindowCommand, ProcessListener):
                 working_dir = os.path.dirname(
                                         self.window.active_view().file_name())
 
-        self.out_panel.set("result_file_regex", file_regex)
-        self.out_panel.set("result_line_regex", line_regex)
-        self.out_panel.set("result_base_dir", working_dir)
-        self.out_panel.set("word_wrap", word_wrap)
-        self.out_panel.set("line_numbers", False)
-        self.out_panel.set("gutter", False)
-        self.out_panel.set("scroll_past_end", False)
+        self.out_panel.set('result_file_regex', file_regex)
+        self.out_panel.set('result_line_regex', line_regex)
+        self.out_panel.set('result_base_dir', working_dir)
+        self.out_panel.set('word_wrap', word_wrap)
+        self.out_panel.set('line_numbers', False)
+        self.out_panel.set('gutter', False)
+        self.out_panel.set('rulers', [])
+        self.out_panel.set('scroll_past_end', False)
         self.out_panel.view.assign_syntax(syntax)
+        self.out_panel.set('color_scheme', '')
 
         self.encoding = encoding
         self.quiet = quiet

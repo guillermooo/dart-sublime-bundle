@@ -355,12 +355,16 @@ class DartRunFileCommand(DartBuildCommandBase):
             after(1000, lambda: start_dartium())
             return
 
+        preamble = '''* Running {0}
+* (output starts below the next line)
+==============================================================================
+'''
         # TODO(guillermooo): improve event args
         self.execute(
             cmd=[SDK().path_to_dart, '--checked', file_name],
             working_dir=working_dir,
             file_regex=r"'file:///(.+)': error: line (\d+) pos (\d+): (.*)$",
-            preamble='* Running {0}\n'.format(file_name),
+            preamble=preamble.format(file_name),
             )
         DartRunFileCommand.is_script_running = True
 
