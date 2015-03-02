@@ -360,7 +360,7 @@ class DartRunFileCommand(DartBuildCommandBase):
             cmd=[SDK().path_to_dart, '--checked', file_name],
             working_dir=working_dir,
             file_regex=r"'file:///(.+)': error: line (\d+) pos (\d+): (.*)$",
-            preamble='Running dart...\n',
+            preamble='* Running {0}\n'.format(file_name),
             )
         DartRunFileCommand.is_script_running = True
 
