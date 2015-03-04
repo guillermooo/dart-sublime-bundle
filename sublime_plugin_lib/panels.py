@@ -87,9 +87,6 @@ class OutputPanel(object):
         pass
 
     def hide(self):
-        # Call create_output_panel a second time after assigning the above
-        # settings, so that it'll be picked up as a result buffer
-        # self.window.create_output_panel(self.name)
         self.window.run_command('hide_panel', {
             'panel': 'output.' + self.name})
 
