@@ -104,7 +104,7 @@ def show_errors(errors):
     errors_pattern = r'^\w+\|\w+\|(.+)\|(\d+)\|(\d+)\|(.+)$'
     panel.set('result_file_regex', errors_pattern)
     # This will overwrite any previous text.
-    panel.write('\n'.join(all_errs))
+    panel.write('\n' + '\n'.join(all_errs))
     panel.show()
     sublime.status_message("Dart: Errors found")
 
