@@ -1,0 +1,32 @@
+Version 1.3.6
+
+The Sublime Text Dart Package has been updated!
+
+This version includes improvements to Dart error reporting and error
+navigation.
+
+Please restart Sublime Text.
+
+Full Documentation:
+
+	- https://github.com/guillermooo/dart-sublime-bundle/wiki
+
+
+MAIN CHANGES
+------------
+
+	- fix errors display and errors navigation
+
+	Errors are now correctly printed to the results panel. This will allow
+	users to navigate errors via F4/Shift+F4. The error message related to the
+	current error will be displayed in the status bar and the results panel.
+
+	The results panel will open automatically if there are any errors reported
+	by the analysis server.
+
+Reporting Bugs and Requesting New Features
+------------------------------------------
+
+Please report any bugs and request features here:
+
+* https://github.com/guillermooo/dart-sublime-bundle/issues
