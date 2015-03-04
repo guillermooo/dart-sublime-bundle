@@ -2,14 +2,17 @@
 # All rights reserved. Use of this source code is governed by a BSD-style
 # license that can be found in the LICENSE file.)
 
-import sublime
-
+from threading import Lock
 import os
+
+import sublime
 
 from .sublime import after
 
 
 class OutputPanel(object):
+    _write_lock = Lock()
+
     """Manages an ST output panel.
 
     Can be used as a file-like object.
@@ -69,12 +72,23 @@ class OutputPanel(object):
 
     def write(self, text):
         assert isinstance(text, str), 'must pass decoded text data'
-        text = self._clean_text(text)
-        fun = lambda: self.view.run_command('append', {'characters': text, 'force': True, 'scroll_to_end': True})
-        after(0, fun)
+        with OutputPanel._write_lock:
+            do_write = lambda: self.view.run_command('append', {
+                'characters': self._clean_text(text),
+                'force': True,
+                'scroll_to_end': True,
+                })
+            # XXX: If we don't sync with the GUI thread here, the command above
+            # won't work if this method is called from .set_timeout_async().
+            # BUG?
+            after(0, do_write)
 
     def flush(self):
         pass
+
+    def hide(self):
+        self.window.run_command('hide_panel', {
+            'panel': 'output.' + self.name})
 
     def show(self):
         # Call create_output_panel a second time after assigning the above
