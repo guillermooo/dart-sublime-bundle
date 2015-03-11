@@ -1,0 +1,34 @@
+Version 1.3.7
+
+The Sublime Text Dart Package has been updated!
+
+This version enables the analysis server for dart files outside of a pub package.
+
+Since this is a such a small release, here's some trivia about the Dart plugin
+for Sublime Text:
+
+Dart is used to build development versions of the Dart plugin (Grinder), and
+the Dart plugin is used to build Dart by the Dart Team. Having achieved full
+recursion, Python must feel a bit jealous!
+
+Please restart Sublime Text.
+
+Full Documentation:
+
+	- https://github.com/guillermooo/dart-sublime-bundle/wiki
+
+
+MAIN CHANGES
+------------
+
+	- fix #483 - enable analysis for loose dart files
+
+	From now on, files located outside of a pub package should be analyzed
+	as well. Users don't need to perform any action.
+
+Reporting Bugs and Requesting New Features
+------------------------------------------
+
+Please report any bugs and request features here:
+
+* https://github.com/guillermooo/dart-sublime-bundle/issues
