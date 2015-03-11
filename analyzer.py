@@ -340,19 +340,22 @@ class AnalysisServer(object):
             _logger.debug('not a valid path: %s', path)
             return
 
-        p = find_pubspec_path(path)
-        if not p:
-            _logger.debug('did not found pubspec.yaml in path: %s', path)
-            return
+        new_root_path = find_pubspec_path(path)
+        if not new_root_path:
+            # It seems we're not in a pub package, so we're probably looking
+            # at a loose .dart file.
+            new_root_path = os.path.dirname(path)
+            _logger.debug('did not find pubspec.yaml in path: %s', path)
+            _logger.debug('set root to: %s', new_root_path)
 
         with AnalysisServer._op_lock:
-            if p not in self.roots:
-                _logger.debug('adding new root: %s', p)
-                self.roots.append(p)
+            if new_root_path not in self.roots:
+                _logger.debug('adding new root: %s', new_root_path)
+                self.roots.append(new_root_path)
                 self.send_set_roots(self.roots)
                 return
 
-        _logger.debug('root already known: %s', p)
+        _logger.debug('root already known: %s', new_root_path)
 
     def start(self):
         if AnalysisServer.ping():
