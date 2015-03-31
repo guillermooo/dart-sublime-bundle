@@ -63,6 +63,10 @@
 		</dict>
 		<dict>
 			<key>include</key>
+			<string>#annotations</string>
+		</dict>
+		<dict>
+			<key>include</key>
 			<string>#decl-typedef</string>
 		</dict>
 		<dict>
@@ -88,6 +92,34 @@
 	</array>
 	<key>repository</key>
 	<dict>
+		<key>annotations</key>
+		<dict>
+			<key>patterns</key>
+			<array>
+				<dict>
+					<key>captures</key>
+					<dict>
+						<key>1</key>
+						<dict>
+							<key>name</key>
+							<string>annotation.dart</string>
+						</dict>
+						<key>2</key>
+						<dict>
+							<key>name</key>
+							<string>entity.name.function.annotation.dart</string>
+						</dict>
+						<key>3</key>
+						<dict>
+							<key>name</key>
+							<string>support.type.dart</string>
+						</dict>
+					</dict>
+					<key>match</key>
+					<string>^(?:\s*)((@)([a-zA-Z0-9_]+))</string>
+				</dict>
+			</array>
+		</dict>
 		<key>comments</key>
 		<dict>
 			<key>patterns</key>
