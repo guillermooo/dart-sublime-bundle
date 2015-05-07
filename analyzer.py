@@ -507,7 +507,6 @@ class ResponseHandler(threading.Thread):
                 # XXX change stuff here XXX
                 # TODO(guillermooo): XXX
                 if isinstance(resp, Notification):
-                    # print(resp.params.__class__.__name__)
                     if isinstance(resp.params, AnalysisErrorsParams):
                         _logger.info('error data received from server')
                         # Make sure the right type is passed to the async
