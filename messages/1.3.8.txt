@@ -1,0 +1,28 @@
+Version 1.3.8
+
+The Sublime Text Dart Package has been updated!
+
+This version includes under-the-hood improvements for the communication with
+the Analysis Server.
+
+Please restart Sublime Text.
+
+Full Documentation:
+
+	- https://github.com/guillermooo/dart-sublime-bundle/wiki
+
+
+MAIN CHANGES
+------------
+
+	- supress TODO info messages
+	- replace old API classes with new ones
+	- style annotations
+
+
+Reporting Bugs and Requesting New Features
+------------------------------------------
+
+Please report any bugs and request features here:
+
+* https://github.com/guillermooo/dart-sublime-bundle/issues
