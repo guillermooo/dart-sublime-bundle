@@ -88,4 +88,4 @@ class RequestsQueue(AnalyzerQueue):
         super().__init__(*args, **kwargs)
 
     def put(self, data, *args, **kwargs):
-        super().put(data.toJson(), *args, **kwargs)
+        super().put(data.to_json(), *args, **kwargs)

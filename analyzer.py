@@ -23,14 +23,16 @@ from Dart.sublime_plugin_lib.sublime import after
 
 from Dart.lib.analyzer import actions
 from Dart.lib.analyzer import requests
-from Dart.lib.analyzer.api.api_types import AddContentOverlay
-from Dart.lib.analyzer.api.api_types import RemoveContentOverlay
-from Dart.lib.analyzer.api.notifications import AnalysisErrorsNotification
-from Dart.lib.analyzer.api.requests import AnalysisSetAnalysisRootsRequest
-from Dart.lib.analyzer.api.requests import AnalysisSetPriorityFilesRequest
-from Dart.lib.analyzer.api.requests import AnalysisUpdateContentRequest
-from Dart.lib.analyzer.api.requests import ServerGetVersionRequest
-from Dart.lib.analyzer.api.responses import ServerGetVersionResponse
+from Dart.lib.analyzer.api.base import Notification
+from Dart.lib.analyzer.api.base import Response
+from Dart.lib.analyzer.api.protocol import AddContentOverlay
+from Dart.lib.analyzer.api.protocol import RemoveContentOverlay
+from Dart.lib.analyzer.api.protocol import AnalysisErrorsParams
+from Dart.lib.analyzer.api.protocol import AnalysisSetAnalysisRootsParams
+from Dart.lib.analyzer.api.protocol import AnalysisSetPriorityFilesParams
+from Dart.lib.analyzer.api.protocol import AnalysisUpdateContentParams
+from Dart.lib.analyzer.api.protocol import ServerGetVersionParams
+from Dart.lib.analyzer.api.protocol import ServerGetVersionResult
 from Dart.lib.analyzer.pipe_server import PipeServer
 from Dart.lib.analyzer.queue import AnalyzerQueue
 from Dart.lib.analyzer.queue import RequestsQueue
@@ -404,13 +406,12 @@ class AnalysisServer(object):
             self.stdin.flush()
 
     def send_set_roots(self, included=[], excluded=[]):
-        req = AnalysisSetAnalysisRootsRequest(self.get_request_id(),
-                included, excluded)
+        req = AnalysisSetAnalysisRootsParams(included, excluded)
         _logger.info('sending set_roots request')
-        self.requests.put(req, block=False)
+        self.requests.put(req.to_request(self.get_request_id()), block=False)
 
     def send_get_version(self):
-        req = ServerGetVersionRequest(self.get_request_id())
+        req = ServerGetVersionParams().to_request(self.get_request_id())
         _logger.info('sending get version request')
         self.requests.put(req, block=False)
 
@@ -442,31 +443,34 @@ class AnalysisServer(object):
 
     def send_add_content(self, view):
         content = view.substr(sublime.Region(0, view.size()))
-        req = AnalysisUpdateContentRequest(self.get_request_id(),
-                {view.file_name(): AddContentOverlay(content)})
+        # TODO(guillermooo): XXX
+        # return
+        req = AnalysisUpdateContentParams({view.file_name(): AddContentOverlay(content)})
         _logger.info('sending update content request - add')
         # track this type of req as it may expire
         # TODO: when this file is saved, we must remove the overlays.
-        self.requests.put(req,
+        self.requests.put(req.to_request(self.get_request_id()),
                           view=view,
                           priority=TaskPriority.HIGH,
                           block=False)
 
     def send_remove_content(self, view):
-        req = AnalysisUpdateContentRequest(self.get_request_id(),
-                {view.file_name(): RemoveContentOverlay()})
+        # TODO(guillermooo): XXX
+        return
+        req = AnalysisUpdateContentParams({view.file_name(): RemoveContentOverlay()})
         _logger.info('sending update content request - delete')
-        self.requests.put(req,
-                          view=view,
-                          priority=TaskPriority.HIGH,
-                          block=False)
+        self.requests.put(req.to_request(self.get_request_id()),
+                view=view,
+                priority=TaskPriority.HIGH,
+                block=False)
 
     def send_set_priority_files(self, files):
         if files == self.priority_files:
             return
 
-        req = AnalysisSetPriorityFilesRequest(self.get_request_id(), files)
-        self.requests.put(req, priority=TaskPriority.HIGH, block=False)
+        req = AnalysisSetPriorityFilesParams(files)
+        self.requests.put(req.to_request(self.get_request_id()),
+                priority=TaskPriority.HIGH, block=False)
 
 
 class ResponseHandler(threading.Thread):
@@ -501,19 +505,22 @@ class ResponseHandler(threading.Thread):
                         return
                 
                 # XXX change stuff here XXX
-                if isinstance(resp, AnalysisErrorsNotification):
-                    _logger.info('error data received from server')
-                    # Make sure the right type is passed to the async
-                    # code. `resp` may point to a different object when
-                    # the async code finally has a chance to run.
-                    after(0, actions.show_errors,
-                          AnalysisErrorsNotification(resp.data.copy())
-                          )
-                    continue
+                # TODO(guillermooo): XXX
+                if isinstance(resp, Notification):
+                    if isinstance(resp.params, AnalysisErrorsParams):
+                        _logger.info('error data received from server')
+                        # Make sure the right type is passed to the async
+                        # code. `resp` may point to a different object when
+                        # the async code finally has a chance to run.
+                        after(0, actions.show_errors,
+                              AnalysisErrorsParams.from_json(resp.params.to_json().copy())
+                              )
+                        continue
 
-                if isinstance(resp, ServerGetVersionResponse):
-                    print('Dart: Analysis Server version:', resp.version)
-                    continue
+                if isinstance(resp, Response):
+                    if isinstance(resp.result, ServerGetVersionResult):
+                        print('Dart: Analysis Server version:', resp.result.version)
+                        continue
 
                 # elif resp.type == 'server.status':
                 #     after(0, sublime.status_message,
