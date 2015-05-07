@@ -59,55 +59,55 @@ def show_errors(errors):
         '''Converts location data to region data.
         '''
         pass
-    #     loc = error.location
-    #     pt = view.text_point(loc.startLine - 1,
-    #                          loc.startColumn - 1)
-    #     return sublime.Region(pt, pt + loc.length)
+        loc = error.location
+        pt = view.text_point(loc.startLine - 1,
+                             loc.startColumn - 1)
+        return sublime.Region(pt, pt + loc.length)
 
-    # info_regs = [error_to_region(v, item) for item in infos]
-    # warn_regs = [error_to_region(v, item) for item in warns]
-    # errs_regs = [error_to_region(v, item) for item in erros]
+    info_regs = [error_to_region(v, item) for item in infos]
+    warn_regs = [error_to_region(v, item) for item in warns]
+    errs_regs = [error_to_region(v, item) for item in erros]
 
-    # _logger.debug('displaying errors to the user')
+    _logger.debug('displaying errors to the user')
 
-    # v.add_regions(DAS_UI_REGIONS_INFOS, info_regs,
-    #     scope=DAS_SCOPE_INFO,
-    #     icon="Packages/Dart/gutter/dartlint-simple-info.png",
-    #     flags=_flags)
+    v.add_regions(DAS_UI_REGIONS_INFOS, info_regs,
+        scope=DAS_SCOPE_INFO,
+        icon="Packages/Dart/gutter/dartlint-simple-info.png",
+        flags=_flags)
 
-    # v.add_regions(DAS_UI_REGIONS_WARNINGS, warn_regs,
-    #     scope=DAS_SCOPE_WARNING,
-    #     icon="Packages/Dart/gutter/dartlint-simple-warning.png",
-    #     flags=_flags)
+    v.add_regions(DAS_UI_REGIONS_WARNINGS, warn_regs,
+        scope=DAS_SCOPE_WARNING,
+        icon="Packages/Dart/gutter/dartlint-simple-warning.png",
+        flags=_flags)
 
-    # v.add_regions(DAS_UI_REGIONS_ERRORS, errs_regs,
-    #     scope=DAS_SCOPE_ERROR,
-    #     icon='Packages/Dart/gutter/dartlint-simple-error.png',
-    #     flags=_flags)
+    v.add_regions(DAS_UI_REGIONS_ERRORS, errs_regs,
+        scope=DAS_SCOPE_ERROR,
+        icon='Packages/Dart/gutter/dartlint-simple-error.png',
+        flags=_flags)
 
-    # def to_compact_text(error):
-    #     return ("{error.severity}|{error.type}|{loc.file}|"
-    #             "{loc.startLine}|{loc.startColumn}|{error.message}").format(
-    #                                             error=error, loc=error.location)
+    def to_compact_text(error):
+        return ("{error.severity}|{error.type}|{loc.file}|"
+                "{loc.startLine}|{loc.startColumn}|{error.message}").format(
+                                                error=error, loc=error.location)
 
-    # info_patts = [to_compact_text(item) for item in infos]
-    # warn_patts = [to_compact_text(item) for item in warns]
-    # errs_patts = [to_compact_text(item) for item in erros]
+    info_patts = [to_compact_text(item) for item in infos]
+    warn_patts = [to_compact_text(item) for item in warns]
+    errs_patts = [to_compact_text(item) for item in erros]
 
-    # all_errs = set(errs_patts + warn_patts + info_patts)
+    all_errs = set(errs_patts + warn_patts + info_patts)
 
-    # if not all_errs:
-    #     panel = OutputPanel('dart.analyzer')
-    #     panel.hide()
-    #     return
+    if not all_errs:
+        panel = OutputPanel('dart.analyzer')
+        panel.hide()
+        return
 
-    # panel = OutputPanel('dart.analyzer')
-    # errors_pattern = r'^\w+\|\w+\|(.+)\|(\d+)\|(\d+)\|(.+)$'
-    # panel.set('result_file_regex', errors_pattern)
-    # # This will overwrite any previous text.
-    # panel.write('\n' + '\n'.join(all_errs))
-    # panel.show()
-    # sublime.status_message("Dart: Errors found")
+    panel = OutputPanel('dart.analyzer')
+    errors_pattern = r'^\w+\|\w+\|(.+)\|(\d+)\|(\d+)\|(.+)$'
+    panel.set('result_file_regex', errors_pattern)
+    # This will overwrite any previous text.
+    panel.write('\n' + '\n'.join(all_errs))
+    panel.show()
+    sublime.status_message("Dart: Errors found")
 
 
 def clear_ui():

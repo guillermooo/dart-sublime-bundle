@@ -11,7 +11,7 @@ import sublime
 
 from Dart.sublime_plugin_lib import PluginLogger
 
-# from Dart.lib.analyzer.api.notifications import AnalysisErrorsNotification
+from Dart.lib.analyzer.api.protocol import AnalysisErrorsParams
 from Dart.lib.analyzer.api.protocol import ServerGetVersionResult
 
 
@@ -70,8 +70,8 @@ def is_internal_response(data):
 def response_classifier(data):
     # XXX: replace here XXX
     if is_errors_response(data):
-        pass
-        # return AnalysisErrorsNotification(data)
+        params = AnalysisErrorsParams.from_json(data['params'])
+        return params.to_notification()
 
     if is_server_version_response(data):
         result = ServerGetVersionResult.from_json(data['result'])
