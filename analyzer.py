@@ -23,12 +23,12 @@ from Dart.sublime_plugin_lib.sublime import after
 
 from Dart.lib.analyzer import actions
 from Dart.lib.analyzer import requests
-# from Dart.lib.analyzer.api.api_types import AddContentOverlay
-# from Dart.lib.analyzer.api.api_types import RemoveContentOverlay
-# from Dart.lib.analyzer.api.notifications import AnalysisErrorsNotification
-# from Dart.lib.analyzer.api.requests import AnalysisSetAnalysisRootsRequest
-# from Dart.lib.analyzer.api.requests import AnalysisSetPriorityFilesRequest
-# from Dart.lib.analyzer.api.requests import AnalysisUpdateContentRequest
+# from Dart.lib.analyzer.api.protocol import AddContentOverlay
+# from Dart.lib.analyzer.api.protocol import RemoveContentOverlay
+# from Dart.lib.analyzer.api.protocol import AnalysisErrorsNotification
+from Dart.lib.analyzer.api.protocol import AnalysisSetAnalysisRootsParams
+from Dart.lib.analyzer.api.protocol import AnalysisSetPriorityFilesParams
+# from Dart.lib.analyzer.api.protocol import AnalysisUpdateContentRequest
 from Dart.lib.analyzer.api.protocol import ServerGetVersionParams
 from Dart.lib.analyzer.api.protocol import ServerGetVersionResult
 from Dart.lib.analyzer.pipe_server import PipeServer
@@ -336,27 +336,26 @@ class AnalysisServer(object):
         @path
           Can be a directory or a file path.
         """
-        return
-        # if not path:
-        #     _logger.debug('not a valid path: %s', path)
-        #     return
+        if not path:
+            _logger.debug('not a valid path: %s', path)
+            return
 
-        # new_root_path = find_pubspec_path(path)
-        # if not new_root_path:
-        #     # It seems we're not in a pub package, so we're probably looking
-        #     # at a loose .dart file.
-        #     new_root_path = os.path.dirname(path)
-        #     _logger.debug('did not find pubspec.yaml in path: %s', path)
-        #     _logger.debug('set root to: %s', new_root_path)
+        new_root_path = find_pubspec_path(path)
+        if not new_root_path:
+            # It seems we're not in a pub package, so we're probably looking
+            # at a loose .dart file.
+            new_root_path = os.path.dirname(path)
+            _logger.debug('did not find pubspec.yaml in path: %s', path)
+            _logger.debug('set root to: %s', new_root_path)
 
-        # with AnalysisServer._op_lock:
-        #     if new_root_path not in self.roots:
-        #         _logger.debug('adding new root: %s', new_root_path)
-        #         self.roots.append(new_root_path)
-        #         self.send_set_roots(self.roots)
-        #         return
+        with AnalysisServer._op_lock:
+            if new_root_path not in self.roots:
+                _logger.debug('adding new root: %s', new_root_path)
+                self.roots.append(new_root_path)
+                self.send_set_roots(self.roots)
+                return
 
-        # _logger.debug('root already known: %s', new_root_path)
+        _logger.debug('root already known: %s', new_root_path)
 
     def start(self):
         if AnalysisServer.ping():
@@ -405,11 +404,9 @@ class AnalysisServer(object):
             self.stdin.flush()
 
     def send_set_roots(self, included=[], excluded=[]):
-        return
-        # req = AnalysisSetAnalysisRootsRequest(self.get_request_id(),
-        #         included, excluded)
-        # _logger.info('sending set_roots request')
-        # self.requests.put(req, block=False)
+        req = AnalysisSetAnalysisRootsParams(included, excluded)
+        _logger.info('sending set_roots request')
+        self.requests.put(req.to_request(self.get_request_id()), block=False)
 
     def send_get_version(self):
         req = ServerGetVersionParams().to_request(self.get_request_id())
@@ -471,8 +468,9 @@ class AnalysisServer(object):
         if files == self.priority_files:
             return
 
-        req = AnalysisSetPriorityFilesRequest(self.get_request_id(), files)
-        self.requests.put(req, priority=TaskPriority.HIGH, block=False)
+        req = AnalysisSetPriorityFilesParams(files)
+        self.requests.put(req.to_request(self.get_request_id()),
+                priority=TaskPriority.HIGH, block=False)
 
 
 class ResponseHandler(threading.Thread):

@@ -10,10 +10,10 @@ import sublime
 
 import os
 
-# from Dart.lib.analyzer.api.api_types import AnalysisErrorSeverity
-# from Dart.lib.analyzer.api.api_types import Location
 from Dart.sublime_plugin_lib import PluginLogger
 from Dart.sublime_plugin_lib.panels import OutputPanel
+
+from Dart.lib.analyzer.api.protocol import AnalysisErrorSeverity
 
 
 _logger = PluginLogger(__name__)
