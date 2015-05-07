@@ -14,6 +14,7 @@ from Dart.sublime_plugin_lib import PluginLogger
 from Dart.sublime_plugin_lib.panels import OutputPanel
 
 from Dart.lib.analyzer.api.protocol import AnalysisErrorSeverity
+from Dart.lib.analyzer.api.protocol import AnalysisErrorType
 
 
 _logger = PluginLogger(__name__)
@@ -45,13 +46,15 @@ def show_errors(errors):
     if os.path.realpath(errors.file) != os.path.realpath(v.file_name()):
         _logger.debug('different view active - aborting')
         return
-
+    
     analysis_errors = list(errors.errors)
     if analysis_errors == 0:
         clear_ui()
         return
 
-    infos = [ae for ae in analysis_errors if (ae.severity == AnalysisErrorSeverity.INFO)]
+    infos = [ae for ae in analysis_errors if
+                (ae.severity == AnalysisErrorSeverity.INFO)
+                and (ae.type != AnalysisErrorType.TODO)]
     warns = [ae for ae in analysis_errors if (ae.severity == AnalysisErrorSeverity.WARNING)]
     erros = [ae for ae in analysis_errors if (ae.severity == AnalysisErrorSeverity.ERROR)]
 
@@ -89,6 +92,7 @@ def show_errors(errors):
         return ("{error.severity}|{error.type}|{loc.file}|"
                 "{loc.startLine}|{loc.startColumn}|{error.message}").format(
                                                 error=error, loc=error.location)
+
 
     info_patts = [to_compact_text(item) for item in infos]
     warn_patts = [to_compact_text(item) for item in warns]

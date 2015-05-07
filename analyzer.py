@@ -24,6 +24,7 @@ from Dart.sublime_plugin_lib.sublime import after
 from Dart.lib.analyzer import actions
 from Dart.lib.analyzer import requests
 from Dart.lib.analyzer.api.base import Notification
+from Dart.lib.analyzer.api.base import Response
 from Dart.lib.analyzer.api.protocol import AddContentOverlay
 from Dart.lib.analyzer.api.protocol import RemoveContentOverlay
 from Dart.lib.analyzer.api.protocol import AnalysisErrorsParams
@@ -517,9 +518,10 @@ class ResponseHandler(threading.Thread):
                               )
                         continue
 
-                if isinstance(resp.result, ServerGetVersionResult):
-                    print('Dart: Analysis Server version:', resp.result.version)
-                    continue
+                if isinstance(resp, Response):
+                    if isinstance(resp.result, ServerGetVersionResult):
+                        print('Dart: Analysis Server version:', resp.result.version)
+                        continue
 
                 # elif resp.type == 'server.status':
                 #     after(0, sublime.status_message,
