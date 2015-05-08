@@ -18,20 +18,28 @@ class DartGoToDeclaration(sublime_plugin.WindowCommand):
         self.get_navigation(sel)
 
     def get_navigation(self, r):
-        sources = editor_context.navigation.regions
+        # FIXME(guillermooo): we may have a race condition here, or get info
+        # for the wrong file.
+        navigation = editor_context.navigation
 
-        target = None
-        for source in sources:
-            if (source.offset <= r.begin()
-                and (source.offset + source.length) >= r.begin()):
-                    target = source
-                    break
+        if not navigation:
+            sublime.status_message('Dart: No navigation available.')
+            return
 
-        first_target = target.targets[0]
+        sources = navigation.regions
 
-        first_target = editor_context.navigation.targets[first_target]
+        # TODO(guillermooo): move this check to the generated API.
+        targets = [source for source in sources
+                        if source.offset <= r.begin() <= (source.offset + source.length)]
+
+        if not targets:
+            sublime.status_message('Dart: No navigations available for the current location.')
+            return
+
+        first_target = targets[0].targets[0]
+        first_target = navigation.targets[first_target]
         
-        fname = editor_context.navigation.files[first_target.fileIndex]
+        fname = navigation.files[first_target.fileIndex]
         row = first_target.startLine
         col = first_target.startColumn
 
