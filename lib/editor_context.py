@@ -11,12 +11,14 @@ from Dart.sublime_plugin_lib.panels import OutputPanel
 
 
 class EditorContext(object):
+    write_lock = threading.Lock()
     search_id_lock = threading.Lock()
 
     # FIXME(guillermooo): This is utterly wrong. This needs to be a singleton.
     def __init__(self):
         self._search_id = None
         self.results_panel = None
+        self._navigation = None
 
     @property
     def search_id(self):
@@ -31,6 +33,17 @@ class EditorContext(object):
             self.results_panel = OutputPanel('dart.search.results')
             self.results_panel.set('result_file_regex', r'^\w+\s+-\s+(.*?):(\d+):(\d+)')
             self._search_id = value
+
+    @property
+    def navigation(self):
+        with EditorContext.write_lock:
+            return self._navigation
+
+    @navigation.setter
+    def navigation(self, value):
+        # TODO(guillermooo): store this data by file
+        with EditorContext.write_lock:
+            self._navigation = value
 
     @search_id.deleter
     def search_id(self):
