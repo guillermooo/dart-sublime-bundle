@@ -15,6 +15,7 @@ from Dart.sublime_plugin_lib.panels import OutputPanel
 
 from Dart.lib.analyzer.api.protocol import AnalysisErrorSeverity
 from Dart.lib.analyzer.api.protocol import AnalysisErrorType
+from Dart import editor_context
 
 
 _logger = PluginLogger(__name__)
@@ -32,6 +33,10 @@ DAS_UI_REGIONS_ERRORS = 'dart.errors'
 _flags = (sublime.DRAW_SQUIGGLY_UNDERLINE |
           sublime.DRAW_NO_FILL |
           sublime.DRAW_NO_OUTLINE)
+
+
+def handle_navigation_data(navigation_params):
+    editor_context.navigation = navigation_params
 
 
 def show_errors(errors):
