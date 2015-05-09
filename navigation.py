@@ -53,7 +53,7 @@ class DartGoToDeclaration(sublime_plugin.WindowCommand):
 
 
 class ErrorNavigator(object):
-    pattern = re.compile(r'^\w+\|\w+\|(?P<fname>.+)\|(?P<row>\d+)\|(?P<col>\d+)\|(?P<message>.+)$')
+    pattern = re.compile(r'^(?P<severity>\w+)\|(?P<type>\w+)\|(?P<fname>.+)\|(?P<row>\d+)\|(?P<col>\d+)\|(?P<message>.+)$')
 
     def __init__(self, editor_context):
         self.editor_context = editor_context
@@ -64,7 +64,7 @@ class ErrorNavigator(object):
         data = self.editor_context.errors[self.editor_context.errors_index]
         match = self.pattern.match(data)
 
-        return match.groupdict()['message']
+        return match.groupdict()
 
     def previous(self):
         self.editor_context.decrement_error_index()
@@ -72,7 +72,7 @@ class ErrorNavigator(object):
         data = self.editor_context.errors[self.editor_context.errors_index]
         match = self.pattern.match(data)
 
-        return match.groupdict()['message']
+        return match.groupdict()
 
 
 class DartGoToNextResult(sublime_plugin.WindowCommand):
@@ -83,11 +83,12 @@ class DartGoToNextResult(sublime_plugin.WindowCommand):
         if editor_context.errors:
             navi = ErrorNavigator(editor_context)
             try:
-                message = navi.next()
+                data = navi.next()
             except IndexError:
                 return
             else:
-                show_error(self.window.active_view(), message)
+                message = '<strong class="%(severity)s">&nbsp;%(severity)s&nbsp;</strong> %(message)s'
+                show_error(self.window.active_view(), message % data)
 
 
 class DartGoToPrevResult(sublime_plugin.WindowCommand):
@@ -98,8 +99,9 @@ class DartGoToPrevResult(sublime_plugin.WindowCommand):
         if editor_context.errors:
             navi = ErrorNavigator(editor_context)
             try:
-                message = navi.previous()
+                data = navi.previous()
             except IndexError:
                 return
             else:
-                show_error(self.window.active_view(), message)
+                message = '<strong class="%(severity)s">&nbsp;%(severity)s&nbsp;</strong> %(message)s'
+                show_error(self.window.active_view(), message % data)
