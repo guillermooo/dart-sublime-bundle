@@ -1,1 +1,3 @@
-dart -c ./bin/deployment_tool/bin/main.dart
+pushd bin/deployment_tool
+pub global run grinder deploy
+popd
