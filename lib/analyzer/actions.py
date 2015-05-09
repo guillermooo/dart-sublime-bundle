@@ -108,7 +108,6 @@ def show_errors(errors):
     panel = OutputPanel('dart.analyzer')
 
     if not all_errs:
-        # clear errors
         editor_context.errors = []
         panel.hide()
         return
@@ -122,7 +121,6 @@ def show_errors(errors):
     panel.show()
     sublime.status_message("Dart: Errors found")
 
-    # set errors
     editor_context.errors = all_errs
 
 
