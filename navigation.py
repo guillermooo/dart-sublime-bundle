@@ -36,6 +36,7 @@ class DartGoToDeclaration(sublime_plugin.WindowCommand):
                         if source.offset <= r.begin() <= (source.offset + source.length)]
 
         if not targets:
+            # FIXME(guillermooo): the callback may close an unrelated popup.
             show_info(view, "No navigations available at this location.", timeout=3000)
             sublime.status_message('Dart: No navigations available for the current location.')
             return
@@ -51,35 +52,54 @@ class DartGoToDeclaration(sublime_plugin.WindowCommand):
         self.window.open_file("{}:{}:{}".format(fname, row, col), sublime.ENCODED_POSITION)
 
 
+class ErrorNavigator(object):
+    pattern = re.compile(r'^\w+\|\w+\|(?P<fname>.+)\|(?P<row>\d+)\|(?P<col>\d+)\|(?P<message>.+)$')
+
+    def __init__(self, editor_context):
+        self.editor_context = editor_context
+
+    def next(self):
+        self.editor_context.increment_error_index()
+
+        data = self.editor_context.errors[self.editor_context.errors_index]
+        match = self.pattern.match(data)
+
+        return match.groupdict()['message']
+
+    def previous(self):
+        self.editor_context.decrement_error_index()
+
+        data = self.editor_context.errors[self.editor_context.errors_index]
+        match = self.pattern.match(data)
+
+        return match.groupdict()['message']
+
+
 class DartGoToNextResult(sublime_plugin.WindowCommand):
     def run(self):
         self.window.run_command('next_result')
         
+        # todo(guillermo): check that the errors affect the current file.
         if editor_context.errors:
-            pattern = r'^\w+\|\w+\|(.+)\|(\d+)\|(\d+)\|(.+)$'
-
+            navi = ErrorNavigator(editor_context)
             try:
-                editor_context.increment_error_index()
+                message = navi.next()
             except IndexError:
                 return
-
-            data = editor_context.errors[editor_context.errors_index]
-            match = re.match(pattern, data)
-            show_error(self.window.active_view(), match.group(4))
+            else:
+                show_error(self.window.active_view(), message)
 
 
 class DartGoToPrevResult(sublime_plugin.WindowCommand):
     def run(self):
         self.window.run_command('prev_result')
         
+        # todo(guillermo): check that the errors affect the current file.
         if editor_context.errors:
-            pattern = r'^\w+\|\w+\|(.+)\|(\d+)\|(\d+)\|(.+)$'
-
+            navi = ErrorNavigator(editor_context)
             try:
-                editor_context.decrement_error_index()
+                message = navi.previous()
             except IndexError:
                 return
-                
-            data = editor_context.errors[editor_context.errors_index]
-            match = re.match(pattern, data)
-            show_error(self.window.active_view(), match.group(4))
+            else:
+                show_error(self.window.active_view(), message)

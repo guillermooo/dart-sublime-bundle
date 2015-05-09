@@ -1,0 +1,64 @@
+%YAML 1.2
+---
+name: Dart Analysis Output
+hidden: false
+scope: text.dart-analysis-output
+
+contexts:
+  main:
+    - match: ^(ERROR)(\|)(\w+)(\|)(.+)(\|)(\d+)(\|)(\d+)(\|)(.+)$
+      scope: analysis.result.dart-analysis-output
+      captures:
+        1: analysis.severity.error.dart-analysis-output
+        2: field.separator.dart-analysis-output
+        3: analysis.type.dart-analysis-output
+        4: field.separator.dart-analysis-output
+        5: file.name.dart-analysis-output
+        6: field.separator.dart-analysis-output
+        7: row.dart-analysis-output
+        8: field.separator.dart-analysis-output
+        9: column.dart-analysis-output
+        10: field.separator.dart-analysis-output
+        11: message.dart-analysis-output
+    - match: ^(WARNING)(\|)(\w+)(\|)(.+)(\|)(\d+)(\|)(\d+)(\|)(.+)$
+      scope: analysis.result.dart-analysis-output
+      captures:
+        1: analysis.severity.warning.dart-analysis-output
+        2: field.separator.dart-analysis-output
+        3: analysis.type.dart-analysis-output
+        4: field.separator.dart-analysis-output
+        5: file.name.dart-analysis-output
+        6: field.separator.dart-analysis-output
+        7: row.dart-analysis-output
+        8: field.separator.dart-analysis-output
+        9: column.dart-analysis-output
+        10: field.separator.dart-analysis-output
+        11: message.dart-analysis-output
+    - match: ^(INFO)(\|)(\w+)(\|)(.+)(\|)(\d+)(\|)(\d+)(\|)(.+)$
+      scope: analysis.result.dart-analysis-output
+      captures:
+        1: analysis.severity.info.dart-analysis-output
+        2: field.separator.dart-analysis-output
+        3: analysis.type.dart-analysis-output
+        4: field.separator.dart-analysis-output
+        5: file.name.dart-analysis-output
+        6: field.separator.dart-analysis-output
+        7: row.dart-analysis-output
+        8: field.separator.dart-analysis-output
+        9: column.dart-analysis-output
+        10: field.separator.dart-analysis-output
+        11: message.dart-analysis-output
+    - match: ^(\w+)(\|)(\w+)(\|)(.+)(\|)(\d+)(\|)(\d+)(\|)(.+)$
+      scope: analysis.result.dart-analysis-output
+      captures:
+        1: analysis.severity.unknown.dart-analysis-output
+        2: field.separator.dart-analysis-output
+        3: analysis.type.dart-analysis-output
+        4: field.separator.dart-analysis-output
+        5: file.name.dart-analysis-output
+        6: field.separator.dart-analysis-output
+        7: row.dart-analysis-output
+        8: field.separator.dart-analysis-output
+        9: column.dart-analysis-output
+        10: field.separator.dart-analysis-output
+        11: message.dart-analysis-output
