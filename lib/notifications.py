@@ -5,7 +5,7 @@ from Dart.sublime_plugin_lib.sublime import after
 
 notification_tpl = """
 <style type="text/css">
-    html { background-color: #FFFF99 }
+    html { background-color: #A9CCFF }
 </style>
 <div>
     %s
