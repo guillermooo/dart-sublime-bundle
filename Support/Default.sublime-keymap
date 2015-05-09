@@ -102,10 +102,10 @@
 		]
 	},
 
+	// TODO(guillermooo): disable these key bindings in command mode
 	{ "keys": ["f12"], "command": "dart_go_to_declaration", "context": [{"key": "selector", "operand": "source.dart" }] },
 	{ "keys": ["f4"], "command": "dart_go_to_next_result", "context": [{"key": "selector", "operand": "source.dart" }] },
-	// { "keys": ["ctrl+.", "ctrl+t"], "command": "dart_find_top_level_decls" },
-	// { "keys": ["ctrl+.", "ctrl+r"], "command": "dart_find_references" }
+	{ "keys": ["shift+f4"], "command": "dart_go_to_prev_result", "context": [{"key": "selector", "operand": "source.dart" }] },
 
 	// File system UI navigation keys.
 	{ "keys": ["tab"], "command": "dart_complete_fs", "context": [{"key": "selector", "operand": "text.dart-fs-navi" }] },

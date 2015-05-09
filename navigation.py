@@ -1,9 +1,11 @@
+import re
+
 import sublime
 import sublime_plugin
 
-
 from Dart import editor_context
 from Dart.lib.notifications import show_info
+from Dart.lib.notifications import show_error
 
 
 class DartGoToDeclaration(sublime_plugin.WindowCommand):
@@ -51,8 +53,33 @@ class DartGoToDeclaration(sublime_plugin.WindowCommand):
 
 class DartGoToNextResult(sublime_plugin.WindowCommand):
     def run(self):
+        self.window.run_command('next_result')
+        
         if editor_context.errors:
-            print(editor_context.errors)
             pattern = r'^\w+\|\w+\|(.+)\|(\d+)\|(\d+)\|(.+)$'
-            self.window.run_command('next_result')
-            editor_context.increment_error_index()
+
+            try:
+                editor_context.increment_error_index()
+            except IndexError:
+                return
+
+            data = editor_context.errors[editor_context.errors_index]
+            match = re.match(pattern, data)
+            show_error(self.window.active_view(), match.group(4))
+
+
+class DartGoToPrevResult(sublime_plugin.WindowCommand):
+    def run(self):
+        self.window.run_command('prev_result')
+        
+        if editor_context.errors:
+            pattern = r'^\w+\|\w+\|(.+)\|(\d+)\|(\d+)\|(.+)$'
+
+            try:
+                editor_context.decrement_error_index()
+            except IndexError:
+                return
+                
+            data = editor_context.errors[editor_context.errors_index]
+            match = re.match(pattern, data)
+            show_error(self.window.active_view(), match.group(4))

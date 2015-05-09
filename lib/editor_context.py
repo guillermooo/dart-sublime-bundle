@@ -61,7 +61,7 @@ class EditorContext(object):
     def errors(self, values):
         with EditorContext.write_lock:
             self._errors_index = -1
-            self._errors = values
+            self._errors = list(values)
 
     @property
     def errors_index(self):
@@ -70,9 +70,15 @@ class EditorContext(object):
 
     def increment_error_index(self):
         with EditorContext.write_lock:
+            if self._errors_index == len(self._errors) - 1:
+                raise IndexError('end of errors list')
             self._errors_index += 1
-            if self._errors_index >= len(self._errors):
-                self._errors_index -= 1
+
+    def decrement_error_index(self):
+        with EditorContext.write_lock:
+            if self._errors_index == 0:
+                raise IndexError('start of errors list')
+            self._errors_index -= 1
 
     def check_token(self, action, token):
         if action == 'search':
