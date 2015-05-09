@@ -47,3 +47,12 @@ class DartGoToDeclaration(sublime_plugin.WindowCommand):
 
         # XXX(guillermooo): can we optimize this for the current view?
         self.window.open_file("{}:{}:{}".format(fname, row, col), sublime.ENCODED_POSITION)
+
+
+class DartGoToNextResult(sublime_plugin.WindowCommand):
+    def run(self):
+        if editor_context.errors:
+            print(editor_context.errors)
+            pattern = r'^\w+\|\w+\|(.+)\|(\d+)\|(\d+)\|(.+)$'
+            self.window.run_command('next_result')
+            editor_context.increment_error_index()
