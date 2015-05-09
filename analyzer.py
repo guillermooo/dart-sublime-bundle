@@ -206,7 +206,7 @@ class ActivityTracker(sublime_plugin.EventListener):
             #               view.file_name())
             return
 
-        if AnalysisServer.ping():
+        if AnalysisServer.ping() and not view.is_loading():
             g_server.add_root(view.file_name())
 
             if is_active(view):

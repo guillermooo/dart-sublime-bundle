@@ -19,6 +19,8 @@ class EditorContext(object):
         self._search_id = None
         self.results_panel = None
         self._navigation = None
+        self._errors = []
+        self._errors_index = -1
 
     @property
     def search_id(self):
@@ -34,6 +36,11 @@ class EditorContext(object):
             self.results_panel.set('result_file_regex', r'^\w+\s+-\s+(.*?):(\d+):(\d+)')
             self._search_id = value
 
+    @search_id.deleter
+    def search_id(self):
+        with EditorContext.search_id_lock:
+            self._search_id = None
+
     @property
     def navigation(self):
         with EditorContext.write_lock:
@@ -45,10 +52,33 @@ class EditorContext(object):
         with EditorContext.write_lock:
             self._navigation = value
 
-    @search_id.deleter
-    def search_id(self):
-        with EditorContext.search_id_lock:
-            self._search_id = None
+    @property
+    def errors(self):
+        with EditorContext.write_lock:
+            return self._errors
+
+    @errors.setter
+    def errors(self, values):
+        with EditorContext.write_lock:
+            self._errors_index = -1
+            self._errors = list(values)
+
+    @property
+    def errors_index(self):
+        with EditorContext.write_lock:
+            return self._errors_index
+
+    def increment_error_index(self):
+        with EditorContext.write_lock:
+            if self._errors_index == len(self._errors) - 1:
+                raise IndexError('end of errors list')
+            self._errors_index += 1
+
+    def decrement_error_index(self):
+        with EditorContext.write_lock:
+            if self._errors_index == 0:
+                raise IndexError('start of errors list')
+            self._errors_index -= 1
 
     def check_token(self, action, token):
         if action == 'search':

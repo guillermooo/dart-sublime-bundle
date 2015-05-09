@@ -105,18 +105,23 @@ def show_errors(errors):
 
     all_errs = set(errs_patts + warn_patts + info_patts)
 
+    panel = OutputPanel('dart.analyzer')
+
     if not all_errs:
-        panel = OutputPanel('dart.analyzer')
+        # clear errors
+        editor_context.errors = []
         panel.hide()
         return
 
-    panel = OutputPanel('dart.analyzer')
     errors_pattern = r'^\w+\|\w+\|(.+)\|(\d+)\|(\d+)\|(.+)$'
     panel.set('result_file_regex', errors_pattern)
     # This will overwrite any previous text.
     panel.write('\n' + '\n'.join(all_errs))
     panel.show()
     sublime.status_message("Dart: Errors found")
+
+    # set errors
+    editor_context.errors = all_errs
 
 
 def clear_ui():
