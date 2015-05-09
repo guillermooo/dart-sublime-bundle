@@ -3,6 +3,7 @@ import sublime_plugin
 
 
 from Dart import editor_context
+from Dart.lib.notifications import show_info
 
 
 class DartGoToDeclaration(sublime_plugin.WindowCommand):
@@ -15,9 +16,9 @@ class DartGoToDeclaration(sublime_plugin.WindowCommand):
             return
 
         sel = view.sel()[0]        
-        self.get_navigation(sel)
+        self.get_navigation(view, sel)
 
-    def get_navigation(self, r):
+    def get_navigation(self, view, r):
         # FIXME(guillermooo): we may have a race condition here, or get info
         # for the wrong file.
         navigation = editor_context.navigation
@@ -33,6 +34,7 @@ class DartGoToDeclaration(sublime_plugin.WindowCommand):
                         if source.offset <= r.begin() <= (source.offset + source.length)]
 
         if not targets:
+            show_info(view, "No navigations available at this location.", timeout=3000)
             sublime.status_message('Dart: No navigations available for the current location.')
             return
 
