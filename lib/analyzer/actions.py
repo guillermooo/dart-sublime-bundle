@@ -117,6 +117,8 @@ def show_errors(errors):
     panel.set('result_file_regex', errors_pattern)
     # This will overwrite any previous text.
     panel.write('\n' + '\n'.join(all_errs))
+    panel.view.set_syntax_file('Packages/Dart/Support/Analyzer Output.sublime-syntax')
+    panel.view.settings().set('color_scheme', 'Packages/Dart/Support/Analyzer Output.tmTheme')
     panel.show()
     sublime.status_message("Dart: Errors found")
 

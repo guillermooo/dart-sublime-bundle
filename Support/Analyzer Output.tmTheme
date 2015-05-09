@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+   <key>name</key>
+   <string>Dart Analysis Ouput</string>
+   <key>settings</key>
+    <array>
+       <dict>
+          <key>settings</key>
+          <dict>
+             <key>background</key>
+             <string>#0F0F0F</string>
+             <key>foreground</key>
+             <string>#F0F0F0</string>
+             <key>selection</key>
+             <string>#383838</string>
+          </dict>
+       </dict>
+       <dict>
+          <key>name</key>
+          <string>Secondary</string>
+          <key>scope</key>
+          <string>row, column, field.separator, file.name</string>
+          <key>settings</key>
+          <dict>
+             <key>foreground</key>
+             <string>#75715E</string>
+          </dict>
+       </dict>
+       <dict>
+          <key>name</key>
+          <string>Type</string>
+          <key>scope</key>
+          <string>analysis.type</string>
+          <key>settings</key>
+          <dict>
+             <key>foreground</key>
+             <string>#548AE8</string>
+          </dict>
+       </dict>
+       <dict>
+          <key>name</key>
+          <string>Severity - Error</string>
+          <key>scope</key>
+          <string>analysis.severity.error</string>
+          <key>settings</key>
+          <dict>
+             <key>foreground</key>
+             <string>#FF2E2E</string>
+          </dict>
+       </dict>
+       <dict>
+          <key>name</key>
+          <string>Severity - Warning</string>
+          <key>scope</key>
+          <string>analysis.severity.warning</string>
+          <key>settings</key>
+          <dict>
+             <key>foreground</key>
+             <string>#FF7B1C</string>
+          </dict>
+       </dict>
+       <dict>
+          <key>name</key>
+          <string>Severity - Info</string>
+          <key>scope</key>
+          <string>analysis.severity.info</string>
+          <key>settings</key>
+          <dict>
+             <key>foreground</key>
+             <string>#FCE535</string>
+          </dict>
+       </dict>
+    </array>
+</dict>
+</plist>
