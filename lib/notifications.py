@@ -5,7 +5,10 @@ from Dart.sublime_plugin_lib.sublime import after
 
 notification_tpl = """
 <style type="text/css">
-    html { background-color: #A9CCFF }
+    html { background-color: #99CCFF }
+    strong.ERROR { padding: 1px 3px; color: white; background-color: red }
+    strong.WARNING { padding: 1px 3px; color: white; background-color: #E68A00 }
+    strong.INFO { padding: 1px 3px; color: white; background-color: #3399FF }
 </style>
 <div>
     %s
@@ -14,7 +17,10 @@ notification_tpl = """
 
 severe_tpl = """
 <style type="text/css">
-    html { background-color: #FFA4A4 }
+    html { background-color: #FFFFD1 }
+    strong.ERROR { color: white; background-color: red }
+    strong.WARNING { color: white; background-color: #E68A00 }
+    strong.INFO { color: white; background-color: #3399FF }
 </style>
 <div>
     %s
