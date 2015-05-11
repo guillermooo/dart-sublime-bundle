@@ -11,7 +11,7 @@ ERROR_TEMPLATE = """
     strong.INFO { color: white; background-color: #3399FF }
 </style>
 <div>
-    <strong class="%(severity)s">&nbsp;%(tag)s&nbsp;</strong> %(message)s'
+    <strong class="%(severity)s">&nbsp;%(tag)s&nbsp;</strong> %(message)s
 </div>
 """
 

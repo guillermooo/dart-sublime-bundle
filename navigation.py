@@ -51,7 +51,12 @@ class DartGoToDeclaration(sublime_plugin.WindowCommand):
 
 
 class ErrorNavigator(object):
-    pattern = re.compile(r'^(?P<severity>\w+)\|(?P<type>\w+)\|(?P<fname>.+)\|(?P<row>\d+)\|(?P<col>\d+)\|(?P<message>.+)$')
+    '''
+    Navigates the errors received from the analysis server and stored in the
+    global EditorContext.
+    '''
+
+    ERROR_LINE_RX = re.compile(r'^(?P<severity>\w+)\|(?P<type>\w+)\|(?P<fname>.+)\|(?P<row>\d+)\|(?P<col>\d+)\|(?P<message>.+)$')
 
     def __init__(self, editor_context):
         self.editor_context = editor_context
@@ -59,17 +64,13 @@ class ErrorNavigator(object):
     def next(self):
         self.editor_context.increment_error_index()
 
-        data = self.editor_context.errors[self.editor_context.errors_index]
-        match = self.pattern.match(data)
-
+        match = self.ERROR_LINE_RX.match(editor_context.get_current_error())
         return match.groupdict()
 
     def previous(self):
         self.editor_context.decrement_error_index()
 
-        data = self.editor_context.errors[self.editor_context.errors_index]
-        match = self.pattern.match(data)
-
+        match = self.ERROR_LINE_RX.match(editor_context.get_current_error())
         return match.groupdict()
 
 
