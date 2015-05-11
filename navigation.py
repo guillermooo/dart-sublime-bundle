@@ -4,8 +4,8 @@ import sublime
 import sublime_plugin
 
 from Dart import editor_context
-from Dart.lib.notifications import show_info
-from Dart.lib.notifications import show_error
+from Dart.lib.notifications import show_analysis_tooltip
+from Dart.lib.notifications import show_status_tooltip
 
 
 class DartGoToDeclaration(sublime_plugin.WindowCommand):
@@ -36,8 +36,7 @@ class DartGoToDeclaration(sublime_plugin.WindowCommand):
                         if source.offset <= r.begin() <= (source.offset + source.length)]
 
         if not targets:
-            # FIXME(guillermooo): the callback may close an unrelated popup.
-            show_info(view, "No navigations available at this location.", timeout=3000)
+            show_status_tooltip("No navigations available at this location.", timeout=3000)
             sublime.status_message('Dart: No navigations available for the current location.')
             return
 
@@ -48,7 +47,6 @@ class DartGoToDeclaration(sublime_plugin.WindowCommand):
         row = first_target.startLine
         col = first_target.startColumn
 
-        # XXX(guillermooo): can we optimize this for the current view?
         self.window.open_file("{}:{}:{}".format(fname, row, col), sublime.ENCODED_POSITION)
 
 
@@ -87,8 +85,7 @@ class DartGoToNextResult(sublime_plugin.WindowCommand):
             except IndexError:
                 return
             else:
-                message = '<strong class="%(severity)s">&nbsp;%(severity)s&nbsp;</strong> %(message)s'
-                show_error(self.window.active_view(), message % data)
+                show_analysis_tooltip(data)
 
 
 class DartGoToPrevResult(sublime_plugin.WindowCommand):
@@ -103,5 +100,4 @@ class DartGoToPrevResult(sublime_plugin.WindowCommand):
             except IndexError:
                 return
             else:
-                message = '<strong class="%(severity)s">&nbsp;%(severity)s&nbsp;</strong> %(message)s'
-                show_error(self.window.active_view(), message % data)
+                show_analysis_tooltip(data)
