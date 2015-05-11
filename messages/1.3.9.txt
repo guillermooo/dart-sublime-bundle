@@ -1,0 +1,37 @@
+Version 1.3.9
+
+The Sublime Text Dart Package has been updated!
+
+This version includes major new features:
+
+	1) Go to Definition
+
+		Press F12 on a symbol to go to its definition.
+
+	2) Colorized output in the analysis output panel
+
+	3) Tooltips for analysis errors
+
+		If the analysis output panel is showing and you press F4/Shift+F4, you will
+		travel to the next error and a tooltip will be displayed at its location.
+
+Please restart Sublime Text.
+
+Full Documentation:
+
+	- https://github.com/guillermooo/dart-sublime-bundle/wiki
+
+
+MAIN CHANGES
+------------
+
+	- add colors to analysis server output
+	- enable tooltips for errors
+	- adds ability to navigate to declaration using F12
+
+Reporting Bugs and Requesting New Features
+------------------------------------------
+
+Please report any bugs and request features here:
+
+* https://github.com/guillermooo/dart-sublime-bundle/issues

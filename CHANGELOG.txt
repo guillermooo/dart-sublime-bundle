@@ -1,3 +1,17 @@
+1.3.9 - 20150511
+
+	- refactor display of errors
+	- refactor
+	- change width of notification box
+	- add colors to analysis server output
+	- fix build script
+	- enable tooltips for errors
+	- refactor
+	- delay analysis until file is ready
+	- first implementation of ui notifications
+	- refactor
+	- adds ability to navigate to declaration using F12
+
 1.3.8 - 20150507
 
 	- supress TODO info messages
