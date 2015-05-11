@@ -80,6 +80,9 @@ class EditorContext(object):
                 raise IndexError('start of errors list')
             self._errors_index -= 1
 
+    def get_current_error(self):
+        return self.errors[self.errors_index]
+
     def check_token(self, action, token):
         if action == 'search':
             if self.search_id is None:
