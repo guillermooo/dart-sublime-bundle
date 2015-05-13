@@ -14,6 +14,7 @@ from Dart.sublime_plugin_lib import PluginLogger
 from Dart.lib.analyzer.api.protocol import AnalysisErrorsParams
 from Dart.lib.analyzer.api.protocol import ServerGetVersionResult
 from Dart.lib.analyzer.api.protocol import AnalysisNavigationParams
+from Dart.lib.analyzer.api.protocol import CompletionGetSuggestionsResult
 
 
 _logger = PluginLogger(__name__)
@@ -72,6 +73,10 @@ def is_navigation_notification(data):
     return 'analysis.navigation' == data.get('event')
 
 
+def is_completions_suggestions_result(data):
+    return 'id' in data.get('result', {})
+
+
 def response_classifier(data):
     # XXX: replace here XXX
     if is_errors_response(data):
@@ -85,5 +90,9 @@ def response_classifier(data):
     if is_navigation_notification(data):
         result = AnalysisNavigationParams.from_json(data['params'])
         return result.to_notification()
+
+    if is_completions_suggestions_result(data):
+        result = CompletionGetSuggestionsResult.from_json(data['result'])
+        return result.to_response(data['id'])
 
     return None

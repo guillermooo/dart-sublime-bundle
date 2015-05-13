@@ -34,6 +34,7 @@ from Dart.lib.analyzer.api.protocol import AnalysisSetAnalysisRootsParams
 from Dart.lib.analyzer.api.protocol import AnalysisSetPriorityFilesParams
 from Dart.lib.analyzer.api.protocol import AnalysisSetSubscriptionsParams
 from Dart.lib.analyzer.api.protocol import AnalysisUpdateContentParams
+from Dart.lib.analyzer.api.protocol import CompletionGetSuggestionsParams
 from Dart.lib.analyzer.api.protocol import RemoveContentOverlay
 from Dart.lib.analyzer.api.protocol import ServerGetVersionParams
 from Dart.lib.analyzer.api.protocol import ServerGetVersionResult
@@ -435,6 +436,13 @@ class AnalysisServer(object):
         self.requests.put(req2.to_request(self.get_request_id()),
                 priority=TaskPriority.HIGH, block=False)
 
+    def send_get_suggestions(self, view, file, offset):
+        new_id = self.get_request_id()
+        editor_context.set_id(view, new_id)
+        req = CompletionGetSuggestionsParams(file, offset)
+        req = req.to_request(new_id)
+        self.requests.put(req, priority=TaskPriority.HIGH, block=False)
+        
     def should_ignore_file(self, path):
         project = DartProject.from_path(path)
         is_a_third_party_file = (project and is_path_under(project.path_to_packages, path))

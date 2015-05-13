@@ -21,6 +21,7 @@ class EditorContext(object):
         self._navigation = None
         self._errors = []
         self._errors_index = -1
+        self.ids = {}
 
     @property
     def search_id(self):
@@ -99,3 +100,12 @@ class EditorContext(object):
                 self.results_panel.write(item.to_encoded_pos())
 
             self.results_panel.show()
+
+    def set_id(self, view, id):
+        target = '{}:{}'.format(view.window().id(), view.id())
+        self.ids[target] = id
+
+    def check_id(self, view, id):
+        target = '{}:{}'.format(view.window().id(), view.id())
+        existing = self.ids.get(target)
+        return existing == id
