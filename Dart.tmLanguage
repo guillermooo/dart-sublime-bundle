@@ -387,6 +387,10 @@
 					<array>
 						<dict>
 							<key>include</key>
+							<string>#comments-inline</string>
+						</dict>
+						<dict>
+							<key>include</key>
 							<string>#decl-function-parameter</string>
 						</dict>
 						<dict>
@@ -423,6 +427,10 @@
 					<string>meta.declaration.function.dart</string>
 					<key>patterns</key>
 					<array>
+						<dict>
+							<key>include</key>
+							<string>#comments-inline</string>
+						</dict>
 						<dict>
 							<key>include</key>
 							<string>#decl-function-parameter</string>
@@ -463,6 +471,10 @@
 					<array>
 						<dict>
 							<key>include</key>
+							<string>#comments-inline</string>
+						</dict>
+						<dict>
+							<key>include</key>
 							<string>#decl-function-parameter</string>
 						</dict>
 						<dict>
@@ -501,6 +513,10 @@
 					<array>
 						<dict>
 							<key>include</key>
+							<string>#comments-inline</string>
+						</dict>
+						<dict>
+							<key>include</key>
 							<string>#decl-function-parameter</string>
 						</dict>
 						<dict>
@@ -537,6 +553,10 @@
 					<string>meta.declaration.function.dart</string>
 					<key>patterns</key>
 					<array>
+						<dict>
+							<key>include</key>
+							<string>#comments-inline</string>
+						</dict>
 						<dict>
 							<key>include</key>
 							<string>#decl-function-parameter</string>
