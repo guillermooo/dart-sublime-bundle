@@ -387,6 +387,10 @@
 					<array>
 						<dict>
 							<key>include</key>
+							<string>#comments-inline</string>
+						</dict>
+						<dict>
+							<key>include</key>
 							<string>#decl-function-parameter</string>
 						</dict>
 						<dict>
@@ -423,6 +427,10 @@
 					<string>meta.declaration.function.dart</string>
 					<key>patterns</key>
 					<array>
+						<dict>
+							<key>include</key>
+							<string>#comments-inline</string>
+						</dict>
 						<dict>
 							<key>include</key>
 							<string>#decl-function-parameter</string>
@@ -463,6 +471,10 @@
 					<array>
 						<dict>
 							<key>include</key>
+							<string>#comments-inline</string>
+						</dict>
+						<dict>
+							<key>include</key>
 							<string>#decl-function-parameter</string>
 						</dict>
 						<dict>
@@ -501,42 +513,8 @@
 					<array>
 						<dict>
 							<key>include</key>
-							<string>#decl-function-parameter</string>
+							<string>#comments-inline</string>
 						</dict>
-						<dict>
-							<key>include</key>
-							<string>#strings</string>
-						</dict>
-						<dict>
-							<key>include</key>
-							<string>#keywords</string>
-						</dict>
-					</array>
-				</dict>
-				<dict>
-					<key>begin</key>
-					<string>^\s*(?:\b(\w+)\b)\s+(\w+)(?=\()</string>
-					<key>beginCaptures</key>
-					<dict>
-						<key>1</key>
-						<dict>
-							<key>name</key>
-							<string>type.user-defined.dart</string>
-						</dict>
-						<key>2</key>
-						<dict>
-							<key>name</key>
-							<string>function.name.dart</string>
-						</dict>
-					</dict>
-					<key>comment</key>
-					<string>A function with a user-defined return type.</string>
-					<key>end</key>
-					<string>\)</string>
-					<key>name</key>
-					<string>meta.declaration.function.dart</string>
-					<key>patterns</key>
-					<array>
 						<dict>
 							<key>include</key>
 							<string>#decl-function-parameter</string>
@@ -906,7 +884,7 @@
 			<array>
 				<dict>
 					<key>match</key>
-					<string>\\.</string>
+					<string>\\[^'"]</string>
 					<key>name</key>
 					<string>constant.character.escaped.regex.dart</string>
 				</dict>
@@ -968,7 +946,7 @@
 					<array>
 						<dict>
 							<key>match</key>
-							<string>\\.</string>
+							<string>\\[^"']</string>
 							<key>name</key>
 							<string>constant.character.escaped.regex.dart</string>
 						</dict>
