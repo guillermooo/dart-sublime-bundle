@@ -35,6 +35,8 @@ from Dart.lib.analyzer.api.protocol import AnalysisSetPriorityFilesParams
 from Dart.lib.analyzer.api.protocol import AnalysisSetSubscriptionsParams
 from Dart.lib.analyzer.api.protocol import AnalysisUpdateContentParams
 from Dart.lib.analyzer.api.protocol import CompletionGetSuggestionsParams
+from Dart.lib.analyzer.api.protocol import CompletionGetSuggestionsResult
+from Dart.lib.analyzer.api.protocol import CompletionResultsParams
 from Dart.lib.analyzer.api.protocol import RemoveContentOverlay
 from Dart.lib.analyzer.api.protocol import ServerGetVersionParams
 from Dart.lib.analyzer.api.protocol import ServerGetVersionResult
@@ -148,6 +150,12 @@ class ActivityTracker(sublime_plugin.EventListener):
             if view.is_dirty() and is_active(view):
                 _logger.debug('sending overlay data for %s', view.file_name())
                 g_server.send_add_content(view)
+
+            if is_active(view):
+                prev_char = view.substr(view.sel()[0].begin() - 1)
+                if prev_char == '.' or prev_char == '(':
+                    view.window().run_command('hide_auto_complete')
+                    view.window().run_command('dart_get_completions')
 
     # TODO(guillermooo): Use on_modified_async
     @only_for_dart_files
@@ -438,9 +446,16 @@ class AnalysisServer(object):
 
     def send_get_suggestions(self, view, file, offset):
         new_id = self.get_request_id()
+
+        with editor_context.autocomplete_context as actx:
+            actx.invalidate()
+            actx.request_id = new_id
+
         editor_context.set_id(view, new_id)
+
         req = CompletionGetSuggestionsParams(file, offset)
         req = req.to_request(new_id)
+        
         self.requests.put(req, priority=TaskPriority.HIGH, block=False)
         
     def should_ignore_file(self, path):
@@ -501,10 +516,27 @@ class ResponseHandler(threading.Thread):
                               )
                         continue
 
+                    if isinstance(resp.params, CompletionResultsParams):
+                        with editor_context.autocomplete_context as actx:
+                            if actx.request_id or (resp.params.id != actx.id):
+                                actx.invalidate_results()
+                                continue
+                        after(0, actions.handle_completions,
+                              CompletionResultsParams.from_json(resp.params.to_json().copy())
+                              )
+
                 if isinstance(resp, Response):
                     if isinstance(resp.result, ServerGetVersionResult):
                         print('Dart: Analysis Server version:', resp.result.version)
                         continue
+
+                    if isinstance(resp.result, CompletionGetSuggestionsResult):
+                        with editor_context.autocomplete_context as actx:
+                            if resp.id != actx.request_id:
+                                continue
+
+                            actx.id = resp.result.id
+                            actx.request_id = None
 
         except Exception as e:
             msg = 'error in thread' + self.name + '\n'

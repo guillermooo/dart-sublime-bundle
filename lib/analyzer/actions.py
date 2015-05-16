@@ -15,6 +15,7 @@ from Dart.sublime_plugin_lib.panels import OutputPanel
 
 from Dart.lib.analyzer.api.protocol import AnalysisErrorSeverity
 from Dart.lib.analyzer.api.protocol import AnalysisErrorType
+from Dart.lib.analyzer.api.protocol import ElementKind
 from Dart import editor_context
 
 
@@ -139,3 +140,35 @@ def clear_ui():
     v.erase_regions(DAS_UI_REGIONS_ERRORS)
     v.erase_regions(DAS_UI_REGIONS_WARNINGS)
     v.erase_regions(DAS_UI_REGIONS_INFOS)
+
+
+def handle_completions(results):
+    show = False
+    with editor_context.autocomplete_context as actx:
+
+        _PROPERTY = '\u25CB {}'
+        _FUNCTION = '\u25BA {}'
+        _OTHER = '· {}'
+
+        formatted = []
+        item = ''
+        for c in results.results:
+            if c.element.kind == ElementKind.FUNCTION or c.element.kind == ElementKind.METHOD or c.element.kind == ElementKind.SETTER:
+                formatted.append([_FUNCTION.format(c.completion) + c.element.parameters, c.completion + '(${1:%s})$0' % c.element.parameters[1:-1]])
+            elif c.element.kind == ElementKind.GETTER or c.element.kind == ElementKind.FIELD:
+                formatted.append([_PROPERTY.format(c.completion), c.completion])
+            else:
+                formatted.append([_OTHER.format(c.completion), c.completion])
+
+        actx.results = results.results
+        actx.formatted_results = formatted
+
+        if actx.results:
+            show = True
+
+    if not show:
+        return
+        
+    v = sublime.active_window().active_view()
+    if v:
+        v.run_command('auto_complete')

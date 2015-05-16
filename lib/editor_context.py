@@ -8,6 +8,7 @@
 import threading
 
 from Dart.sublime_plugin_lib.panels import OutputPanel
+from Dart.lib.autocomplete import AutocompleteContext
 
 
 class EditorContext(object):
@@ -22,6 +23,7 @@ class EditorContext(object):
         self._errors = []
         self._errors_index = -1
         self.ids = {}
+        self.autocomplete_context = AutocompleteContext()
 
     @property
     def search_id(self):
