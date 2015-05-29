@@ -21,11 +21,6 @@ class DartProject(object):
     def make_top_level_dir(self, name):
         os.mkdir(os.path.join(self.pubspec.parent, name))
 
-    def is_path_under(self, top_level, path):
-        prefix = os.path.realpath(top_level)
-        target = os.path.realpath(path)
-        return target.startswith(prefix)
-
     @property
     def path_to_web(self):
         return self._get_top_level_dir('web')
@@ -57,6 +52,10 @@ class DartProject(object):
     @property
     def path_to_lib(self):
         return self._get_top_level_dir('lib')
+
+    @property
+    def path_to_packages(self):
+        return self._get_top_level_dir('packages')
 
     def has_dependency(self, name, version=None):
         plock = self.pubspec.get_pubspec_lock()
