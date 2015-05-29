@@ -1,3 +1,13 @@
+1.4.1 - 20150529
+
+	- do not analyze ./packages or SDK files
+	- fix #518 - use .tmLanguage for 3083 and below
+	- fix #444 - simplify syntax definition
+	- fix #491 - comments in argument list
+	- fix #499 - escaped quotation marks
+	- refactor navigation commands
+	- refactor tooltip code
+
 1.4.0 - 20150511
 
 	- refactor display of errors

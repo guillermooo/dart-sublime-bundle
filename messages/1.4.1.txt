@@ -1,0 +1,43 @@
+Version 1.4.1
+
+The Sublime Text Dart Package has been updated!
+
+This version includes multiple fixes.
+
+The latest versions of Sublime Text have introduced a new format for syntax files.
+This may have broken the Dart plugin pacakge for you in recent releases if you're
+using ST beta. Apologies!
+
+If you notice any other breakage, please report it to the GitHub issue tracker
+indicating your version of Sublime Text.
+
+//////////////////////////////////////////////////////////////////////////////
+Please restart Sublime Text.
+//////////////////////////////////////////////////////////////////////////////
+
+Guillermo
+
+==============================================================================
+
+Full Documentation:
+
+	- https://github.com/guillermooo/dart-sublime-bundle/wiki
+
+
+MAIN CHANGES
+------------
+
+	- do not analyze ./packages or SDK files
+	- fix #518 - use .tmLanguage for 3083 and below
+	- fix #444 - simplify syntax definition
+	- fix #491 - comments in argument list
+	- fix #499 - escaped quotation marks
+	- refactor navigation commands
+	- refactor tooltip code
+
+Reporting Bugs and Requesting New Features
+------------------------------------------
+
+Please report any bugs and request features here:
+
+* https://github.com/guillermooo/dart-sublime-bundle/issues
