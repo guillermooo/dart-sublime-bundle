@@ -26,6 +26,7 @@ from Dart.lib.sdk import PubServe
 from Dart.lib.event import EventSource
 from Dart.lib import ga
 
+
 _logger = PluginLogger(__name__)
 
 
@@ -100,9 +101,11 @@ class ContextProvider(sublime_plugin.EventListener):
 
 
 class PubServeListener(object):
-    '''Special listener to capture 'pub serve --port=0' port information.
+    '''
+    Special listener to capture 'pub serve --port=0' port information.
     Also starts Dartium.
     '''
+
     def __init__(self, instance, panel, path):
         self.instance = instance
         self.panel = panel
@@ -127,8 +130,10 @@ class PubServeListener(object):
 
 
 class DartSmartRunCommand(DartBuildCommandBase):
-    '''Runs the current file in the most appropriate way.
     '''
+    Runs the current file in the most appropriate way.
+    '''
+    
     last_run_file = (None, None)
 
     def __init__(self, *args, **kwargs):
