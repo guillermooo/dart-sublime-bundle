@@ -21,32 +21,34 @@ from Dart.sublime_plugin_lib.path import is_active
 from Dart.sublime_plugin_lib.plat import supress_window
 from Dart.sublime_plugin_lib.sublime import after
 
+from Dart import editor_context
 from Dart.lib.analyzer import actions
 from Dart.lib.analyzer import requests
 from Dart.lib.analyzer.api.base import Notification
 from Dart.lib.analyzer.api.base import Response
 from Dart.lib.analyzer.api.protocol import AddContentOverlay
 from Dart.lib.analyzer.api.protocol import AnalysisErrorsParams
+from Dart.lib.analyzer.api.protocol import AnalysisNavigationParams
 from Dart.lib.analyzer.api.protocol import AnalysisService
 from Dart.lib.analyzer.api.protocol import AnalysisSetAnalysisRootsParams
-from Dart.lib.analyzer.api.protocol import AnalysisNavigationParams
 from Dart.lib.analyzer.api.protocol import AnalysisSetPriorityFilesParams
+from Dart.lib.analyzer.api.protocol import AnalysisSetSubscriptionsParams
 from Dart.lib.analyzer.api.protocol import AnalysisUpdateContentParams
 from Dart.lib.analyzer.api.protocol import RemoveContentOverlay
 from Dart.lib.analyzer.api.protocol import ServerGetVersionParams
 from Dart.lib.analyzer.api.protocol import ServerGetVersionResult
-from Dart.lib.analyzer.api.protocol import AnalysisSetSubscriptionsParams
 from Dart.lib.analyzer.pipe_server import PipeServer
 from Dart.lib.analyzer.queue import AnalyzerQueue
 from Dart.lib.analyzer.queue import RequestsQueue
 from Dart.lib.analyzer.queue import TaskPriority
 from Dart.lib.analyzer.response import ResponseMaker
+from Dart.lib.dart_project import DartProject
 from Dart.lib.editor_context import EditorContext
 from Dart.lib.error import ConfigError
 from Dart.lib.path import find_pubspec_path
+from Dart.lib.path import is_path_under
 from Dart.lib.path import is_view_dart_script
 from Dart.lib.sdk import SDK
-from Dart import editor_context
 
 
 _logger = PluginLogger(__name__)
@@ -398,6 +400,11 @@ class AnalysisServer(object):
             self.stdin.flush()
 
     def send_set_roots(self, included=[], excluded=[]):
+        included = [f for f in included if not self.should_ignore_file(f)]
+
+        if not (included or excluded):
+            return
+
         req = AnalysisSetAnalysisRootsParams(included, excluded)
         _logger.info('sending set_roots request')
         self.requests.put(req.to_request(self.get_request_id()), block=False)
@@ -408,6 +415,9 @@ class AnalysisServer(object):
         self.requests.put(req, block=False)
 
     def send_add_content(self, view):
+        if self.should_ignore_file(view.file_name()):
+            return
+            
         content = view.substr(sublime.Region(0, view.size()))
         req = AnalysisUpdateContentParams({view.file_name(): AddContentOverlay(content)})
         _logger.info('sending update content request - add')
@@ -419,6 +429,9 @@ class AnalysisServer(object):
                           block=False)
 
     def send_remove_content(self, view):
+        if self.should_ignore_file(view.file_name()):
+            return
+            
         req = AnalysisUpdateContentParams({view.file_name(): RemoveContentOverlay()})
         _logger.info('sending update content request - delete')
         self.requests.put(req.to_request(self.get_request_id()),
@@ -430,14 +443,27 @@ class AnalysisServer(object):
         if files == self.priority_files:
             return
 
+        definite_files = [f for f in files if not self.should_ignore_file(f)]
+        if not definite_files:
+            return
 
-        req = AnalysisSetPriorityFilesParams(files)
+        req = AnalysisSetPriorityFilesParams(definite_files)
         self.requests.put(req.to_request(self.get_request_id()),
                 priority=TaskPriority.HIGH, block=False)
 
-        req2 = AnalysisSetSubscriptionsParams({AnalysisService.NAVIGATION: files})
+        req2 = AnalysisSetSubscriptionsParams({AnalysisService.NAVIGATION: definite_files})
         self.requests.put(req2.to_request(self.get_request_id()),
                 priority=TaskPriority.HIGH, block=False)
+
+    def should_ignore_file(self, path):
+        project = DartProject.from_path(path)
+        is_a_third_party_file = (project and is_path_under(project.path_to_packages, path))
+
+        if is_a_third_party_file:
+            return True
+
+        sdk = SDK()
+        return is_path_under(sdk.path, path)
 
 
 class ResponseHandler(threading.Thread):

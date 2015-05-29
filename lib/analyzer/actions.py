@@ -116,7 +116,14 @@ def show_errors(errors):
     panel.set('result_file_regex', errors_pattern)
     # This will overwrite any previous text.
     panel.write('\n' + '\n'.join(all_errs))
-    panel.view.set_syntax_file('Packages/Dart/Support/Analyzer Output.sublime-syntax')
+
+    # FIXME: It appears that if ST dev find a .sublime-syntax and a .tmLanguage
+    # file, it will load # the first one. But how do we refer to the file then?
+    if sublime.version() >= '3084':
+        panel.view.set_syntax_file('Packages/Dart/Support/Analyzer Output.sublime-syntax')
+    else:
+        panel.view.set_syntax_file('Packages/Dart/Support/Analyzer Output.tmLanguage')
+
     panel.view.settings().set('rulers', [])
     panel.show()
     sublime.status_message("Dart: Errors found")
