@@ -48,6 +48,7 @@ from Dart.lib.error import ConfigError
 from Dart.lib.path import find_pubspec_path
 from Dart.lib.path import is_path_under
 from Dart.lib.path import is_view_dart_script
+from Dart.lib.path import only_for_dart_files
 from Dart.lib.sdk import SDK
 
 
@@ -114,14 +115,15 @@ def plugin_unloaded():
 
 
 class ActivityTracker(sublime_plugin.EventListener):
-    """After ST has been idle for an interval, sends requests to the analyzer
+    """
+    After ST has been idle for an interval, sends requests to the analyzer
     if the buffer has been saved or is dirty.
     """
+
     edits = defaultdict(lambda: 0)
     edits_lock = threading.RLock()
 
     def increment_edits(self, view):
-        # XXX: It seems that this function gets called twice for each edit to a buffer.
         with ActivityTracker.edits_lock:
             ActivityTracker.edits[view.id()] += 1
         sublime.set_timeout(lambda: self.check_idle(view), 750)
@@ -131,41 +133,24 @@ class ActivityTracker(sublime_plugin.EventListener):
             if ActivityTracker.edits[view.id()] > 0:
                 ActivityTracker.edits[view.id()] -= 1
 
+    @only_for_dart_files
     def on_load(self, view):
-        if not is_view_dart_script(view):
-            return
-
         with ActivityTracker.edits_lock:
             ActivityTracker.edits[view.id()] = 0
 
         if AnalysisServer.ping():
             g_server.send_remove_content(view)
 
+    @only_for_dart_files
     def on_idle(self, view):
-        if not is_view_dart_script(view):
-            return
-
-        # _logger.debug("active view was idle; could send requests")
         if AnalysisServer.ping():
             if view.is_dirty() and is_active(view):
                 _logger.debug('sending overlay data for %s', view.file_name())
                 g_server.send_add_content(view)
 
     # TODO(guillermooo): Use on_modified_async
+    @only_for_dart_files
     def on_modified(self, view):
-        if not is_view_dart_script(view):
-            # Don't log here -- it'd impact performance.
-            # _logger.debug('on_modified - not a dart file; aborting: %s',
-            #     view.file_name())
-            return
-
-        if not view.file_name():
-            # Don't log here -- it'd impact performance.
-            # _logger.debug(
-            #     'aborting because file does not exist on disk: %s',
-            #     view.file_name())
-            return
-
         # if we've `revert`ed the buffer, it'll be clean
         if not view.is_dirty():
             self.on_load(view)
@@ -179,12 +164,8 @@ class ActivityTracker(sublime_plugin.EventListener):
             if self.edits[view.id()] == 0:
                 self.on_idle(view)
 
+    @only_for_dart_files
     def on_post_save(self, view):
-        if not is_view_dart_script(view):
-            # _logger.debug('on_post_save - not a dart file %s',
-            #               view.file_name())
-            return
-
         with ActivityTracker.edits_lock:
             # TODO(guillermooo): does .id() uniquely identify views
             # across windows?
@@ -195,6 +176,7 @@ class ActivityTracker(sublime_plugin.EventListener):
         if AnalysisServer.ping():
             g_server.send_remove_content(view)
 
+    @only_for_dart_files
     def on_deactivated(self, view):
         # Any ongoing searches must be invalidated.
         del editor_context.search_id
@@ -202,12 +184,8 @@ class ActivityTracker(sublime_plugin.EventListener):
         if not is_view_dart_script(view):
             return
 
+    @only_for_dart_files
     def on_activated(self, view):
-        if not is_view_dart_script(view):
-            # _logger.debug('on_activated - not a dart file %s',
-            #               view.file_name())
-            return
-
         if AnalysisServer.ping() and not view.is_loading():
             g_server.add_root(view.file_name())
 
@@ -324,7 +302,8 @@ class AnalysisServer(object):
         return AnalysisServer.server
 
     def add_root(self, path):
-        """Adds `path` to the monitored roots if it is unknown.
+        """
+        Adds `path` to the monitored roots if it is unknown.
 
         If a `pubspec.yaml` is found in the path, its parent is monitored.
         Otherwise the passed-in directory name is monitored.
@@ -332,6 +311,7 @@ class AnalysisServer(object):
         @path
           Can be a directory or a file path.
         """
+        
         if not path:
             _logger.debug('not a valid path: %s', path)
             return
