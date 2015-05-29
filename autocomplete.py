@@ -34,6 +34,9 @@ class AutocompleteEventListener(sublime_plugin.EventListener):
         if not is_view_dart_script(view):
             return ([], 0)
 
+        if view.settings().get('command_mode') is True:
+            return ([], 0)
+
         completions = []
         with editor_context.autocomplete_context as actx:
             completions = actx.formatted_results

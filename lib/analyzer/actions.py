@@ -153,6 +153,8 @@ def handle_completions(results):
         formatted = []
         item = ''
         for c in results.results:
+            if not c.element:
+                continue
             if c.element.kind == ElementKind.FUNCTION or c.element.kind == ElementKind.METHOD or c.element.kind == ElementKind.SETTER:
                 formatted.append([_FUNCTION.format(c.completion) + c.element.parameters, c.completion + '(${1:%s})$0' % c.element.parameters[1:-1]])
             elif c.element.kind == ElementKind.GETTER or c.element.kind == ElementKind.FIELD:
