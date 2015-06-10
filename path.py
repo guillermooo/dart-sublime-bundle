@@ -15,6 +15,39 @@ import sublime
 from .plat import is_windows
 
 
+class FileInfo(object):
+    """
+    Base class.
+
+    Subclasses inspect a file for interesting properties from a plugin's POV.
+    """
+
+    def __init__(self, view_or_fname):
+        """
+        @view_or_fname
+          A Sublime Text view or a file name.
+        """
+        assert view_or_fname, 'wrong arg: %s' % view_or_fname
+        self.view_or_fname = view_or_fname
+
+    def __str__(self):
+        return self.path
+
+    @property
+    def path(self):
+        try:
+            # The returned path can be None, for example, if the view is unsaved.
+            return self.view_or_fname.file_name()
+        except AttributeError:
+            return self.view_or_fname
+
+    def extension_equals(self, extension):
+        return self.path and extension_equals(self.path, extension)
+
+    def extension_in(self, *extensions):
+        return self.path and any(self.extension_equals(ext) for ext in extensions)
+
+
 def extension_equals(path_or_view, extension):
     """Compares @path_or_view's extensions with @extension.
 
