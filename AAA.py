@@ -34,6 +34,15 @@ Something went wrong... :-[
 
 This is an automatic report from the Dart package for Sublime Text.
 
+Most likely, your settings are off. For help, check out:
+
+* https://github.com/guillermooo/dart-sublime-bundle/wiki/Installation%20and%20Basic%20Configuration
+
+To see a summary of your current settings, open the command palette and select
+"Dart: Check Configuration".
+
+---
+
 If you're having trouble running this package, please open an issue in our
 issue tracker[1] and paste as much information as possible from the report
 below.
