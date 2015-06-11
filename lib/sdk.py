@@ -53,7 +53,7 @@ class SDK(object):
                     raise FatalConfigError(msg)
             self._path = path
         except Exception:
-            msg = 'invalid value of "dart_sdk_path": {}'.format(p or '(none)')
+            msg = 'invalid value of "dart_sdk_path": {}'.format(path or '(none)')
             raise FatalConfigError(msg)
 
     @property
