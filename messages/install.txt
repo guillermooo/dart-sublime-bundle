@@ -17,12 +17,29 @@
 
 Thank you for installing the Dart package for Sublime Text!
 
+Let's get set up!
+
+2 min configuration:
+
+Put this in User/Preferences.sublime-settings:
+
+	{
+	  "dart_sdk_path": "/path/to/dart-sdk"
+	}
+
+That should enable the core development tools included in this package.
+
+But if you need more guidance or want to check out all available settings,
+head over to:
+
+* https://github.com/guillermooo/dart-sublime-bundle/wiki/Installation%20and%20Basic%20Configuration
+
 
 Please report any bugs or request features here:
 
-* https://github.com/dart-lang/dart-sublime-bundle/issues
+* https://github.com/guillermooo/dart-sublime-bundle/issues
 
 
 Happy coding! :-)
 
-The Dart Team
+Guillermo
