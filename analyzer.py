@@ -93,7 +93,7 @@ def plugin_loaded():
     if not sdk.enable_analysis_server:
         return
     try:
-        sdk.path_to_analysis_snapshot
+        sdk.check_for_critical_configuration_errors()
     except ConfigError as e:
         print("Dart: " + str(e))
         _logger.error(e)

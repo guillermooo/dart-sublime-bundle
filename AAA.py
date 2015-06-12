@@ -71,7 +71,7 @@ def check_install():
 
 def check():
     try:
-        SDK()
+        SDK().check_for_critical_configuration_errors()
     except FatalConfigError as e:
         sublime.active_window().run_command('_dart_report_config_errors', {
             'message': str(e)

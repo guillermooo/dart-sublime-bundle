@@ -17,21 +17,57 @@ import os
 import re
 import threading
 
-from Dart.sublime_plugin_lib import PluginLogger
 from Dart.lib.error import ConfigError
 from Dart.lib.error import FatalConfigError
+from Dart.sublime_plugin_lib import PluginLogger
 from Dart.sublime_plugin_lib.filter import TextFilter
+from Dart.sublime_plugin_lib.io import AsyncStreamReader
 from Dart.sublime_plugin_lib.path import join_on_win
+from Dart.sublime_plugin_lib.path import to_platform_path
 from Dart.sublime_plugin_lib.plat import is_windows
 from Dart.sublime_plugin_lib.plat import supress_window
-from Dart.sublime_plugin_lib.path import to_platform_path
-from Dart.sublime_plugin_lib.io import AsyncStreamReader
-from Dart.sublime_plugin_lib.text import decode_and_clean
+from Dart.sublime_plugin_lib.settings import FlexibleSettingByPlatform
 from Dart.sublime_plugin_lib.subprocess import GenericBinary
 from Dart.sublime_plugin_lib.subprocess import killwin32
+from Dart.sublime_plugin_lib.text import decode_and_clean
 
 
 _logger = PluginLogger(__name__)
+
+
+class FlexibleDartSdkPathSettingByPlatform(FlexibleSettingByPlatform):
+    '''
+    Data descriptor.
+
+    Reads a setting from Dart config file so that it can be a single value
+    or a value keyed by platform. Usefult to easily retrieve a global setting
+    for all platforms, or a per-platform setting.
+    '''
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+    def validate_sdk_path(self, value):
+        try:
+            expanded = os.path.expandvars(os.path.expanduser(value))
+        except:
+            raise FatalConfigError(
+                'cannot resolve configured "%s" path to sdk folder: %s' % (self.name, value))
+        else:
+            full_path = os.path.join(expanded, 'bin',
+                    join_on_win('dart', '.exe'))
+            if not os.path.exists(full_path):
+                raise FatalConfigError(
+                    'configured "%s" folder does not contain dart binary: %s' % (self.name, value))
+            return expanded
+
+    def validate(self, value):
+        value = super().validate(value)
+        return self.validate_sdk_path(value)
+
+    def get(self, name):
+        self.setts = sublime.load_settings('Dart - Plugin Settings.sublime-settings')
+        return self.setts.get(name)
 
 
 class SDK(object):
@@ -40,21 +76,6 @@ class SDK(object):
     # TODO(guillermooo): make this class more test-friendly.
     def __init__(self):
         self.setts = sublime.load_settings('Dart - Plugin Settings.sublime-settings')
-
-        path = self.setts.get('dart_sdk_path')
-        if not path:
-            raise FatalConfigError('missing "dart_sdk_path" setting')
-
-        path = os.path.expandvars(os.path.expanduser(path))
-        try:
-            if not os.path.exists(
-                os.path.join(path, 'bin', join_on_win('dart', '.exe'))):
-                    msg = 'wrong path in "dart_sdk_path": {}'.format(path)
-                    raise FatalConfigError(msg)
-            self._path = path
-        except Exception:
-            msg = 'invalid value of "dart_sdk_path": {}'.format(path or '(none)')
-            raise FatalConfigError(msg)
 
     @property
     def enable_analysis_server(self):
@@ -85,9 +106,7 @@ class SDK(object):
         name = join_on_win(name, win_ext)
         return os.path.realpath(os.path.join(self.path_to_bin_dir, name))
 
-    @property
-    def path(self):
-        return self._path
+    path = FlexibleDartSdkPathSettingByPlatform(name='dart_sdk_path', expected_type=str)
 
     @property
     def path_to_bin_dir(self):
@@ -152,6 +171,10 @@ class SDK(object):
             msg = 'could not find Dartium in directory: %s\n***\n' + full_path
             msg += str(e)
             _logger.error(msg)
+
+    def check_for_critical_configuration_errors(self):
+        # this will raise critical config errors if misconfigured
+        return self.path
 
     @property
     def path_to_default_user_browser(self):
