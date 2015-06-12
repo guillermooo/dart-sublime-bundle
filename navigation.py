@@ -17,7 +17,7 @@ class DartGoToDeclaration(sublime_plugin.WindowCommand):
         except Exception as e:
             return
 
-        sel = view.sel()[0]        
+        sel = view.sel()[0]
         self.get_navigation(view, sel)
 
     def get_navigation(self, view, r):
@@ -42,7 +42,7 @@ class DartGoToDeclaration(sublime_plugin.WindowCommand):
 
         first_target = targets[0].targets[0]
         first_target = navigation.targets[first_target]
-        
+
         fname = navigation.files[first_target.fileIndex]
         row = first_target.startLine
         col = first_target.startColumn
@@ -77,7 +77,7 @@ class ErrorNavigator(object):
 class DartGoToNextResult(sublime_plugin.WindowCommand):
     def run(self):
         self.window.run_command('next_result')
-        
+
         # todo(guillermo): check that the errors affect the current file.
         if editor_context.errors:
             navi = ErrorNavigator(editor_context)
@@ -92,7 +92,7 @@ class DartGoToNextResult(sublime_plugin.WindowCommand):
 class DartGoToPrevResult(sublime_plugin.WindowCommand):
     def run(self):
         self.window.run_command('prev_result')
-        
+
         # todo(guillermo): check that the errors affect the current file.
         if editor_context.errors:
             navi = ErrorNavigator(editor_context)

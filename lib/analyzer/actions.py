@@ -51,7 +51,7 @@ def show_errors(errors):
     if os.path.realpath(errors.file) != os.path.realpath(v.file_name()):
         _logger.debug('different view active - aborting')
         return
-    
+
     analysis_errors = list(errors.errors)
     if analysis_errors == 0:
         clear_ui()

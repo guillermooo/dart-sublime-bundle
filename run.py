@@ -133,7 +133,7 @@ class DartSmartRunCommand(DartBuildCommandBase):
     '''
     Runs the current file in the most appropriate way.
     '''
-    
+
     last_run_file = (None, None)
 
     def __init__(self, *args, **kwargs):
