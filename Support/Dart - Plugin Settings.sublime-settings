@@ -10,7 +10,7 @@
 	//
 	//		"dart_sdk_path": "path/to/dart-sdk"
 	//
-	//  2. Platform-specific values:
+	//	2. Platform-specific values:
 	//
 	//		{
 	//			"linux": "path/to/dart-sdk"
@@ -29,7 +29,7 @@
 	//
 	//		"dart_dartium_path": "path/to/dartium"
 	//
-	//  2. Platform-specific values:
+	//	2. Platform-specific values:
 	//
 	//		{
 	//			"linux": "path/to/dartium"
