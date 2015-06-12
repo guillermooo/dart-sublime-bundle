@@ -45,7 +45,12 @@ class FlexibleDartSdkPathSettingByPlatform(FlexibleSettingByPlatform):
     '''
 
     def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+        try:
+            del kwargs['name']
+            del kwargs['expected_type']
+        except KeyError:
+            pass
+        super().__init__(*args, name='dart_sdk_path', expected_type=str, **kwargs)
 
     def validate_sdk_path(self, value):
         try:
@@ -64,6 +69,51 @@ class FlexibleDartSdkPathSettingByPlatform(FlexibleSettingByPlatform):
     def validate(self, value):
         value = super().validate(value)
         return self.validate_sdk_path(value)
+
+    def get(self, name):
+        self.setts = sublime.load_settings('Dart - Plugin Settings.sublime-settings')
+        return self.setts.get(name)
+
+
+class FlexibleDartiumDirectoryPathSettingByPlatform(FlexibleSettingByPlatform):
+    '''
+    Data descriptor.
+
+    Reads a setting from Dart config file so that it can be a single value
+    or a value keyed by platform. Usefult to easily retrieve a global setting
+    for all platforms, or a per-platform setting.
+    '''
+
+    def __init__(self, *args, **kwargs):
+        try:
+            del kwargs['name']
+            del kwargs['expected_type']
+        except KeyError:
+            pass
+        super().__init__(*args, name='dart_dartium_path', expected_type=str, **kwargs)
+
+    def validate_dartium_path(self, value):
+        bin_name = 'chrome.exe'
+        if sublime.platform() == 'osx':
+            bin_name = 'Contents/MacOS/Chromium'
+        elif sublime.platform() == 'linux':
+            bin_name = 'chrome'
+
+        try:
+            full_path = os.path.join(value, bin_name)
+            full_path = os.path.expandvars(os.path.expanduser(full_path))
+            if not os.path.exists(full_path):
+                raise IOError()
+            return full_path
+        except Exception as e:
+            msg = 'could not find Dartium in configured folder "%s": "%s"\n***\n' % (self.name, value)
+            msg += str(e)
+            _logger.error(msg)
+            raise ConfigError(msg)
+
+    def validate(self, value):
+        value = super().validate(value)
+        return self.validate_dartium_path(value)
 
     def get(self, name):
         self.setts = sublime.load_settings('Dart - Plugin Settings.sublime-settings')
@@ -106,7 +156,9 @@ class SDK(object):
         name = join_on_win(name, win_ext)
         return os.path.realpath(os.path.join(self.path_to_bin_dir, name))
 
-    path = FlexibleDartSdkPathSettingByPlatform(name='dart_sdk_path', expected_type=str)
+    # descriptors
+    path = FlexibleDartSdkPathSettingByPlatform()
+    path_to_dartium = FlexibleDartiumDirectoryPathSettingByPlatform()
 
     @property
     def path_to_bin_dir(self):
@@ -141,36 +193,6 @@ class SDK(object):
         """Returns the full path to docgen.
         """
         return self.get_bin_tool('docgen', '.bat')
-
-    @property
-    def path_to_dartium(self):
-        '''Returns the path to the `chrome` binary of the 'Dartium' Chrome
-        build.
-
-        May throw a ConfigError that the caller must prepare for.
-        '''
-        # Dartium will not always be available on the user's machine.
-        bin_name = 'chrome.exe'
-        if sublime.platform() == 'osx':
-            bin_name = 'Contents/MacOS/Chromium'
-        elif sublime.platform() == 'linux':
-            bin_name = 'chrome'
-
-        try:
-            path = self.setts.get('dart_dartium_path')
-        except (KeyError, TypeError) as e:
-            raise ConfigError('could not find path to Dartium')
-
-        try:
-            full_path = os.path.join(path, bin_name)
-            full_path = os.path.expandvars(os.path.expanduser(full_path))
-            if not os.path.exists(full_path):
-                raise ConfigError()
-            return full_path
-        except Exception as e:
-            msg = 'could not find Dartium in directory: %s\n***\n' + full_path
-            msg += str(e)
-            _logger.error(msg)
 
     def check_for_critical_configuration_errors(self):
         # this will raise critical config errors if misconfigured

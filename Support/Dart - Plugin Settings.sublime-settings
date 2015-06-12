@@ -3,9 +3,40 @@
 
 {
 	// Path to the sdk directory.
+	//
+	// This setting can be specified in two ways:
+	//
+	//	1. One value for all platforms:
+	//
+	//		"dart_sdk_path": "path/to/dart-sdk"
+	//
+	//	2. Platform-specific values:
+	//
+	//		{
+	//			"linux": "path/to/dart-sdk"
+	//			"osx": "path/to/dart-sdk"
+	//			"windows": "d:\\path\\to\\dart-sdk"
+	//		}
+	//
 	"dart_sdk_path": null,
+
 	// Path to the directory containing Dartium.
 	// On OSX, it's the full path to Chromium.app.
+	//
+	// This setting can be specified in two ways:
+	//
+	//	1. One value for all platforms:
+	//
+	//		"dart_dartium_path": "path/to/dartium"
+	//
+	//	2. Platform-specific values:
+	//
+	//		{
+	//			"linux": "path/to/dartium"
+	//			"osx": "path/to/dartium"
+	//			"windows": "d:\\path\\to\\dartium"
+	//		}
+	//
 	"dart_dartium_path": null,
 
 	// User-defined browsers.
