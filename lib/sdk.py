@@ -329,3 +329,36 @@ class Dartium(object):
             _logger.error('-' * 80)
             _logger.error(e)
             _logger.error('=' * 80)
+
+
+class FlexiblePlatformSettingReader(object):
+    def __init__(self, name, validation_type=None):
+        self.name = name
+        self.validation_type = validation_type
+
+    def __get__(self, obj, typ):
+        if obj is None:
+            return self
+
+        top_level_val = self.get_setting()
+        try:
+            val = top_level_val[sublime.platform()]
+            self.validate(val)
+            return val
+        except TypeError:
+            self.validate(top_level_val)
+            return top_level_val
+        except KeyError:
+            raise ValueError("no platform settings found for '%s' (%s)" % (self.name, sublime.platform()))
+
+    def __set__(self, obj, val):
+        raise NotImplementedException("can't do this now")
+
+    def validate(self, val):
+        if self.validation_type is None:
+            return True
+        assert isinstance(val, self.validation_type), 'validation failed for "%s". Got %s, expected %s' % (self.name, type(val), self.validation_type)
+
+    def get_setting(self):
+        self.setts = sublime.load_settings('Dart - Plugin Settings.sublime-settings')
+        return self.setts.get(self.name)
