@@ -37,7 +37,7 @@ class FlexibleSettingByPlatform(object):
     Optionally, basic validation is configurable:
 
         class SomeSettingsClass:
-            path_to_thing = FlexibleSettingByPlatformSubclass(name='path_to_thing', validation_type=str)
+            path_to_thing = FlexibleSettingByPlatformSubclass(name='path_to_thing', expected_type=str)
 
         settings = SomeSettingsClass()
         value = settings.path_to_thing
@@ -47,9 +47,9 @@ class FlexibleSettingByPlatform(object):
     Subclasses must at a minimum implement the .get() method.
     '''
 
-    def __init__(self, name, validation_type=None, default=None):
+    def __init__(self, name, expected_type=None, default=None):
         self.name = name
-        self.validation_type = validation_type
+        self.expected_type = expected_type
         self.default = default
 
     def __get__(self, obj, typ):
@@ -76,9 +76,9 @@ class FlexibleSettingByPlatform(object):
         raise NotImplementedException("can't do this now")
 
     def validate(self, value):
-        if self.validation_type is None:
+        if self.expected_type is None:
             return value
-        assert isinstance(value, self.validation_type), 'validation failed for "%s". Got %s, expected %s' % (self.name, type(value), self.validation_type)
+        assert isinstance(value, self.expected_type), 'validation failed for "%s". Got %s, expected %s' % (self.name, type(value), self.expected_type)
         return value
 
     def post_validate(self, value):
