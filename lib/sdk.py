@@ -17,18 +17,19 @@ import os
 import re
 import threading
 
-from Dart.sublime_plugin_lib import PluginLogger
 from Dart.lib.error import ConfigError
 from Dart.lib.error import FatalConfigError
+from Dart.sublime_plugin_lib import PluginLogger
 from Dart.sublime_plugin_lib.filter import TextFilter
+from Dart.sublime_plugin_lib.io import AsyncStreamReader
 from Dart.sublime_plugin_lib.path import join_on_win
+from Dart.sublime_plugin_lib.path import to_platform_path
 from Dart.sublime_plugin_lib.plat import is_windows
 from Dart.sublime_plugin_lib.plat import supress_window
-from Dart.sublime_plugin_lib.path import to_platform_path
-from Dart.sublime_plugin_lib.io import AsyncStreamReader
-from Dart.sublime_plugin_lib.text import decode_and_clean
+from Dart.sublime_plugin_lib.settings import FlexibleSettingByPlatform
 from Dart.sublime_plugin_lib.subprocess import GenericBinary
 from Dart.sublime_plugin_lib.subprocess import killwin32
+from Dart.sublime_plugin_lib.text import decode_and_clean
 
 
 _logger = PluginLogger(__name__)
@@ -329,3 +330,25 @@ class Dartium(object):
             _logger.error('-' * 80)
             _logger.error(e)
             _logger.error('=' * 80)
+
+
+class FlexibleDartPathSettingByPlatform(FlexibleSettingByPlatform):
+    '''
+    Data descriptor.
+
+    Reads a setting from Dart config file so that it can be a single value
+    or a value keyed by platform. Usefult to easily retrieve a global setting
+    for all platforms, or a per-platform setting.
+    '''
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+    def post_validate(self, value):
+        if value is None:
+            return
+        return os.path.expandvars(os.path.expanduser(value))
+
+    def get(self, name):
+        self.setts = sublime.load_settings('Dart - Plugin Settings.sublime-settings')
+        return self.setts.get(name)
