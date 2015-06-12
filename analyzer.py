@@ -93,7 +93,7 @@ def plugin_loaded():
     if not sdk.enable_analysis_server:
         return
     try:
-        sdk.path_to_analysis_snapshot
+        sdk.check_for_critical_configuration_errors
     except ConfigError as e:
         print("Dart: " + str(e))
         _logger.error(e)
@@ -311,7 +311,7 @@ class AnalysisServer(object):
         @path
           Can be a directory or a file path.
         """
-        
+
         if not path:
             _logger.debug('not a valid path: %s', path)
             return
@@ -397,7 +397,7 @@ class AnalysisServer(object):
     def send_add_content(self, view):
         if self.should_ignore_file(view.file_name()):
             return
-            
+
         content = view.substr(sublime.Region(0, view.size()))
         req = AnalysisUpdateContentParams({view.file_name(): AddContentOverlay(content)})
         _logger.info('sending update content request - add')
@@ -411,7 +411,7 @@ class AnalysisServer(object):
     def send_remove_content(self, view):
         if self.should_ignore_file(view.file_name()):
             return
-            
+
         req = AnalysisUpdateContentParams({view.file_name(): RemoveContentOverlay()})
         _logger.info('sending update content request - delete')
         self.requests.put(req.to_request(self.get_request_id()),
@@ -476,7 +476,7 @@ class ResponseHandler(threading.Thread):
                     if resp.get('_internal') == _SIGNAL_STOP:
                         _logger.info('ResponseHandler exiting by internal request.')
                         return
-                
+
                 if isinstance(resp, Notification):
                     if isinstance(resp.params, AnalysisErrorsParams):
                         # Make sure the right type is passed to the async

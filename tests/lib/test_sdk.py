@@ -8,15 +8,18 @@ import unittest
 
 import sublime
 
-from Dart.lib.sdk import FlexibleDartPathSettingByPlatform
+from Dart.lib.error import FatalConfigError
+from Dart.lib.sdk import FlexibleDartSdkPathSettingByPlatform
 from Dart.lib.sdk import FlexibleSettingByPlatform
 
 
 class TestFlexiblePlatformSettingsReader(unittest.TestCase):
     def testCanRetrieveSimpleSetting(self):
-        getter = FlexibleDartPathSettingByPlatform(name='doesnt_matter')
+        getter = FlexibleDartSdkPathSettingByPlatform(name='doesnt_matter')
         getter.get = mock.Mock()
+        getter.validate_sdk_path = mock.Mock()
         getter.get.return_value = 'some/path'
+        getter.validate_sdk_path = lambda x: x
 
         class dummy:
             my_path = getter
@@ -26,8 +29,9 @@ class TestFlexiblePlatformSettingsReader(unittest.TestCase):
         self.assertEqual('some/path', d.my_path)
 
     def testCanRetrievePlatformSetting(self):
-        getter = FlexibleDartPathSettingByPlatform(name='doesnt_matter')
+        getter = FlexibleDartSdkPathSettingByPlatform(name='doesnt_matter')
         getter.get = mock.Mock()
+        getter.validate_sdk_path = mock.Mock()
 
         data = {
             'windows': 'some/windows/path',
@@ -36,6 +40,7 @@ class TestFlexiblePlatformSettingsReader(unittest.TestCase):
         }
 
         getter.get.return_value = data
+        getter.validate_sdk_path = lambda x: x
 
         class dummy:
             my_path = getter
@@ -45,14 +50,18 @@ class TestFlexiblePlatformSettingsReader(unittest.TestCase):
         self.assertEqual(data[sublime.platform()], d.my_path)
 
     def testThrowsIfPlatformUnknown(self):
-        getter = FlexibleDartPathSettingByPlatform(name='doesnt_matter')
+        getter = FlexibleDartSdkPathSettingByPlatform(name='doesnt_matter')
         getter.get = mock.Mock()
-        getter.get.return_value =  {
+        getter.validate_sdk_path = mock.Mock()
+
+        data = {
                 'windows': 'some/windows/path',
                 'linux': 'some/linux/path',
                 'osx': 'some/osx/path',
             }
 
+        getter.get.return_value = data
+        getter.validate_sdk_path = lambda x: x
 
         with mock.patch('sublime.platform') as mocked:
             mocked.return_value = "winux"
@@ -65,7 +74,7 @@ class TestFlexiblePlatformSettingsReader(unittest.TestCase):
             self.assertRaises(ValueError, lambda: d.my_path)
 
     def testThrowsIfValidationFailed(self):
-        getter = FlexibleDartPathSettingByPlatform(name='doesnt_matter', validation_type=str)
+        getter = FlexibleDartSdkPathSettingByPlatform(name='doesnt_matter', expected_type=str)
         getter.get = mock.Mock()
 
         getter.get.return_value = 10
@@ -77,11 +86,26 @@ class TestFlexiblePlatformSettingsReader(unittest.TestCase):
 
         self.assertRaises(AssertionError, lambda: d.my_path)
 
-    def testCanPassValidation(self):
-        getter = FlexibleDartPathSettingByPlatform(name='doesnt_matter', validation_type=str)
+    def testThrowsIfSdkPathDoesNotValidate(self):
+        getter = FlexibleDartSdkPathSettingByPlatform(name='doesnt_matter')
         getter.get = mock.Mock()
 
+        getter.get.return_value = 'xxx'
+
+        class dummy:
+            my_path = getter
+
+        d = dummy()
+
+        self.assertRaises(FatalConfigError, lambda: d.my_path)
+
+    def testCanPassValidation(self):
+        getter = FlexibleDartSdkPathSettingByPlatform(name='doesnt_matter', expected_type=str)
+        getter.get = mock.Mock()
+        getter.validate_sdk_path = mock.Mock()
+
         getter.get.return_value = 'diez'
+        getter.validate_sdk_path = lambda x: x
 
         class dummy:
             my_path = getter
@@ -91,11 +115,13 @@ class TestFlexiblePlatformSettingsReader(unittest.TestCase):
         self.assertEqual('diez', d.my_path)
 
     def testCanImplementPostValidate(self):
-        getter = FlexibleDartPathSettingByPlatform(name='doesnt_matter', validation_type=str)
+        getter = FlexibleDartSdkPathSettingByPlatform(name='doesnt_matter')
         getter.get = mock.Mock()
+        getter.validate_sdk_path = mock.Mock()
         getter.post_validate = mock.Mock()
 
         getter.get.return_value = 'chorizo'
+        getter.validate_sdk_path = lambda x: x
         getter.post_validate.return_value = 'morcilla'
 
         class dummy:
@@ -106,10 +132,12 @@ class TestFlexiblePlatformSettingsReader(unittest.TestCase):
         self.assertEqual('morcilla', d.my_setting)
 
     def testCanReturnDefaultValue(self):
-        getter = FlexibleDartPathSettingByPlatform(name='doesnt_matter', default="fabada")
+        getter = FlexibleDartSdkPathSettingByPlatform(name='doesnt_matter', default="fabada")
         getter.get = mock.Mock()
+        getter.validate_sdk_path = mock.Mock()
 
         getter.get.return_value = None
+        getter.validate_sdk_path = lambda x: x
 
         class dummy:
             my_path = getter
