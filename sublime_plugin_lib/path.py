@@ -5,6 +5,7 @@
 '''Helper functions for path management.
 '''
 
+import glob
 import os
 from os.path import join
 from contextlib import contextmanager
@@ -12,6 +13,39 @@ from contextlib import contextmanager
 import sublime
 
 from .plat import is_windows
+
+
+class FileInfo(object):
+    """
+    Base class.
+
+    Subclasses inspect a file for interesting properties from a plugin's POV.
+    """
+
+    def __init__(self, view_or_fname):
+        """
+        @view_or_fname
+          A Sublime Text view or a file name.
+        """
+        assert view_or_fname, 'wrong arg: %s' % view_or_fname
+        self.view_or_fname = view_or_fname
+
+    def __str__(self):
+        return self.path
+
+    @property
+    def path(self):
+        try:
+            # The returned path can be None, for example, if the view is unsaved.
+            return self.view_or_fname.file_name()
+        except AttributeError:
+            return self.view_or_fname
+
+    def extension_equals(self, extension):
+        return self.path and extension_equals(self.path, extension)
+
+    def extension_in(self, *extensions):
+        return self.path and any(self.extension_equals(ext) for ext in extensions)
 
 
 def extension_equals(path_or_view, extension):
@@ -48,6 +82,31 @@ def find_in_path(name, win_ext=''):
         path = os.path.expandvars(os.path.expanduser(path))
         if os.path.exists(os.path.join(path, bin_name)):
             return os.path.realpath(path)
+
+
+def find_file_by_extension(start, extension):
+    '''
+    Finds a file in a directory hierarchy starting from @start and
+    walking upwards.
+
+    @start
+      The directory to start from.
+
+    @extension
+      Sought extension.
+    '''
+    if not os.path.exists(start):
+        return
+
+    pattern = os.path.join(start, "*." + extension)
+    file_name = glob.glob(pattern)
+    if file_name:
+        return file_name[0]
+
+    if os.path.dirname(start) == start:
+        return
+
+    return find_file_by_extension(os.path.dirname(start), extension)
 
 
 def find_file(start, fname):
