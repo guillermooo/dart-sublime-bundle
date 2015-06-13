@@ -34,6 +34,9 @@ from Dart.lib.analyzer.api.protocol import AnalysisSetAnalysisRootsParams
 from Dart.lib.analyzer.api.protocol import AnalysisSetPriorityFilesParams
 from Dart.lib.analyzer.api.protocol import AnalysisSetSubscriptionsParams
 from Dart.lib.analyzer.api.protocol import AnalysisUpdateContentParams
+from Dart.lib.analyzer.api.protocol import CompletionGetSuggestionsParams
+from Dart.lib.analyzer.api.protocol import CompletionGetSuggestionsResult
+from Dart.lib.analyzer.api.protocol import CompletionResultsParams
 from Dart.lib.analyzer.api.protocol import RemoveContentOverlay
 from Dart.lib.analyzer.api.protocol import ServerGetVersionParams
 from Dart.lib.analyzer.api.protocol import ServerGetVersionResult
@@ -60,14 +63,6 @@ _SIGNAL_STOP = '__SIGNAL_STOP'
 
 
 g_server = None
-
-# maps:
-#   req_type => view_id
-#   view_id => valid token for this type of request
-# Abstract this out into a class that provides its own synchronization.
-g_req_to_resp = {
-    "search": {},
-}
 
 
 def init():
@@ -208,13 +203,6 @@ class StdoutWatcher(threading.Thread):
     def start(self):
         _logger.info("starting StdoutWatcher")
 
-        try:
-            # Awaiting other threads...
-            self.server.ready_barrier.wait()
-        except threading.BrokenBarrierError:
-            _logger.error('could not start StdoutWatcher properly')
-            return
-
         while True:
             try:
                 data = self.server.stdout.readline().decode('utf-8')
@@ -245,8 +233,6 @@ class StdoutWatcher(threading.Thread):
 
 class AnalysisServer(object):
     MAX_ID = 9999999
-    # Halts all worker threads until the server is ready.
-    _ready_barrier = threading.Barrier(4, timeout=5)
 
     _request_id_lock = threading.Lock()
     _op_lock = threading.Lock()
@@ -255,10 +241,6 @@ class AnalysisServer(object):
     _request_id = -1
 
     server = None
-
-    @property
-    def ready_barrier(self):
-        return AnalysisServer._ready_barrier
 
     @property
     def stdout(self):
@@ -289,6 +271,8 @@ class AnalysisServer(object):
         self.requests = RequestsQueue('requests')
         self.responses = AnalyzerQueue('responses')
 
+
+    def start_handlers(self):
         reqh = RequestHandler(self)
         reqh.daemon = True
         reqh.start()
@@ -346,24 +330,25 @@ class AnalysisServer(object):
         AnalysisServer.server = PipeServer([sdk.path_to_dart,
                             sdk.path_to_analysis_snapshot,
                            '--sdk={0}'.format(sdk.path)])
-        AnalysisServer.server.start(working_dir=sdk.path)
 
-        self.start_stdout_watcher()
+        def do_start():
+            try:
+                AnalysisServer.server.start(working_dir=sdk.path)
+                self.start_handlers()
+                self.start_stdout_watcher()
+            except Exception as e:
+                _logger.error('could not start server properly')
+                _logger.error(e)
+                return
 
-        try:
-            # Server is ready.
-            self.ready_barrier.wait()
-        except threading.BrokenBarrierError:
-            _logger.error('could not start server properly')
-            return
+        threading.Thread(target=do_start).start()
 
     def start_stdout_watcher(self):
         sdk = SDK()
         t = StdoutWatcher(self, sdk.path)
         # Thread dies with the main thread.
         t.daemon = True
-        # XXX: This is necessary. If we call t.start() directly, ST hangs.
-        sublime.set_timeout_async(t.start, 0)
+        t.start()
 
     def stop(self):
         req = requests.shut_down(str(AnalysisServer.MAX_ID + 100))
@@ -435,6 +420,20 @@ class AnalysisServer(object):
         self.requests.put(req2.to_request(self.get_request_id()),
                 priority=TaskPriority.HIGH, block=False)
 
+    def send_get_suggestions(self, view, file, offset):
+        new_id = self.get_request_id()
+
+        with editor_context.autocomplete_context as actx:
+            actx.invalidate()
+            actx.request_id = new_id
+
+        editor_context.set_id(view, new_id)
+
+        req = CompletionGetSuggestionsParams(file, offset)
+        req = req.to_request(new_id)
+
+        self.requests.put(req, priority=TaskPriority.HIGH, block=False)
+
     def should_ignore_file(self, path):
         project = DartProject.from_path(path)
         is_a_third_party_file = (project and is_path_under(project.path_to_packages, path))
@@ -456,13 +455,6 @@ class ResponseHandler(threading.Thread):
 
     def run(self):
         _logger.info('starting ResponseHandler')
-
-        try:
-            # Awaiting other threads...
-            self.server.ready_barrier.wait()
-        except threading.BrokenBarrierError:
-            _logger.error('could not start ResponseHandler properly')
-            return
 
         response_maker = ResponseMaker(self.server.responses)
 
@@ -493,10 +485,27 @@ class ResponseHandler(threading.Thread):
                               )
                         continue
 
+                    if isinstance(resp.params, CompletionResultsParams):
+                        with editor_context.autocomplete_context as actx:
+                            if actx.request_id or (resp.params.id != actx.id):
+                                actx.invalidate_results()
+                                continue
+                        after(0, actions.handle_completions,
+                              CompletionResultsParams.from_json(resp.params.to_json().copy())
+                              )
+
                 if isinstance(resp, Response):
                     if isinstance(resp.result, ServerGetVersionResult):
                         print('Dart: Analysis Server version:', resp.result.version)
                         continue
+
+                    if isinstance(resp.result, CompletionGetSuggestionsResult):
+                        with editor_context.autocomplete_context as actx:
+                            if resp.id != actx.request_id:
+                                continue
+
+                            actx.id = resp.result.id
+                            actx.request_id = None
 
         except Exception as e:
             msg = 'error in thread' + self.name + '\n'
@@ -514,12 +523,6 @@ class RequestHandler(threading.Thread):
 
     def run(self):
         _logger.info('starting RequestHandler')
-
-        try:
-            self.server.ready_barrier.wait()
-        except threading.BrokenBarrierError:
-            _logger.error('could not start RequestHandler properly')
-            return
 
         while True:
             try:
