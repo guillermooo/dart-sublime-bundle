@@ -3,9 +3,43 @@ import re
 import sublime
 import sublime_plugin
 
+from Dart.sublime_plugin_lib import PluginLogger
+from Dart.sublime_plugin_lib.events import IdleIntervalEventListener
+from Dart.sublime_plugin_lib.path import is_active
+
+
 from Dart import analyzer
+from Dart.analyzer import AnalysisServer
 from Dart import editor_context
 from Dart.lib.path import is_view_dart_script
+
+
+_logger = PluginLogger(__name__)
+
+
+class IdleAutocomplete(IdleIntervalEventListener):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.duration = 400
+
+    def check(self, view):
+        return True
+
+    def on_idle(self, view):
+        prev_char = view.substr(view.sel()[0].begin() - 1)
+        if not prev_char in '.':
+            return
+
+        if not AnalysisServer.ping():
+            return
+
+        if view.is_dirty() and is_active(view):
+            _logger.debug('sending overlay data for %s', view.file_name())
+            analyzer.g_server.send_add_content(view)
+
+        if is_active(view):
+            view.window().run_command('dart_get_completions')
+            # view.window().run_command('hide_auto_complete')
 
 
 class DartGetCompletions(sublime_plugin.WindowCommand):

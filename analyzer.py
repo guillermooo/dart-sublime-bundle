@@ -16,7 +16,6 @@ import sublime
 import sublime_plugin
 
 from Dart.sublime_plugin_lib import PluginLogger
-from Dart.sublime_plugin_lib.events import IdleIntervalEventListener
 from Dart.sublime_plugin_lib.panels import OutputPanel
 from Dart.sublime_plugin_lib.path import is_active
 from Dart.sublime_plugin_lib.plat import supress_window
@@ -65,14 +64,6 @@ _SIGNAL_STOP = '__SIGNAL_STOP'
 
 g_server = None
 
-# maps:
-#   req_type => view_id
-#   view_id => valid token for this type of request
-# Abstract this out into a class that provides its own synchronization.
-g_req_to_resp = {
-    "search": {},
-}
-
 
 def init():
     global g_server
@@ -116,31 +107,6 @@ def plugin_unloaded():
     # killing the plugin. Disable this for now.
     # g_server.stop()
     pass
-
-
-class IdleAutocomplete(IdleIntervalEventListener):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.duration = 400
-
-    def check(self, view):
-        return True
-
-    def on_idle(self, view):
-        prev_char = view.substr(view.sel()[0].begin() - 1)
-        if not prev_char in '.':
-            return
-
-        if not AnalysisServer.ping():
-            return
-
-        if view.is_dirty() and is_active(view):
-            _logger.debug('sending overlay data for %s', view.file_name())
-            g_server.send_add_content(view)
-
-        if is_active(view):
-            view.window().run_command('dart_get_completions')
-            # view.window().run_command('hide_auto_complete')
 
 
 class ActivityTracker(sublime_plugin.EventListener):
