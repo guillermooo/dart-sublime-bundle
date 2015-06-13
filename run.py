@@ -284,7 +284,7 @@ class DartRunFileCommand(DartBuildCommandBase):
         # At this point, we are looking at a file that either:
         #   - is not a .dart or .html file
         #   - is outside of a pub package
-        # As a last restort, try to run the file as a script.
+        # As a last resort, try to run the file as a script.
         if action != 'primary' or not dart_view.is_dart_file:
             print("Dart: Cannot determine best action for {}".format(
                   dart_view.path
