@@ -26,6 +26,8 @@ class DartGetCompletions(sublime_plugin.WindowCommand):
 class AutocompleteEventListener(sublime_plugin.EventListener):
     _PROPERTY = '\u25CB {}'
     _FUNCTION = '\u25BA {}'
+    _INHIBIT_OTHER = (sublime.INHIBIT_WORD_COMPLETIONS |
+            sublime.INHIBIT_EXPLICIT_COMPLETIONS)
 
     def _format(self, completions):
         pass
@@ -43,6 +45,6 @@ class AutocompleteEventListener(sublime_plugin.EventListener):
             actx.invalidate_results()
 
         if completions:
-            return (completions, sublime.INHIBIT_WORD_COMPLETIONS | sublime.INHIBIT_EXPLICIT_COMPLETIONS)
+            return (completions, self._INHIBIT_OTHER)
 
         return ([], 0)
