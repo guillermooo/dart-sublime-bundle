@@ -226,17 +226,8 @@ class DartRunFileCommand(DartBuildCommandBase):
     def pub_serve_port(self, value):
         DartRunFileCommand.pub_serve.port = value
 
-    def run(self, file_name=None, action='primary', kill_only=False):
-        '''
-        @action
-          One of: primary, secondary
-
-        @kill_only
-          Whether we should simply kill any running processes.
-        '''
-        assert kill_only or (file_name and not kill_only), 'wrong call'
-
-        # First, clean up any existing processes.
+    def _cleanup(self):
+        # Stop up any existing processes.
         if DartRunFileCommand.is_server_running:
             self.execute(kill=True)
             self.pub_serve.stop()
@@ -246,17 +237,32 @@ class DartRunFileCommand(DartBuildCommandBase):
 
         self.stop_server_observatory()
 
+    def _kill(self):
+        self.window.run_command("dart_exec", {
+            "kill": True
+            })
+        DartRunFileCommand.is_script_running = False
+
+    def run(self, file_name=None, action='primary', kill_only=False):
+        '''
+        @action
+          One of: [primary, secondary]
+
+        @kill_only
+          If `True`, simply kill any running processes we've started.
+        '''
+        assert kill_only or file_name, 'wrong call'
+
+        self._cleanup()
+
         if kill_only:
-            self.window.run_command("dart_exec", {
-                "kill": True
-                })
-            DartRunFileCommand.is_script_running = False
+            self._kill()
             return
 
         working_dir = None
         try:
             working_dir = os.path.dirname(find_pubspec(file_name))
-        except:
+        except TypeError:
             try:
                 if not working_dir:
                     working_dir = os.path.dirname(file_name)
@@ -268,6 +274,10 @@ class DartRunFileCommand(DartBuildCommandBase):
                 _logger.error('programmer error: this exception needs to be handled')
                 _logger.error(e)
                 return
+        except Exception as e:
+            _logger.error('programmer error: this exception needs to be handled')
+            _logger.error(e)
+            return
 
         dart_view = DartFile.from_path(file_name)
 
