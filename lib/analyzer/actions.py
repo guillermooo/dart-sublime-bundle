@@ -148,6 +148,7 @@ def handle_completions(results):
 
         _PROPERTY = '\u25CB {}'
         _FUNCTION = '\u25BA {}'
+        _CONSTRUCTOR = '\u00A9 {}'
         _OTHER = '· {}'
 
         formatted = []
@@ -159,6 +160,8 @@ def handle_completions(results):
                 formatted.append([_FUNCTION.format(c.completion) + c.element.parameters, c.completion + '(${1:%s})$0' % c.element.parameters[1:-1]])
             elif c.element.kind == ElementKind.GETTER or c.element.kind == ElementKind.FIELD:
                 formatted.append([_PROPERTY.format(c.completion), c.completion])
+            elif c.element.kind == ElementKind.CONSTRUCTOR:
+                formatted.append([_CONSTRUCTOR.format(c.completion), c.completion])
             else:
                 formatted.append([_OTHER.format(c.completion), c.completion])
 
@@ -170,7 +173,7 @@ def handle_completions(results):
 
     if not show:
         return
-        
+
     v = sublime.active_window().active_view()
     if v:
         v.run_command('auto_complete')
