@@ -2,7 +2,7 @@ import sublime
 
 
 # todo: move these tests to sublime_plugin_lib
-class FlexibleSettingByPlatform(object):
+class FlexibleSetting(object):
     '''
     Base class.
 
@@ -29,7 +29,7 @@ class FlexibleSettingByPlatform(object):
     For example:
 
         class SomeSettingsClass:
-            path_to_thing = FlexibleSettingByPlatformSubclass(name='path_to_thing')
+            path_to_thing = FlexibleSettingSubclass(name='path_to_thing')
 
         settings = SomeSettingsClass()
         value = settings.path_to_thing
@@ -37,7 +37,7 @@ class FlexibleSettingByPlatform(object):
     Optionally, basic validation is configurable:
 
         class SomeSettingsClass:
-            path_to_thing = FlexibleSettingByPlatformSubclass(name='path_to_thing', expected_type=str)
+            path_to_thing = FlexibleSettingSubclass(name='path_to_thing', expected_type=str)
 
         settings = SomeSettingsClass()
         value = settings.path_to_thing
