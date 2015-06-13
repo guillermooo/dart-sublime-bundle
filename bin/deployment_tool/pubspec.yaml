@@ -1,4 +1,4 @@
-name: sublime_dart_plugin_tools
+name: build_tools
 version: 0.0.1
 description: Tools to build the Sublime Text Dart plugin.
 author: Guillermo López-Anglada <guillermo.lopez@outlook.com>

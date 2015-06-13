@@ -3,7 +3,7 @@ import 'dart:io';
 import 'package:grinder/grinder.dart';
 import 'package:path/path.dart' as path;
 
-import '../bin/manifest.dart';
+import '../lib/manifest.dart';
 import '../lib/environment.dart';
 
 
@@ -30,16 +30,9 @@ bool checkLoggingLevelIsError() {
   return regex.hasMatch(file.readAsStringSync());
 }
 
-// Task Definition ***********************************************************
-// TODO(guillermooo): use grinder "decorators".
-main([List<String> args]) {
-  task('check', check);
-  task('deploy', do_deploy);
-  task('release', null, ['check', 'deploy']);
-  startGrinder(args);
-}
+main([List<String> args]) => grind(args);
 
-// Task Implementation *******************************************************
+@Task("Check things.")
 void check(GrinderContext context) {
   if (!checkLoggingLevelIsError()) {
     var msg =
@@ -49,7 +42,8 @@ void check(GrinderContext context) {
   }
 }
 
-void do_deploy(GrinderContext context) {
+@Task("Deploy locally")
+void deploy(GrinderContext context) {
   var environment = new Environment(topLevel);
 
   try {
@@ -69,6 +63,10 @@ void do_deploy(GrinderContext context) {
     print('  ${source.path}');
     copySync(source, destination);
   });
+}
 
-  return 0;
+@Task("Release")
+// @Depends(check, deploy)
+void release(GrinderContext context) {
+  print("not implmented");
 }

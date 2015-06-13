@@ -1,6 +1,8 @@
 // Copyright (c) 2015, <your name>. All rights reserved. Use of this source code
 // is governed by a BSD-style license that can be found in the LICENSE file.
 
+library build_tools.environment;
+
 import 'dart:io';
 import 'dart:convert';
 
@@ -11,8 +13,8 @@ import 'package:path_for_server/path_for_server.dart';
 ///
 /// Used to find common locations for deployment of files.
 class Environment {
-  /// Path to the Sublime Text project' top-level directory.
-  String root;
+  /// Path to the Sublime Text project top-level directory.
+  final String root;
 
   /// Path to Sublime Text 3 Data directory.
   String pathToData;
