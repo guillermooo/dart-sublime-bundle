@@ -106,7 +106,7 @@
 	{ "keys": ["f12"], "command": "dart_go_to_declaration", "context": [{"key": "selector", "operand": "source.dart" }] },
 	{ "keys": ["f4"], "command": "dart_go_to_next_result", "context": [{"key": "selector", "operand": "source.dart" }] },
 	{ "keys": ["shift+f4"], "command": "dart_go_to_prev_result", "context": [{"key": "selector", "operand": "source.dart" }] },
-	{ "keys": ["ctrl+k", "ctrl+l"], "command": "dart_get_completions", "context": [{"key": "selector", "operand": "source.dart" }] },
+	{ "keys": ["ctrl+space"], "command": "dart_get_completions", "context": [{"key": "selector", "operand": "source.dart, -source.dart comment, -source.dart string" }] },
 
 	// File system UI navigation keys.
 	{ "keys": ["tab"], "command": "dart_complete_fs", "context": [{"key": "selector", "operand": "text.dart-fs-navi" }] },
