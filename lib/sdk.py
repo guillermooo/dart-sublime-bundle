@@ -26,7 +26,7 @@ from Dart.sublime_plugin_lib.path import join_on_win
 from Dart.sublime_plugin_lib.path import to_platform_path
 from Dart.sublime_plugin_lib.plat import is_windows
 from Dart.sublime_plugin_lib.plat import supress_window
-from Dart.sublime_plugin_lib.settings import FlexibleSettingByPlatform
+from Dart.sublime_plugin_lib.settings import FlexibleSetting
 from Dart.sublime_plugin_lib.subprocess import GenericBinary
 from Dart.sublime_plugin_lib.subprocess import killwin32
 from Dart.sublime_plugin_lib.text import decode_and_clean
@@ -35,7 +35,7 @@ from Dart.sublime_plugin_lib.text import decode_and_clean
 _logger = PluginLogger(__name__)
 
 
-class FlexibleDartSdkPathSettingByPlatform(FlexibleSettingByPlatform):
+class DartSdkPathSetting(FlexibleSetting):
     '''
     Data descriptor.
 
@@ -75,7 +75,7 @@ class FlexibleDartSdkPathSettingByPlatform(FlexibleSettingByPlatform):
         return self.setts.get(name)
 
 
-class FlexibleDartiumDirectoryPathSettingByPlatform(FlexibleSettingByPlatform):
+class DartiumPathSetting(FlexibleSetting):
     '''
     Data descriptor.
 
@@ -157,8 +157,8 @@ class SDK(object):
         return os.path.realpath(os.path.join(self.path_to_bin_dir, name))
 
     # descriptors
-    path = FlexibleDartSdkPathSettingByPlatform()
-    path_to_dartium = FlexibleDartiumDirectoryPathSettingByPlatform()
+    path = DartSdkPathSetting()
+    path_to_dartium = DartiumPathSetting()
 
     @property
     def path_to_bin_dir(self):

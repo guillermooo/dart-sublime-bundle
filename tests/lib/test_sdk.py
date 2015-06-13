@@ -9,13 +9,13 @@ import unittest
 import sublime
 
 from Dart.lib.error import FatalConfigError
-from Dart.lib.sdk import FlexibleDartSdkPathSettingByPlatform
-from Dart.lib.sdk import FlexibleSettingByPlatform
+from Dart.lib.sdk import DartSdkPathSetting
+from Dart.lib.sdk import FlexibleSetting
 
 
 class TestFlexiblePlatformSettingsReader(unittest.TestCase):
     def testCanRetrieveSimpleSetting(self):
-        getter = FlexibleDartSdkPathSettingByPlatform(name='doesnt_matter')
+        getter = DartSdkPathSetting(name='doesnt_matter')
         getter.get = mock.Mock()
         getter.validate_sdk_path = mock.Mock()
         getter.get.return_value = 'some/path'
@@ -29,7 +29,7 @@ class TestFlexiblePlatformSettingsReader(unittest.TestCase):
         self.assertEqual('some/path', d.my_path)
 
     def testCanRetrievePlatformSetting(self):
-        getter = FlexibleDartSdkPathSettingByPlatform(name='doesnt_matter')
+        getter = DartSdkPathSetting(name='doesnt_matter')
         getter.get = mock.Mock()
         getter.validate_sdk_path = mock.Mock()
 
@@ -50,7 +50,7 @@ class TestFlexiblePlatformSettingsReader(unittest.TestCase):
         self.assertEqual(data[sublime.platform()], d.my_path)
 
     def testThrowsIfPlatformUnknown(self):
-        getter = FlexibleDartSdkPathSettingByPlatform(name='doesnt_matter')
+        getter = DartSdkPathSetting(name='doesnt_matter')
         getter.get = mock.Mock()
         getter.validate_sdk_path = mock.Mock()
 
@@ -74,7 +74,7 @@ class TestFlexiblePlatformSettingsReader(unittest.TestCase):
             self.assertRaises(ValueError, lambda: d.my_path)
 
     def testThrowsIfValidationFailed(self):
-        getter = FlexibleDartSdkPathSettingByPlatform(name='doesnt_matter', expected_type=str)
+        getter = DartSdkPathSetting(name='doesnt_matter', expected_type=str)
         getter.get = mock.Mock()
 
         getter.get.return_value = 10
@@ -87,7 +87,7 @@ class TestFlexiblePlatformSettingsReader(unittest.TestCase):
         self.assertRaises(AssertionError, lambda: d.my_path)
 
     def testThrowsIfSdkPathDoesNotValidate(self):
-        getter = FlexibleDartSdkPathSettingByPlatform(name='doesnt_matter')
+        getter = DartSdkPathSetting(name='doesnt_matter')
         getter.get = mock.Mock()
 
         getter.get.return_value = 'xxx'
@@ -100,7 +100,7 @@ class TestFlexiblePlatformSettingsReader(unittest.TestCase):
         self.assertRaises(FatalConfigError, lambda: d.my_path)
 
     def testCanPassValidation(self):
-        getter = FlexibleDartSdkPathSettingByPlatform(name='doesnt_matter', expected_type=str)
+        getter = DartSdkPathSetting(name='doesnt_matter', expected_type=str)
         getter.get = mock.Mock()
         getter.validate_sdk_path = mock.Mock()
 
@@ -115,7 +115,7 @@ class TestFlexiblePlatformSettingsReader(unittest.TestCase):
         self.assertEqual('diez', d.my_path)
 
     def testCanImplementPostValidate(self):
-        getter = FlexibleDartSdkPathSettingByPlatform(name='doesnt_matter')
+        getter = DartSdkPathSetting(name='doesnt_matter')
         getter.get = mock.Mock()
         getter.validate_sdk_path = mock.Mock()
         getter.post_validate = mock.Mock()
@@ -132,7 +132,7 @@ class TestFlexiblePlatformSettingsReader(unittest.TestCase):
         self.assertEqual('morcilla', d.my_setting)
 
     def testCanReturnDefaultValue(self):
-        getter = FlexibleDartSdkPathSettingByPlatform(name='doesnt_matter', default="fabada")
+        getter = DartSdkPathSetting(name='doesnt_matter', default="fabada")
         getter.get = mock.Mock()
         getter.validate_sdk_path = mock.Mock()
 
