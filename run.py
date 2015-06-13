@@ -236,7 +236,7 @@ class DartRunFileCommand(DartBuildCommandBase):
         '''
         assert kill_only or (file_name and not kill_only), 'wrong call'
 
-        # First, clean up any existing prosesses.
+        # First, clean up any existing processes.
         if DartRunFileCommand.is_server_running:
             self.execute(kill=True)
             self.pub_serve.stop()
@@ -253,14 +253,20 @@ class DartRunFileCommand(DartBuildCommandBase):
             DartRunFileCommand.is_script_running = False
             return
 
+        working_dir = None
         try:
             working_dir = os.path.dirname(find_pubspec(file_name))
         except:
             try:
                 if not working_dir:
                     working_dir = os.path.dirname(file_name)
-            except:
+            except TypeError as e:
                 _logger.debug('cannot run an unsaved file')
+                _logger.debug(e)
+                return
+            except Exception as e:
+                _logger.error('programmer error: this exception needs to be handled')
+                _logger.error(e)
                 return
 
         dart_view = DartFile.from_path(file_name)
@@ -273,12 +279,13 @@ class DartRunFileCommand(DartBuildCommandBase):
             self.run_web_app(dart_view, working_dir, action)
             return
 
+        # TODO: improve detection of runnable file (for example, don't attempt
+        # to run a part of a library).
         # At this point, we are looking at a file that either:
         #   - is not a .dart or .html file
         #   - is outside of a pub package
-        # As a last restort, run the file as a script, but only if the user
-        # requested a 'secondary' action.
-        if action != 'secondary' or not dart_view.is_dart_file:
+        # As a last restort, try to run the file as a script.
+        if action != 'primary' or not dart_view.is_dart_file:
             print("Dart: Cannot determine best action for {}".format(
                   dart_view.path
                   ))
