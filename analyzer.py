@@ -140,7 +140,7 @@ class IdleAutocomplete(IdleIntervalEventListener):
 
         if is_active(view):
             view.window().run_command('dart_get_completions')
-            view.window().run_command('hide_auto_complete')
+            # view.window().run_command('hide_auto_complete')
 
 
 class ActivityTracker(sublime_plugin.EventListener):
