@@ -226,17 +226,8 @@ class DartRunFileCommand(DartBuildCommandBase):
     def pub_serve_port(self, value):
         DartRunFileCommand.pub_serve.port = value
 
-    def run(self, file_name=None, action='primary', kill_only=False):
-        '''
-        @action
-          One of: primary, secondary
-
-        @kill_only
-          Whether we should simply kill any running processes.
-        '''
-        assert kill_only or (file_name and not kill_only), 'wrong call'
-
-        # First, clean up any existing prosesses.
+    def _cleanup(self):
+        # Stop up any existing processes.
         if DartRunFileCommand.is_server_running:
             self.execute(kill=True)
             self.pub_serve.stop()
@@ -246,22 +237,47 @@ class DartRunFileCommand(DartBuildCommandBase):
 
         self.stop_server_observatory()
 
+    def _kill(self):
+        self.window.run_command("dart_exec", {
+            "kill": True
+            })
+        DartRunFileCommand.is_script_running = False
+
+    def run(self, file_name=None, action='primary', kill_only=False):
+        '''
+        @action
+          One of: [primary, secondary]
+
+        @kill_only
+          If `True`, simply kill any running processes we've started.
+        '''
+        assert kill_only or file_name, 'wrong call'
+
+        self._cleanup()
+
         if kill_only:
-            self.window.run_command("dart_exec", {
-                "kill": True
-                })
-            DartRunFileCommand.is_script_running = False
+            self._kill()
             return
 
+        working_dir = None
         try:
             working_dir = os.path.dirname(find_pubspec(file_name))
-        except:
+        except TypeError:
             try:
                 if not working_dir:
                     working_dir = os.path.dirname(file_name)
-            except:
+            except TypeError as e:
                 _logger.debug('cannot run an unsaved file')
+                _logger.debug(e)
                 return
+            except Exception as e:
+                _logger.error('programmer error: this exception needs to be handled')
+                _logger.error(e)
+                return
+        except Exception as e:
+            _logger.error('programmer error: this exception needs to be handled')
+            _logger.error(e)
+            return
 
         dart_view = DartFile.from_path(file_name)
 
@@ -273,12 +289,13 @@ class DartRunFileCommand(DartBuildCommandBase):
             self.run_web_app(dart_view, working_dir, action)
             return
 
+        # TODO: improve detection of runnable file (for example, don't attempt
+        # to run a part of a library).
         # At this point, we are looking at a file that either:
         #   - is not a .dart or .html file
         #   - is outside of a pub package
-        # As a last restort, run the file as a script, but only if the user
-        # requested a 'secondary' action.
-        if action != 'secondary' or not dart_view.is_dart_file:
+        # As a last resort, try to run the file as a script.
+        if action != 'primary' or not dart_view.is_dart_file:
             print("Dart: Cannot determine best action for {}".format(
                   dart_view.path
                   ))
