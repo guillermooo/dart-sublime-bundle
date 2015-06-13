@@ -151,12 +151,6 @@ class ActivityTracker(sublime_plugin.EventListener):
                 _logger.debug('sending overlay data for %s', view.file_name())
                 g_server.send_add_content(view)
 
-            if is_active(view):
-                prev_char = view.substr(view.sel()[0].begin() - 1)
-                if prev_char == '.' or prev_char == '(':
-                    view.window().run_command('hide_auto_complete')
-                    view.window().run_command('dart_get_completions')
-
     # TODO(guillermooo): Use on_modified_async
     @only_for_dart_files
     def on_modified(self, view):
@@ -217,13 +211,6 @@ class StdoutWatcher(threading.Thread):
     def start(self):
         _logger.info("starting StdoutWatcher")
 
-        try:
-            # Awaiting other threads...
-            self.server.ready_barrier.wait()
-        except threading.BrokenBarrierError:
-            _logger.error('could not start StdoutWatcher properly')
-            return
-
         while True:
             try:
                 data = self.server.stdout.readline().decode('utf-8')
@@ -254,8 +241,6 @@ class StdoutWatcher(threading.Thread):
 
 class AnalysisServer(object):
     MAX_ID = 9999999
-    # Halts all worker threads until the server is ready.
-    _ready_barrier = threading.Barrier(4, timeout=5)
 
     _request_id_lock = threading.Lock()
     _op_lock = threading.Lock()
@@ -264,10 +249,6 @@ class AnalysisServer(object):
     _request_id = -1
 
     server = None
-
-    @property
-    def ready_barrier(self):
-        return AnalysisServer._ready_barrier
 
     @property
     def stdout(self):
@@ -298,6 +279,8 @@ class AnalysisServer(object):
         self.requests = RequestsQueue('requests')
         self.responses = AnalyzerQueue('responses')
 
+
+    def start_handlers(self):
         reqh = RequestHandler(self)
         reqh.daemon = True
         reqh.start()
@@ -355,24 +338,25 @@ class AnalysisServer(object):
         AnalysisServer.server = PipeServer([sdk.path_to_dart,
                             sdk.path_to_analysis_snapshot,
                            '--sdk={0}'.format(sdk.path)])
-        AnalysisServer.server.start(working_dir=sdk.path)
 
-        self.start_stdout_watcher()
+        def do_start():
+            try:
+                AnalysisServer.server.start(working_dir=sdk.path)
+                self.start_handlers()
+                self.start_stdout_watcher()
+            except Exception as e:
+                _logger.error('could not start server properly')
+                _logger.error(e)
+                return
 
-        try:
-            # Server is ready.
-            self.ready_barrier.wait()
-        except threading.BrokenBarrierError:
-            _logger.error('could not start server properly')
-            return
+        threading.Thread(target=do_start).start()
 
     def start_stdout_watcher(self):
         sdk = SDK()
         t = StdoutWatcher(self, sdk.path)
         # Thread dies with the main thread.
         t.daemon = True
-        # XXX: This is necessary. If we call t.start() directly, ST hangs.
-        sublime.set_timeout_async(t.start, 0)
+        t.start()
 
     def stop(self):
         req = requests.shut_down(str(AnalysisServer.MAX_ID + 100))
@@ -455,9 +439,9 @@ class AnalysisServer(object):
 
         req = CompletionGetSuggestionsParams(file, offset)
         req = req.to_request(new_id)
-        
+
         self.requests.put(req, priority=TaskPriority.HIGH, block=False)
-        
+
     def should_ignore_file(self, path):
         project = DartProject.from_path(path)
         is_a_third_party_file = (project and is_path_under(project.path_to_packages, path))
@@ -479,13 +463,6 @@ class ResponseHandler(threading.Thread):
 
     def run(self):
         _logger.info('starting ResponseHandler')
-
-        try:
-            # Awaiting other threads...
-            self.server.ready_barrier.wait()
-        except threading.BrokenBarrierError:
-            _logger.error('could not start ResponseHandler properly')
-            return
 
         response_maker = ResponseMaker(self.server.responses)
 
@@ -554,12 +531,6 @@ class RequestHandler(threading.Thread):
 
     def run(self):
         _logger.info('starting RequestHandler')
-
-        try:
-            self.server.ready_barrier.wait()
-        except threading.BrokenBarrierError:
-            _logger.error('could not start RequestHandler properly')
-            return
 
         while True:
             try:
