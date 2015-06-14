@@ -127,6 +127,12 @@ def show_errors(errors):
 
     panel.view.settings().set('rulers', [])
     panel.show()
+
+    try:
+        v.show(v.sel()[0])
+    except IndexError:
+        pass
+
     sublime.status_message("Dart: Errors found")
 
     editor_context.errors = all_errs
