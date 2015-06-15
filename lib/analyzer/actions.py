@@ -144,7 +144,7 @@ class ShowErrorsImpl(object):
         panel.show()
 
         try:
-            v.show(v.sel()[0])
+            view.show(view.sel()[0])
         except IndexError:
             pass
 
