@@ -129,6 +129,12 @@ def show_errors(errors):
 
     panel.view.settings().set('rulers', [])
     panel.show()
+
+    try:
+        v.show(v.sel()[0])
+    except IndexError:
+        pass
+
     sublime.status_message("Dart: Errors found")
 
     editor_context.errors = all_errs
@@ -163,7 +169,7 @@ def handle_completions(results):
             elif c.element.kind == ElementKind.GETTER or c.element.kind == ElementKind.FIELD:
                 formatted.append([_PROPERTY.format(c.completion), c.completion])
             elif c.element.kind == ElementKind.CONSTRUCTOR:
-                formatted.append([_CONSTRUCTOR.format(c.completion), c.completion])
+                formatted.append([_CONSTRUCTOR.format(c.completion) + c.element.parameters, c.completion + '(${1:%s})$0' % c.element.parameters[1:-1]])
             else:
                 formatted.append([_OTHER.format(c.completion), c.completion])
 
