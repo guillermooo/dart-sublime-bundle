@@ -89,27 +89,30 @@ class ShowErrorsImpl(object):
         @errors
           An instance of `ErrorInfoCollection`.
         '''
-        v = get_active_view()
+        view = get_active_view()
         # TODO(guillermooo): Use tokens to identify requests:file.
         # todo (pp): notifications don't have id; process all
-        if not self.compare_paths(errors.file, v.file_name()):
+        if not self.compare_paths(errors.file, view.file_name()):
             _logger.debug('different view active - aborting')
             return
+
+        panel = OutputPanel('dart.analyzer')
 
         analysis_errors = list(errors.errors)
         if len(analysis_errors) == 0:
             clear_ui()
+            panel.hide()
             return
 
         infos, warns, erros = self.group(analysis_errors)
 
-        info_regs = [self.error_to_region(v, item) for item in infos]
-        warn_regs = [self.error_to_region(v, item) for item in warns]
-        errs_regs = [self.error_to_region(v, item) for item in erros]
+        info_regs = [self.error_to_region(view, item) for item in infos]
+        warn_regs = [self.error_to_region(view, item) for item in warns]
+        errs_regs = [self.error_to_region(view, item) for item in erros]
 
         _logger.debug('displaying errors to the user')
 
-        self.add_regions(v, info_regs, warn_regs, errs_regs)
+        self.add_regions(view, info_regs, warn_regs, errs_regs)
 
         info_patts = [self.to_compact_text(item) for item in infos]
         warn_patts = [self.to_compact_text(item) for item in warns]
@@ -118,11 +121,6 @@ class ShowErrorsImpl(object):
         all_errs = set(errs_patts + warn_patts + info_patts)
 
         panel = OutputPanel('dart.analyzer')
-
-        if not all_errs:
-            editor_context.errors = []
-            panel.hide()
-            return
 
         errors_pattern = r'^\w+\|\w+\|(.+)\|(\d+)\|(\d+)\|(.+)$'
         panel.set('result_file_regex', errors_pattern)
