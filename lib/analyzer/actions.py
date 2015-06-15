@@ -6,12 +6,14 @@
 Actions performed inside ST3 based on the analysis server's responses.
 """
 
-import sublime
-
 import os
+
+import sublime
 
 from Dart.sublime_plugin_lib import PluginLogger
 from Dart.sublime_plugin_lib.panels import OutputPanel
+from Dart.sublime_plugin_lib.sublime import get_active_view
+from Dart.sublime_plugin_lib.sublime import R
 
 from Dart.lib.analyzer.api.protocol import AnalysisErrorSeverity
 from Dart.lib.analyzer.api.protocol import AnalysisErrorType
@@ -46,7 +48,7 @@ def show_errors(errors):
     @errors
       An instance of `ErrorInfoCollection`.
     '''
-    v = sublime.active_window().active_view()
+    v = get_active_view()
     # TODO(guillermooo): Use tokens to identify requests:file.
     # todo (pp): notifications don't have id; process all
     if os.path.realpath(errors.file) != os.path.realpath(v.file_name()):
@@ -71,7 +73,7 @@ def show_errors(errors):
         loc = error.location
         pt = view.text_point(loc.startLine - 1,
                              loc.startColumn - 1)
-        return sublime.Region(pt, pt + loc.length)
+        return R(pt, pt + loc.length)
 
     info_regs = [error_to_region(v, item) for item in infos]
     warn_regs = [error_to_region(v, item) for item in warns]
@@ -136,7 +138,7 @@ def clear_ui():
     '''Remove UI decoration.
     '''
     _logger.debug('erasing errors from view')
-    v = sublime.active_window().active_view()
+    v = get_active_view()
     v.erase_regions(DAS_UI_REGIONS_ERRORS)
     v.erase_regions(DAS_UI_REGIONS_WARNINGS)
     v.erase_regions(DAS_UI_REGIONS_INFOS)
@@ -174,6 +176,6 @@ def handle_completions(results):
     if not show:
         return
 
-    v = sublime.active_window().active_view()
+    v = get_active_view()
     if v:
         v.run_command('auto_complete')
