@@ -123,6 +123,7 @@ class ShowErrorsImpl(object):
         # Tried to use .sublime-settings for this, but it won't work well.
         errors_pattern = r'^\w+\|\w+\|(.+)\|(\d+)\|(\d+)\|(.+)$'
         panel.set('result_file_regex', errors_pattern)
+        all_errs = list(all_errs)
         # Overwrite any previous text in the panel.
         panel.write('\n'.join(all_errs))
 

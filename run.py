@@ -262,7 +262,7 @@ class DartRunFileCommand(DartBuildCommandBase):
         working_dir = None
         try:
             working_dir = os.path.dirname(find_pubspec(file_name))
-        except TypeError:
+        except (TypeError, AttributeError):
             try:
                 if not working_dir:
                     working_dir = os.path.dirname(file_name)
