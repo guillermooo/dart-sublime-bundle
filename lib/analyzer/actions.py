@@ -90,8 +90,8 @@ class ShowErrorsImpl(object):
           An instance of `ErrorInfoCollection`.
         '''
         view = get_active_view()
+
         # TODO(guillermooo): Use tokens to identify requests:file.
-        # todo (pp): notifications don't have id; process all
         if not self.compare_paths(errors.file, view.file_name()):
             _logger.debug('different view active - aborting')
             return
@@ -99,12 +99,12 @@ class ShowErrorsImpl(object):
         panel = OutputPanel('dart.analyzer')
 
         analysis_errors = list(errors.errors)
-        if len(analysis_errors) == 0:
+        infos, warns, erros = self.group(analysis_errors)
+
+        if not len(infos + warns + erros) > 0:
             clear_ui()
             panel.hide()
             return
-
-        infos, warns, erros = self.group(analysis_errors)
 
         info_regs = [self.error_to_region(view, item) for item in infos]
         warn_regs = [self.error_to_region(view, item) for item in warns]
@@ -114,33 +114,26 @@ class ShowErrorsImpl(object):
 
         self.add_regions(view, info_regs, warn_regs, errs_regs)
 
-        info_patts = [self.to_compact_text(item) for item in infos]
-        warn_patts = [self.to_compact_text(item) for item in warns]
-        errs_patts = [self.to_compact_text(item) for item in erros]
+        all_sorted = sorted(infos + warns + erros, key=lambda x: x.location.offset)
+        all_errs = (self.to_compact_text(item) for item in all_sorted)
 
-        all_errs = set(errs_patts + warn_patts + info_patts)
-
+        # TODO(guillermooo): abstract out the panel stuff into a DartErrorPanel class.
         panel = OutputPanel('dart.analyzer')
 
+        # Tried to use .sublime-settings for this, but it won't work well.
         errors_pattern = r'^\w+\|\w+\|(.+)\|(\d+)\|(\d+)\|(.+)$'
         panel.set('result_file_regex', errors_pattern)
-        # This will overwrite any previous text.
+        # Overwrite any previous text in the panel.
         panel.write('\n'.join(all_errs))
 
-        # FIXME: It appears that if ST dev find a .sublime-syntax and a .tmLanguage
-        # file, it will load # the first one. But how do we refer to the file then?
+        # TODO(guillermooo): remove this when .sublime-syntax has been fully
+        # adopted.
         if sublime.version() >= '3084':
             panel.view.set_syntax_file('Packages/Dart/Support/Analyzer Output.sublime-syntax')
         else:
             panel.view.set_syntax_file('Packages/Dart/Support/Analyzer Output.tmLanguage')
 
-        panel.view.settings().set('rulers', [])
-        panel.show()
-        sublime.status_message("Dart: Errors found")
-
         editor_context.errors = all_errs
-
-        panel.view.settings().set('rulers', [])
         panel.show()
 
         try:
