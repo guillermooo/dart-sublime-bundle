@@ -101,7 +101,7 @@ class ShowErrorsImpl(object):
         analysis_errors = list(errors.errors)
         infos, warns, erros = self.group(analysis_errors)
 
-        if not len(infos + warns + erros) > 0:
+        if len(infos + warns + erros) == 0:
             clear_ui()
             panel.hide()
             return
