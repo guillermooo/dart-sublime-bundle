@@ -120,6 +120,7 @@ class ShowErrorsImpl(object):
 
         all_errs = set(errs_patts + warn_patts + info_patts)
 
+        # TODO(guillermooo): abstract out the panel stuff into a DartErrorPanel class.
         panel = OutputPanel('dart.analyzer')
 
         # Tried to use .sublime-settings for this, but it won't work well.
