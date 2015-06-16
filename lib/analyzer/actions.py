@@ -114,11 +114,8 @@ class ShowErrorsImpl(object):
 
         self.add_regions(view, info_regs, warn_regs, errs_regs)
 
-        info_patts = [self.to_compact_text(item) for item in infos]
-        warn_patts = [self.to_compact_text(item) for item in warns]
-        errs_patts = [self.to_compact_text(item) for item in erros]
-
-        all_errs = set(errs_patts + warn_patts + info_patts)
+        all_sorted = sorted(infos + warns + erros, key=lambda x: x.location.offset)
+        all_errs = (self.to_compact_text(item) for item in all_sorted)
 
         # TODO(guillermooo): abstract out the panel stuff into a DartErrorPanel class.
         panel = OutputPanel('dart.analyzer')
