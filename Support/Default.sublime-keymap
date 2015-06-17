@@ -115,5 +115,8 @@
 	{ "keys": ["ctrl+e"], "command": "move_to", "args": { "to": "eol" }, "context": [{"key": "selector", "operand": "text.dart-fs-navi" }] },
 	{ "keys": ["ctrl+f"], "command": "move", "args": { "forward": true, "by": "characters", "count": 1 }, "context": [{"key": "selector", "operand": "text.dart-fs-navi" }] },
 	{ "keys": ["ctrl+b"], "command": "move", "args": { "forward": false, "by": "characters", "count": 1 }, "context": [{"key": "selector", "operand": "text.dart-fs-navi" }] },
-	{ "keys": ["ctrl+k"], "command": "dart_kill_to_eol", "context": [{"key": "selector", "operand": "text.dart-fs-navi" }] }
+	{ "keys": ["ctrl+k"], "command": "dart_kill_to_eol", "context": [{"key": "selector", "operand": "text.dart-fs-navi" }] },
+
+	{ "keys": ["ctrl+j"], "command": "move", "args": {"by": "lines", "forward": true}, "context": [{"key": "auto_complete_visible"}, {"key": "selector", "operand": "source.dart"}] },
+	{ "keys": ["ctrl+k"], "command": "move", "args": {"by": "lines", "forward": false}, "context": [{"key": "auto_complete_visible"}, {"key": "selector", "operand": "source.dart"}] }
 ]

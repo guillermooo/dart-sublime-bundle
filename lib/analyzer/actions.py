@@ -125,6 +125,8 @@ class ShowErrorsImpl(object):
         panel.set('result_file_regex', errors_pattern)
         all_errs = list(all_errs)
         # Overwrite any previous text in the panel.
+
+        # We get errors sometimes when writing error lines here.
         panel.write('\n'.join(all_errs))
 
         # TODO(guillermooo): remove this when .sublime-syntax has been fully
