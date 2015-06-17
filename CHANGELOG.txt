@@ -1,3 +1,38 @@
+1.5.0 - 20150616
+
+	- tweak error reporting details
+	- fixes
+	- refactor error reporting code
+	- use new helpers
+	- add helpers
+	- show sel()[0] after errors panel opens
+	- show ctor params in autocomplete list
+	- use different symbol for constructors in autocomplete list
+	- use standard keyboard shortcut for completions list
+	- tweak locations where completions are offered after "."
+	- don't close the autocomplete list before showing our completions
+	- remove longstanding race condition in analyzer.py
+	- implement autocomple functionality
+	- retire dartlint
+	- fix #525 - plugin can now run standalone .dart files
+	- change awful class names to less awful class names
+	- change awful class name to less awful class name
+	- refactor build tool
+	- make dart_dartium_path a cross-platform setting
+	- add missing parens
+	- improve sdk setting reader for Dart package
+	- improve descriptor for xplatform settings
+	- implement cross-platform setting descriptor
+	- fix variable name
+	- friendlier messages
+	- abstract out FileInfo
+	- move IdleEventListener class
+	- add context.py to sublime_plugin_lib
+	- add function to search by extension
+	- refactor
+	- Add support for assert keyword
+	- synchronize panel writing with UI thread
+
 1.4.1 - 20150529
 
 	- do not analyze ./packages or SDK files
