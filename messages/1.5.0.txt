@@ -1,0 +1,31 @@
+Version 1.5.0
+
+The Sublime Text Dart Package has been updated!
+
+This version includes major new features. More information here:
+
+https://github.com/guillermooo/dart-sublime-bundle/releases/tag/1.5.0
+
+//////////////////////////////////////////////////////////////////////////////
+
+Please restart Sublime Text.
+
+//////////////////////////////////////////////////////////////////////////////
+
+Full Documentation:
+
+	- https://github.com/guillermooo/dart-sublime-bundle/wiki
+
+
+MAIN CHANGES
+------------
+
+https://github.com/guillermooo/dart-sublime-bundle/releases/tag/1.5.0
+
+
+Reporting Bugs and Requesting New Features
+------------------------------------------
+
+Please report any bugs and request features here:
+
+* https://github.com/guillermooo/dart-sublime-bundle/issues
