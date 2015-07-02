@@ -6,6 +6,7 @@ import logging
 
 
 _logger = PluginLogger(__name__)
+_logger.warn_aboug_logging_level()
 
 
 editor_context = EditorContext()
