@@ -8,13 +8,16 @@ import os
 import sublime
 
 
+# If we don't do this, logging will fail sometimes. :-/
+logging.basicConfig()
+
+
 class PluginLogger(object):
     """A logger intented to be used from plugin files inside this package.
     """
     def __init__(self, name):
-        logger = logging.getLogger(name)
-        logger.setLevel(logging.ERROR)
-        self.logger = logger
+        self.logger = logging.getLogger(name)
+        self.logger.setLevel(logging.DEBUG)
 
     def debug(self, msg, *args, **kwargs):
         self.logger.debug(msg, *args, **kwargs)
