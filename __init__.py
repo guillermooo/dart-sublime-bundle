@@ -17,7 +17,7 @@ class PluginLogger(object):
     """
     def __init__(self, name):
         self.logger = logging.getLogger(name)
-        self.logger.setLevel(logging.DEBUG)
+        self.logger.setLevel(logging.ERROR)
 
     def debug(self, msg, *args, **kwargs):
         self.logger.debug(msg, *args, **kwargs)
