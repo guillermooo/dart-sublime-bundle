@@ -101,6 +101,7 @@ class OutputPanel(object):
         pass
 
 
+# TOOD: fix this
 class ErrorPanel(object):
     def __init__(self):
         self.panel = OutputPanel('dart.info')
@@ -116,3 +117,92 @@ class ErrorPanel(object):
 
     def show(self):
         self.panel.show()
+
+
+# TODO: move this to common plugin lib.
+class ErrorsPanel(object):
+    """
+    A panel that displays errors and enables error navigation.
+    """
+    _sublime_syntax_file = None
+    _tm_language_file = None
+    _errors_pattern = ''
+    _errors_template = ''
+
+    _lock = Lock()
+
+    def __init__(self, name):
+        """
+        @name
+          The name of the underlying output panel.
+        """
+        self.name = name
+        self._errors = []
+
+    @property
+    def errors(self):
+        with self._lock:
+            return self._errors
+
+    @errors.setter
+    def errors(self, value):
+        with self._lock:
+            self._errors = value
+
+    @property
+    def errors_pattern(self):
+        """
+        Subclasses can override this to provide a more suitable pattern to
+        capture errors.
+        """
+        return self._errors_pattern
+
+    @property
+    def errors_template(self):
+        """
+        Subclasses can override this to provide a more suitable template to
+        display errors.
+        """
+        return self._errors_template
+
+    def display(self):
+        if len(self.errors) == 0:
+            panel = OutputPanel(self.name)
+            panel.hide()
+            return
+
+        # Like this to avoid deadlock. XXX: Maybe use RLock instead?
+        formatted = self.format()
+        with self._lock:
+            # XXX: If we store this panel as an instance member, it won't work.
+            # Revise implementation.
+            panel = OutputPanel(self.name)
+            panel.set('result_file_regex', self.errors_pattern)
+            # TODO: remove this when we don't support tmLanguage any more.
+            if sublime.version() > '3083':
+                panel.view.set_syntax_file(self._sublime_syntax_file)
+            else:
+                panel.view.set_syntax_file(self._tm_language_file)
+            panel.write(formatted)
+            # TODO(guillermooo): Do not show now if other panel is showing;
+            # for example, the console.
+            panel.show()
+
+    def clear(self):
+        self.errors = []
+
+    def update(self, errors, sort_key=None):
+        self.errors = list(sorted(errors, key=sort_key))
+
+    def get_item_result_data(self, item):
+        """
+        Subclasses must implement this method.
+
+        Must return a dictionary to be used as data for `errors_template`.
+        """
+        return {}
+
+    def format(self):
+        formatted = (self.errors_template.format(**self.get_item_result_data(e))
+                for e in self.errors)
+        return '\n'.join(formatted)

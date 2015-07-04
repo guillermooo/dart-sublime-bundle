@@ -1,23 +1,23 @@
 # Copyright (c) 2014, Guillermo López-Anglada. Please see the AUTHORS file for details.
 # All rights reserved. Use of this source code is governed by a BSD-style
 # license that can be found in the LICENSE file.)
-
-'''This module is intended to run first when the different plugins load.
+'''
+This module is intended to run first thing when ST loads modules in this package.
 
 It should perform a basic status check so that we can catch severe
 configuration errors early on and report them to the user.
 '''
 
+import os
+
 import sublime
 import sublime_plugin
 
-import os
-
-from Dart.lib.sdk import SDK
-from Dart.sublime_plugin_lib.panels import OutputPanel
-from Dart.lib.error import FatalConfigError
-from Dart.sublime_plugin_lib.io import touch
 from Dart.lib import ga
+from Dart.lib.error import FatalConfigError
+from Dart.lib.sdk import SDK
+from Dart.sublime_plugin_lib.io import touch
+from Dart.sublime_plugin_lib.panels import OutputPanel
 
 
 HEADING = '''
@@ -84,6 +84,10 @@ def plugin_loaded():
 
 
 class _dart_report_config_errors(sublime_plugin.WindowCommand):
+    '''
+    Shows config errors in an output panel.
+    '''
+
     def run(self, message):
         v = OutputPanel('dart.config.check')
         text = HEADING + '\n'
