@@ -37,6 +37,8 @@ from Dart.lib.analyzer.api.protocol import AnalysisUpdateContentParams
 from Dart.lib.analyzer.api.protocol import CompletionGetSuggestionsParams
 from Dart.lib.analyzer.api.protocol import CompletionGetSuggestionsResult
 from Dart.lib.analyzer.api.protocol import CompletionResultsParams
+from Dart.lib.analyzer.api.protocol import EditFormatParams
+from Dart.lib.analyzer.api.protocol import EditFormatResult
 from Dart.lib.analyzer.api.protocol import RemoveContentOverlay
 from Dart.lib.analyzer.api.protocol import ServerGetVersionParams
 from Dart.lib.analyzer.api.protocol import ServerGetVersionResult
@@ -434,6 +436,26 @@ class AnalysisServer(object):
 
         self.requests.put(req, priority=TaskPriority.HIGH, block=False)
 
+    def send_format_file(self, view):
+        new_id = self.get_request_id()
+
+        if not view.file_name():
+            _logger.info("aborting sending request for formatting - no file name")
+            return
+
+        r0 = None
+        try:
+            r0 = view.sel()[0]
+        except IndexError:
+            r0 = sublime.Region(0)
+
+        # TODO: Implement lineLength parameter.
+        req = EditFormatParams(view.file_name(), r0.begin(), r0.size())
+        req = req.to_request(new_id)
+
+        _logger.info("now sending request for formatting")
+        self.requests.put(req, priority=TaskPriority.HIGH, block=False)
+
     def should_ignore_file(self, path):
         project = DartProject.from_path(path)
         is_a_third_party_file = (project and is_path_under(project.path_to_packages, path))
@@ -506,6 +528,10 @@ class ResponseHandler(threading.Thread):
 
                             actx.id = resp.result.id
                             actx.request_id = None
+
+                    if isinstance(resp.result, EditFormatResult):
+                        after(0, actions.handle_formatting, EditFormatResult.from_json(resp.result.to_json().copy()))
+                        continue
 
         except Exception as e:
             msg = 'error in thread' + self.name + '\n'

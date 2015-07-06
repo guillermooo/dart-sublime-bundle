@@ -2,15 +2,18 @@
 # All rights reserved. Use of this source code is governed by a BSD-style
 # license that can be found in the LICENSE file.)
 
+from subprocess import PIPE
+from subprocess import Popen
+
 import sublime
 import sublime_plugin
 
 from Dart.sublime_plugin_lib import PluginLogger
 from Dart.sublime_plugin_lib.plat import supress_window
+
+from Dart import analyzer
 from Dart.lib.sdk import DartFormat
 
-from subprocess import PIPE
-from subprocess import Popen
 
 _logger = PluginLogger(__name__)
 
@@ -26,18 +29,7 @@ class DartFormatCommand(sublime_plugin.WindowCommand):
         if not view:
             return
 
-        # Reformat the whole file.
-        text = view.substr(sublime.Region(0, view.size()))
-        formatted_text = DartFormat().format(text)
-
-        if not formatted_text:
-            sublime.status_message("Dart: Could not format anything.")
-            return
-
-        view.run_command('dart_replace_region', {
-            'region': [0, view.size()],
-            'text': formatted_text + '\n'
-            })
+        analyzer.g_server.send_format_file(view)
 
 
 class DartReplaceRegion(sublime_plugin.TextCommand):

@@ -13,17 +13,19 @@ from Dart.sublime_plugin_lib import PluginLogger
 
 from Dart._init_ import editor_context
 from Dart.lib.analyzer.api.protocol import AnalysisErrorsParams
-from Dart.lib.analyzer.api.protocol import ServerGetVersionResult
 from Dart.lib.analyzer.api.protocol import AnalysisNavigationParams
 from Dart.lib.analyzer.api.protocol import CompletionGetSuggestionsResult
 from Dart.lib.analyzer.api.protocol import CompletionResultsParams
+from Dart.lib.analyzer.api.protocol import ServerGetVersionResult
+from Dart.lib.analyzer.api.protocol import EditFormatResult
 
 
 _logger = PluginLogger(__name__)
 
 
 class ResponseMaker(object):
-    '''Transforms raw notifications and responses into `ServerResponse`s.
+    '''
+    Transforms raw notifications and responses into `Response`s.
     '''
 
     def __init__(self, source):
@@ -83,8 +85,16 @@ def is_completions_suggestions_result(data):
     return 'id' in data.get('result', {})
 
 
+def is_format_result(data):
+    # TODO: find a better way to identify responses.
+    res = data.get('result', {})
+    return (res
+            and 'selectionOffset' in res
+            and 'selectionLength' in res
+            and 'edits' in res)
+
+
 def response_classifier(data):
-    # XXX: replace here XXX
     if is_errors_response(data):
         params = AnalysisErrorsParams.from_json(data['params'])
         return params.to_notification()
@@ -103,6 +113,10 @@ def response_classifier(data):
 
     if is_completions_suggestions_result(data):
         result = CompletionGetSuggestionsResult.from_json(data['result'])
+        return result.to_response(data['id'])
+
+    if is_format_result(data):
+        result = EditFormatResult.from_json(data['result'])
         return result.to_response(data['id'])
 
     return None
