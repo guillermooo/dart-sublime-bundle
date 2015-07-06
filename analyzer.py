@@ -21,7 +21,7 @@ from Dart.sublime_plugin_lib.path import is_active
 from Dart.sublime_plugin_lib.plat import supress_window
 from Dart.sublime_plugin_lib.sublime import after
 
-from Dart import editor_context
+from Dart._init_ import editor_context
 from Dart.lib.analyzer import actions
 from Dart.lib.analyzer import requests
 from Dart.lib.analyzer.api.base import Notification

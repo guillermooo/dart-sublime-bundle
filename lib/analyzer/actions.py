@@ -18,7 +18,7 @@ from Dart.sublime_plugin_lib.sublime import R
 from Dart.lib.analyzer.api.protocol import AnalysisErrorSeverity
 from Dart.lib.analyzer.api.protocol import AnalysisErrorType
 from Dart.lib.analyzer.api.protocol import ElementKind
-from Dart import editor_context
+from Dart._init_ import editor_context
 
 
 _logger = PluginLogger(__name__)

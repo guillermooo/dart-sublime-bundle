@@ -99,6 +99,11 @@ class PluginLogger(object):
 
     def __init__(self, name):
         self.logger = logging.getLogger(name)
+
+        # Only attach handlers to the top-level logger in the hierarchy.
+        if '.' in name:
+            return
+
         default_level = logging.ERROR
         user_level = self._get_log_level_from_file()
         self.logger.setLevel(user_level if user_level is not None else default_level)
