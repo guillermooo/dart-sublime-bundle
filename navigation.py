@@ -3,7 +3,7 @@ import re
 import sublime
 import sublime_plugin
 
-from Dart import editor_context
+from Dart._init_ import editor_context
 from Dart.lib.notifications import show_analysis_tooltip
 from Dart.lib.notifications import show_status_tooltip
 

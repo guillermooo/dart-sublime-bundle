@@ -11,7 +11,7 @@ import sublime
 
 from Dart.sublime_plugin_lib import PluginLogger
 
-from Dart import editor_context
+from Dart._init_ import editor_context
 from Dart.lib.analyzer.api.protocol import AnalysisErrorsParams
 from Dart.lib.analyzer.api.protocol import ServerGetVersionResult
 from Dart.lib.analyzer.api.protocol import AnalysisNavigationParams
