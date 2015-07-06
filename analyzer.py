@@ -429,8 +429,6 @@ class AnalysisServer(object):
             actx.invalidate()
             actx.request_id = new_id
 
-        editor_context.set_id(view, new_id)
-
         req = CompletionGetSuggestionsParams(file, offset)
         req = req.to_request(new_id)
 
