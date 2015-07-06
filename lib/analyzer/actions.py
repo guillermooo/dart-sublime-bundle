@@ -195,3 +195,19 @@ def handle_completions(results):
     v = get_active_view()
     if v:
         v.run_command('auto_complete')
+
+
+def handle_formatting(result):
+    v = get_active_view()
+
+    v.sel().clear()
+
+    for edit in result.edits:
+        v.run_command('dart_replace_region', {
+            'region': [edit.offset, edit.length],
+            'text': edit.replacement
+            })
+
+    r = sublime.Region(result.selectionOffset,
+            result.selectionOffset + result.selectionLength)
+    v.sel().add(r)
