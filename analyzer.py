@@ -255,13 +255,13 @@ class AnalysisServer(object):
     def stdin(self):
         return AnalysisServer.server.proc.stdin
 
-    @staticmethod
-    def get_request_id(view, response_type):
+    def get_request_id(self, view, response_type):
         with AnalysisServer._request_id_lock:
             if AnalysisServer._request_id >= AnalysisServer.MAX_ID:
                 AnalysisServer._request_id = -1
             AnalysisServer._request_id += 1
-            editor_context.request_ids[view.id()][str(AnalysisServer._request_id)] = response_type
+            # editor_context.request_ids[view.id()][str(AnalysisServer._request_id)] = response_type
+            self.request_ids[view.id()][str(AnalysisServer._request_id)] = response_type
             return str(AnalysisServer._request_id)
 
     @staticmethod
@@ -276,7 +276,8 @@ class AnalysisServer(object):
         self.priority_files = []
         self.requests = RequestsQueue('requests')
         self.responses = AnalyzerQueue('responses')
-
+        # Maps view.id's to request id's, and these to response types.
+        self.request_ids = defaultdict(dict)
 
     def start_handlers(self):
         reqh = RequestHandler(self)
@@ -484,7 +485,7 @@ class ResponseHandler(threading.Thread):
     def run(self):
         _logger.info('starting ResponseHandler')
 
-        response_maker = ResponseMaker(self.server.responses)
+        response_maker = ResponseMaker(self.server)
 
         try:
             for resp in response_maker.make():
