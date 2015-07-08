@@ -12,7 +12,6 @@ import sublime
 from Dart.sublime_plugin_lib import PluginLogger
 from Dart.sublime_plugin_lib.sublime import get_active_view
 
-from Dart._init_ import editor_context
 from Dart.lib.analyzer.api.protocol import AnalysisErrorsParams
 from Dart.lib.analyzer.api.protocol import AnalysisNavigationParams
 from Dart.lib.analyzer.api.protocol import CompletionGetSuggestionsResult
@@ -29,15 +28,15 @@ class ResponseMaker(object):
     Transforms raw notifications and responses into `Response`s.
     '''
 
-    def __init__(self, source):
-        self.source = source
+    def __init__(self, server):
+        self.server = server
 
     def make(self):
         '''Makes `ServerResponse`s forever.
         '''
         while True:
             try:
-                data = self.source.get()
+                data = self.server.responses.get()
             except queue.Empty:
                 # unreachable?
                 _logger.error('unexpected empty queue in ResponseMaker')
@@ -50,7 +49,7 @@ class ResponseMaker(object):
                     break
 
                 view = get_active_view()
-                if view and data.get('id') in editor_context.request_ids[view.id()]:
+                if view and data.get('id') in self.server.request_ids[view.id()]:
                     yield self.make_request(data, view.id())
                     continue
 
@@ -58,8 +57,8 @@ class ResponseMaker(object):
 
     def make_request(self, data, view_id):
         request_id = data['id']
-        response_type = editor_context.request_ids[view_id][request_id]
-        del editor_context.request_ids[view_id][request_id]
+        response_type = self.server.request_ids[view_id][request_id]
+        del self.server.request_ids[view_id][request_id]
 
         if hasattr(response_type, 'from_json'):
             r = response_type.from_json(data.get('result'))

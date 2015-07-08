@@ -23,8 +23,6 @@ class EditorContext(object):
         self._errors = []
         self._errors_index = -1
         self.autocomplete_context = AutocompleteContext()
-        # Maps view.id's request id's, and these to response types.
-        self.request_ids = defaultdict(dict)
 
     @property
     def navigation(self):
