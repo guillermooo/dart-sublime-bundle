@@ -36,7 +36,6 @@ from Dart.lib.analyzer.api.protocol import AnalysisSetAnalysisRootsResult
 from Dart.lib.analyzer.api.protocol import AnalysisSetPriorityFilesParams
 from Dart.lib.analyzer.api.protocol import AnalysisSetPriorityFilesResult
 from Dart.lib.analyzer.api.protocol import AnalysisSetSubscriptionsParams
-from Dart.lib.analyzer.api.protocol import ServerSetSubscriptionsResult
 from Dart.lib.analyzer.api.protocol import AnalysisUpdateContentParams
 from Dart.lib.analyzer.api.protocol import AnalysisUpdateContentResult
 from Dart.lib.analyzer.api.protocol import CompletionGetSuggestionsParams
@@ -47,6 +46,7 @@ from Dart.lib.analyzer.api.protocol import EditFormatResult
 from Dart.lib.analyzer.api.protocol import RemoveContentOverlay
 from Dart.lib.analyzer.api.protocol import ServerGetVersionParams
 from Dart.lib.analyzer.api.protocol import ServerGetVersionResult
+from Dart.lib.analyzer.api.protocol import ServerSetSubscriptionsResult
 from Dart.lib.analyzer.pipe_server import PipeServer
 from Dart.lib.analyzer.queue import AnalyzerQueue
 from Dart.lib.analyzer.queue import RequestsQueue
