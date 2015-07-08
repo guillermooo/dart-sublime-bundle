@@ -25,10 +25,6 @@ from Dart.lib.sdk import SDK
 _logger = PluginLogger(__name__)
 
 
-START_DELAY = 50
-_SIGNAL_STOP = '__SIGNAL_STOP'
-
-
 g_server = None
 
 
@@ -64,7 +60,7 @@ def plugin_loaded():
     # FIXME(guillermooo): Ignoring, then de-ignoring this package throws
     # errors. (Potential ST3 bug: https://github.com/SublimeTextIssues/Core/issues/386)
     # Make ST more responsive on startup.
-    sublime.set_timeout(init, START_DELAY)
+    sublime.set_timeout(init, 500)
 
 
 def plugin_unloaded():

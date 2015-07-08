@@ -2,18 +2,18 @@
 # All rights reserved. Use of this source code is governed by a BSD-style
 # license that can be found in the LICENSE file.)
 
-from collections import defaultdict
-from datetime import datetime
-from subprocess import PIPE
-from subprocess import Popen
 import json
 import os
 import queue
 import threading
 import time
 
+from collections import defaultdict
+from datetime import datetime
+from subprocess import PIPE
+from subprocess import Popen
+
 import sublime
-import sublime_plugin
 
 from Dart.sublime_plugin_lib import PluginLogger
 from Dart.sublime_plugin_lib.panels import OutputPanel
