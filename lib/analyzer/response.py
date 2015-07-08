@@ -10,6 +10,7 @@ import queue
 import sublime
 
 from Dart.sublime_plugin_lib import PluginLogger
+from Dart.sublime_plugin_lib.sublime import get_active_view
 
 from Dart._init_ import editor_context
 from Dart.lib.analyzer.api.protocol import AnalysisErrorsParams
@@ -48,17 +49,21 @@ class ResponseMaker(object):
                 yield data
                 break
 
+            view = get_active_view()
+            if view and data.get('id') in editor_context.request_ids[view.id()]:
+                response_type = editor_context.request_ids[view.id()][data['id']]
+                del editor_context.request_ids[view.id()][data['id']]
+                if hasattr(response_type, 'from_json'):
+                    r = response_type.from_json(data.get('result'))
+                    yield r.to_response(data['id'])
+                    continue
+
+                yield response_type().to_response(data['id'])
+                continue
+
             r = response_classifier(data)
 
             yield r
-
-
-def is_result_id_response(data):
-    return data.get('result', {}).get('id')
-
-
-def is_server_version_response(data):
-    return data.get('result', {}).get('version')
 
 
 def is_result_response(data):
@@ -81,27 +86,10 @@ def is_completion_results(data):
     return 'completion.results' == data.get('event')
 
 
-def is_completions_suggestions_result(data):
-    return 'id' in data.get('result', {})
-
-
-def is_format_result(data):
-    # TODO: find a better way to identify responses.
-    res = data.get('result', {})
-    return (res
-            and 'selectionOffset' in res
-            and 'selectionLength' in res
-            and 'edits' in res)
-
-
 def response_classifier(data):
     if is_errors_response(data):
         params = AnalysisErrorsParams.from_json(data['params'])
         return params.to_notification()
-
-    if is_server_version_response(data):
-        result = ServerGetVersionResult.from_json(data['result'])
-        return result.to_response(data['id'])
 
     if is_navigation_notification(data):
         result = AnalysisNavigationParams.from_json(data['params'])
@@ -110,13 +98,5 @@ def response_classifier(data):
     if is_completion_results(data):
         result = CompletionResultsParams.from_json(data['params'])
         return result.to_notification()
-
-    if is_completions_suggestions_result(data):
-        result = CompletionGetSuggestionsResult.from_json(data['result'])
-        return result.to_response(data['id'])
-
-    if is_format_result(data):
-        result = EditFormatResult.from_json(data['result'])
-        return result.to_response(data['id'])
 
     return None
