@@ -180,9 +180,7 @@ class ActivityTracker(sublime_plugin.EventListener):
 
     @only_for_dart_files
     def on_deactivated(self, view):
-        # Any ongoing searches must be invalidated.
-        del editor_context.search_id
-
+        # FIXME: what's this supposed to do?
         if not is_view_dart_script(view):
             return
 
