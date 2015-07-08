@@ -20,6 +20,7 @@ from Dart.sublime_plugin_lib.panels import OutputPanel
 from Dart.sublime_plugin_lib.path import is_active
 from Dart.sublime_plugin_lib.plat import supress_window
 from Dart.sublime_plugin_lib.sublime import after
+from Dart.sublime_plugin_lib.sublime import get_active_view
 
 from Dart._init_ import editor_context
 from Dart.lib.analyzer import actions
@@ -31,9 +32,13 @@ from Dart.lib.analyzer.api.protocol import AnalysisErrorsParams
 from Dart.lib.analyzer.api.protocol import AnalysisNavigationParams
 from Dart.lib.analyzer.api.protocol import AnalysisService
 from Dart.lib.analyzer.api.protocol import AnalysisSetAnalysisRootsParams
+from Dart.lib.analyzer.api.protocol import AnalysisSetAnalysisRootsResult
 from Dart.lib.analyzer.api.protocol import AnalysisSetPriorityFilesParams
+from Dart.lib.analyzer.api.protocol import AnalysisSetPriorityFilesResult
 from Dart.lib.analyzer.api.protocol import AnalysisSetSubscriptionsParams
+from Dart.lib.analyzer.api.protocol import ServerSetSubscriptionsResult
 from Dart.lib.analyzer.api.protocol import AnalysisUpdateContentParams
+from Dart.lib.analyzer.api.protocol import AnalysisUpdateContentResult
 from Dart.lib.analyzer.api.protocol import CompletionGetSuggestionsParams
 from Dart.lib.analyzer.api.protocol import CompletionGetSuggestionsResult
 from Dart.lib.analyzer.api.protocol import CompletionResultsParams
@@ -184,10 +189,10 @@ class ActivityTracker(sublime_plugin.EventListener):
     @only_for_dart_files
     def on_activated(self, view):
         if AnalysisServer.ping() and not view.is_loading():
-            g_server.add_root(view.file_name())
+            g_server.add_root(view, view.file_name())
 
             if is_active(view):
-                g_server.send_set_priority_files([view.file_name()])
+                g_server.send_set_priority_files(view, [view.file_name()])
 
                 if view.is_dirty():
                     g_server.send_add_content(view)
@@ -253,11 +258,12 @@ class AnalysisServer(object):
         return AnalysisServer.server.proc.stdin
 
     @staticmethod
-    def get_request_id():
+    def get_request_id(view, response_type):
         with AnalysisServer._request_id_lock:
             if AnalysisServer._request_id >= AnalysisServer.MAX_ID:
                 AnalysisServer._request_id = -1
             AnalysisServer._request_id += 1
+            editor_context.request_ids[view.id()][str(AnalysisServer._request_id)] = response_type
             return str(AnalysisServer._request_id)
 
     @staticmethod
@@ -287,7 +293,7 @@ class AnalysisServer(object):
     def proc(self):
         return AnalysisServer.server
 
-    def add_root(self, path):
+    def add_root(self, view, path):
         """
         Adds `path` to the monitored roots if it is unknown.
 
@@ -314,7 +320,7 @@ class AnalysisServer(object):
             if new_root_path not in self.roots:
                 _logger.debug('adding new root: %s', new_root_path)
                 self.roots.append(new_root_path)
-                self.send_set_roots(self.roots)
+                self.send_set_roots(view, self.roots)
                 return
 
         _logger.debug('root already known: %s', new_root_path)
@@ -323,7 +329,7 @@ class AnalysisServer(object):
         if AnalysisServer.ping():
             return
 
-        self.send_get_version()
+        self.send_get_version(get_active_view())
 
         sdk = SDK()
 
@@ -366,7 +372,7 @@ class AnalysisServer(object):
             self.stdin.write(data)
             self.stdin.flush()
 
-    def send_set_roots(self, included=[], excluded=[]):
+    def send_set_roots(self, view, included=[], excluded=[]):
         included = [f for f in included if not self.should_ignore_file(f)]
 
         if not (included or excluded):
@@ -374,10 +380,12 @@ class AnalysisServer(object):
 
         req = AnalysisSetAnalysisRootsParams(included, excluded)
         _logger.info('sending set_roots request')
-        self.requests.put(req.to_request(self.get_request_id()), block=False)
+        self.requests.put(req.to_request(self.get_request_id(view,
+                AnalysisSetAnalysisRootsResult)), block=False)
 
-    def send_get_version(self):
-        req = ServerGetVersionParams().to_request(self.get_request_id())
+    def send_get_version(self, view):
+        req = ServerGetVersionParams().to_request(
+                self.get_request_id(view, ServerGetVersionResult))
         _logger.info('sending get version request')
         self.requests.put(req, block=False)
 
@@ -390,7 +398,7 @@ class AnalysisServer(object):
         _logger.info('sending update content request - add')
         # track this type of req as it may expire
         # TODO: when this file is saved, we must remove the overlays.
-        self.requests.put(req.to_request(self.get_request_id()),
+        self.requests.put(req.to_request(self.get_request_id(view, AnalysisUpdateContentResult)),
                           view=view,
                           priority=TaskPriority.HIGH,
                           block=False)
@@ -401,12 +409,12 @@ class AnalysisServer(object):
 
         req = AnalysisUpdateContentParams({view.file_name(): RemoveContentOverlay()})
         _logger.info('sending update content request - delete')
-        self.requests.put(req.to_request(self.get_request_id()),
+        self.requests.put(req.to_request(self.get_request_id(view, AnalysisUpdateContentResult)),
                 view=view,
                 priority=TaskPriority.HIGH,
                 block=False)
 
-    def send_set_priority_files(self, files):
+    def send_set_priority_files(self, view, files):
         if files == self.priority_files:
             return
 
@@ -415,15 +423,17 @@ class AnalysisServer(object):
             return
 
         req = AnalysisSetPriorityFilesParams(definite_files)
-        self.requests.put(req.to_request(self.get_request_id()),
+        self.requests.put(req.to_request(self.get_request_id(view, AnalysisSetPriorityFilesResult)),
                 priority=TaskPriority.HIGH, block=False)
 
         req2 = AnalysisSetSubscriptionsParams({AnalysisService.NAVIGATION: definite_files})
-        self.requests.put(req2.to_request(self.get_request_id()),
-                priority=TaskPriority.HIGH, block=False)
+        self.requests.put(req2.to_request(self.get_request_id(view,
+                ServerSetSubscriptionsResult)),
+                priority=TaskPriority.HIGH,
+                block=False)
 
     def send_get_suggestions(self, view, file, offset):
-        new_id = self.get_request_id()
+        new_id = self.get_request_id(view, CompletionGetSuggestionsResult)
 
         with editor_context.autocomplete_context as actx:
             actx.invalidate()
@@ -435,7 +445,7 @@ class AnalysisServer(object):
         self.requests.put(req, priority=TaskPriority.HIGH, block=False)
 
     def send_format_file(self, view):
-        new_id = self.get_request_id()
+        new_id = self.get_request_id(view, EditFormatResult)
 
         if not view.file_name():
             _logger.info("aborting sending request for formatting - no file name")

@@ -6,6 +6,7 @@
 Holds state about the editor.
 '''
 
+from collections import defaultdict
 import threading
 
 from Dart.sublime_plugin_lib.panels import OutputPanel
@@ -22,6 +23,8 @@ class EditorContext(object):
         self._errors = []
         self._errors_index = -1
         self.autocomplete_context = AutocompleteContext()
+        # Maps view.id's request id's, and these to response types.
+        self.request_ids = defaultdict(dict)
 
     @property
     def navigation(self):

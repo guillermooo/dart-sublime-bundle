@@ -735,10 +735,6 @@ class AnalysisUpdateContentResult(object):
 
   @classmethod
   def from_json(cls, data):
-    if not data:
-      raise ValueError("analysis.updateContent result" + " has no data")
-
-
     return cls()
 
   def to_json(self):
