@@ -43,27 +43,29 @@ class ResponseMaker(object):
                 _logger.error('unexpected empty queue in ResponseMaker')
                 yield
                 continue
+            else:
+                if data.get('_internal'):
+                    _logger.info('ResponseMaker exiting by internal request')
+                    yield data
+                    break
 
-            if data.get('_internal'):
-                _logger.info('ResponseMaker exiting by internal request')
-                yield data
-                break
-
-            view = get_active_view()
-            if view and data.get('id') in editor_context.request_ids[view.id()]:
-                response_type = editor_context.request_ids[view.id()][data['id']]
-                del editor_context.request_ids[view.id()][data['id']]
-                if hasattr(response_type, 'from_json'):
-                    r = response_type.from_json(data.get('result'))
-                    yield r.to_response(data['id'])
+                view = get_active_view()
+                if view and data.get('id') in editor_context.request_ids[view.id()]:
+                    yield self.make_request(data, view.id())
                     continue
 
-                yield response_type().to_response(data['id'])
-                continue
+                yield event_classifier(data)
 
-            r = response_classifier(data)
+    def make_request(self, data, view_id):
+        request_id = data['id']
+        response_type = editor_context.request_ids[view_id][request_id]
+        del editor_context.request_ids[view_id][request_id]
 
-            yield r
+        if hasattr(response_type, 'from_json'):
+            r = response_type.from_json(data.get('result'))
+            return r.to_response(request_id)
+        else:
+            return response_type().to_response(request_id)
 
 
 def is_result_response(data):
@@ -86,7 +88,7 @@ def is_completion_results(data):
     return 'completion.results' == data.get('event')
 
 
-def response_classifier(data):
+def event_classifier(data):
     if is_errors_response(data):
         params = AnalysisErrorsParams.from_json(data['params'])
         return params.to_notification()
