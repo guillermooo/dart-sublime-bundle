@@ -17,7 +17,7 @@ from Dart.lib.pub_package import DartFile
 _logger = PluginLogger(__name__)
 
 
-class IdleAutocomplete(IdleIntervalEventListener):
+class DartIdleAutocomplete(IdleIntervalEventListener):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.duration = 300
@@ -45,6 +45,7 @@ class IdleAutocomplete(IdleIntervalEventListener):
         if not AnalysisServer.ping():
             return
 
+        # First, send new content if any.
         if view.is_dirty() and is_active(view):
             _logger.debug('sending overlay data for %s', view.file_name())
             analyzer.g_server.send_add_content(view)

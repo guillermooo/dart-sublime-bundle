@@ -20,6 +20,7 @@ from Dart.lib.analyzer.analyzer import AnalysisServer
 from Dart.lib.error import ConfigError
 from Dart.lib.path import is_view_dart_script
 from Dart.lib.path import only_for_dart_files
+from Dart.lib.pub_package import DartFile
 from Dart.lib.sdk import SDK
 
 
@@ -74,7 +75,7 @@ def plugin_unloaded():
     pass
 
 
-class DartIdleEditsMoninor(IdleIntervalEventListener):
+class DartIdleTimeMoninor(IdleIntervalEventListener):
     """
     After ST has been idle for an interval, sends new content to the analysis
     server if needed.
@@ -84,7 +85,7 @@ class DartIdleEditsMoninor(IdleIntervalEventListener):
         super().__init__(duration=1200)
 
     def check(self, view):
-        return is_view_dart_script(view)
+        return DartFile(view).is_dart_file
 
     def on_idle(self, view):
         if not AnalysisServer.ping():
