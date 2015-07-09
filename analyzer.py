@@ -12,6 +12,7 @@ import sublime
 import sublime_plugin
 
 from Dart.sublime_plugin_lib import PluginLogger
+from Dart.sublime_plugin_lib.events import IdleIntervalEventListener
 from Dart.sublime_plugin_lib.path import is_active
 from Dart.sublime_plugin_lib.sublime import after
 
@@ -25,24 +26,8 @@ from Dart.lib.sdk import SDK
 _logger = PluginLogger(__name__)
 
 
-g_server = None
-
-
-def init():
-    global g_server
-    _logger.debug('starting dart analyzer')
-
-    try:
-        g_server = AnalysisServer()
-        threading.Thread(target=g_server.start).run()
-    except Exception as e:
-        print('Dart: Exception occurred during init. Aborting')
-        print('==============================================')
-        print(e)
-        print('==============================================')
-        return
-
-    print('Dart: Analyzer started.')
+# TODO: move this to _init_.py together with other singletons?
+g_server = None # singleton
 
 
 def plugin_loaded():
@@ -60,7 +45,24 @@ def plugin_loaded():
     # FIXME(guillermooo): Ignoring, then de-ignoring this package throws
     # errors. (Potential ST3 bug: https://github.com/SublimeTextIssues/Core/issues/386)
     # Make ST more responsive on startup.
-    sublime.set_timeout(init, 500)
+    sublime.set_timeout(_init, 500)
+
+
+def _init():
+    global g_server
+    _logger.debug('starting dart analyzer')
+
+    try:
+        g_server = AnalysisServer()
+        threading.Thread(target=g_server.start).run()
+    except Exception as e:
+        print('Dart: Exception occurred during init. Aborting')
+        print('==============================================')
+        print(e)
+        print('==============================================')
+        return
+
+    print('Dart: Analyzer started.')
 
 
 def plugin_unloaded():
@@ -72,39 +74,36 @@ def plugin_unloaded():
     pass
 
 
-class ActivityTracker(sublime_plugin.EventListener):
+class DartIdleEditsMoninor(IdleIntervalEventListener):
     """
     After ST has been idle for an interval, sends requests to the analyzer
     if the buffer has been saved or is dirty.
     """
 
-    edits = defaultdict(lambda: 0)
-    edits_lock = threading.RLock()
+    def __init__(self, *args, **kwargs):
+        super().__init__(duration=1200)
 
-    def increment_edits(self, view):
-        with ActivityTracker.edits_lock:
-            ActivityTracker.edits[view.id()] += 1
-        sublime.set_timeout(lambda: self.check_idle(view), 1200)
+    def check(self, view):
+        return is_view_dart_script(view)
 
-    def decrement_edits(self, view):
-        with ActivityTracker.edits_lock:
-            if ActivityTracker.edits[view.id()] > 0:
-                ActivityTracker.edits[view.id()] -= 1
+    def on_idle(self, view):
+        if not AnalysisServer.ping():
+            return
+
+        if view.is_dirty() and is_active(view):
+            _logger.debug('sending overlay data for %s', view.file_name())
+            g_server.send_add_content(view)
+
+
+class DartViewEventsMonitor(sublime_plugin.EventListener):
+    """
+    Monitors a range of events raised by views.
+    """
 
     @only_for_dart_files
     def on_load(self, view):
-        with ActivityTracker.edits_lock:
-            ActivityTracker.edits[view.id()] = 0
-
         if AnalysisServer.ping():
             g_server.send_remove_content(view)
-
-    @only_for_dart_files
-    def on_idle(self, view):
-        if AnalysisServer.ping():
-            if view.is_dirty() and is_active(view):
-                _logger.debug('sending overlay data for %s', view.file_name())
-                g_server.send_add_content(view)
 
     # TODO(guillermooo): Use on_modified_async
     @only_for_dart_files
@@ -114,22 +113,8 @@ class ActivityTracker(sublime_plugin.EventListener):
             self.on_load(view)
             return
 
-        self.increment_edits(view)
-
-    def check_idle(self, view):
-        with ActivityTracker.edits_lock:
-            self.decrement_edits(view)
-            if self.edits[view.id()] == 0:
-                self.on_idle(view)
-
     @only_for_dart_files
     def on_post_save(self, view):
-        with ActivityTracker.edits_lock:
-            # TODO(guillermooo): does .id() uniquely identify views
-            # across windows?
-            ActivityTracker.edits[view.id()] += 1
-        sublime.set_timeout(lambda: self.check_idle(view), 1000)
-
         # The file has been saved, so force use of filesystem content.
         if AnalysisServer.ping():
             g_server.send_remove_content(view)
@@ -151,4 +136,5 @@ class ActivityTracker(sublime_plugin.EventListener):
                 if view.is_dirty():
                     g_server.send_add_content(view)
         else:
+            # XXX: Retry this a limited amount of times and increase timeout?
             after(250, self.on_activated, view)
