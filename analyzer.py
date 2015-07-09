@@ -76,8 +76,8 @@ def plugin_unloaded():
 
 class DartIdleEditsMoninor(IdleIntervalEventListener):
     """
-    After ST has been idle for an interval, sends requests to the analyzer
-    if the buffer has been saved or is dirty.
+    After ST has been idle for an interval, sends new content to the analysis
+    server if needed.
     """
 
     def __init__(self, *args, **kwargs):
@@ -122,6 +122,7 @@ class DartViewEventsMonitor(sublime_plugin.EventListener):
     @only_for_dart_files
     def on_deactivated(self, view):
         # FIXME: what's this supposed to do?
+        # Perhaps we should remove this file from the priority files?
         if not is_view_dart_script(view):
             return
 
