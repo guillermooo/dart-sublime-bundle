@@ -169,7 +169,9 @@ class AnalysisServer(object):
 
         AnalysisServer.server = PipeServer([sdk.path_to_dart,
                             sdk.path_to_analysis_snapshot,
-                           '--sdk={0}'.format(sdk.path)])
+                           '--sdk={0}'.format(sdk.path),
+                           '--file-read-mode normalize-eol-always',
+                           ])
 
         def do_start():
             try:
