@@ -9,11 +9,14 @@
 from .base import *
 import json
 
+
 # server.getVersion params
+
 class ServerGetVersionParams(object):
   def to_request(self, id):
     assert id is not None, "must provide an id for the request"
     return Request(id, "server.getVersion", None)
+
 
 
 
@@ -22,9 +25,12 @@ class ServerGetVersionParams(object):
 # {
 #   "version": String
 # }
+
 class ServerGetVersionResult(object):
   def __init__(self, version):
+
     # The version number of the analysis server.
+
     self.version = version
 
   @classmethod
@@ -49,18 +55,23 @@ class ServerGetVersionResult(object):
     return json.dumps(self.to_json())
 
 
+
 # server.shutdown params
+
 class ServerShutdownParams(object):
   def to_request(self, id):
     assert id is not None, "must provide an id for the request"
     return Request(id, "server.shutdown", None)
 
 
+
 # server.shutdown result
+
 class ServerShutdownResult(object):
   def to_response(self, id):
     assert id is not None, "must provide an id for the response"
     return Response(id, result=None)
+
 
 
 
@@ -69,9 +80,12 @@ class ServerShutdownResult(object):
 # {
 #   "subscriptions": List<ServerService>
 # }
+
 class ServerSetSubscriptionsParams(object):
   def __init__(self, subscriptions):
+
     # A list of the services being subscribed to.
+
     self.subscriptions = subscriptions
 
   @classmethod
@@ -96,11 +110,14 @@ class ServerSetSubscriptionsParams(object):
     return json.dumps(self.to_json())
 
 
+
 # server.setSubscriptions result
+
 class ServerSetSubscriptionsResult(object):
   def to_response(self, id):
     assert id is not None, "must provide an id for the response"
     return Response(id, result=None)
+
 
 
 
@@ -109,9 +126,12 @@ class ServerSetSubscriptionsResult(object):
 # {
 #   "version": String
 # }
+
 class ServerConnectedParams(object):
   def __init__(self, version):
+
     # The version number of the analysis server.
+
     self.version = version
 
   @classmethod
@@ -136,6 +156,7 @@ class ServerConnectedParams(object):
 
 
 
+
 # server.error params
 #
 # {
@@ -143,15 +164,22 @@ class ServerConnectedParams(object):
 #   "message": String
 #   "stackTrace": String
 # }
+
 class ServerErrorParams(object):
   def __init__(self, isFatal, message, stackTrace):
+
     # True if the error is a fatal error, meaning that the server will shutdown
     # automatically after sending this notification.
+
     self.isFatal = isFatal
+
     # The error message indicating what kind of error was encountered.
+
     self.message = message
+
     # The stack trace associated with the generation of the error, used for
     # debugging the server.
+
     self.stackTrace = stackTrace
 
   @classmethod
@@ -180,19 +208,25 @@ class ServerErrorParams(object):
 
 
 
+
 # server.status params
 #
 # {
 #   "analysis": optional AnalysisStatus
 #   "pub": optional PubStatus
 # }
+
 class ServerStatusParams(object):
   def __init__(self, analysis=None, pub=None):
+
     # The current status of analysis, including whether analysis is being
     # performed and if so what is being analyzed.
+
     self.analysis = analysis
+
     # The current status of pub execution, indicating whether we are currently
     # running pub.
+
     self.pub = pub
 
   @classmethod
@@ -225,14 +259,18 @@ class ServerStatusParams(object):
 
 
 
+
 # analysis.getErrors params
 #
 # {
 #   "file": FilePath
 # }
+
 class AnalysisGetErrorsParams(object):
   def __init__(self, file):
+
     # The file for which errors are being requested.
+
     self.file = file
 
   @classmethod
@@ -258,14 +296,18 @@ class AnalysisGetErrorsParams(object):
 
 
 
+
 # analysis.getErrors result
 #
 # {
 #   "errors": List<AnalysisError>
 # }
+
 class AnalysisGetErrorsResult(object):
   def __init__(self, errors):
+
     # The errors associated with the file.
+
     self.errors = errors
 
   @classmethod
@@ -291,17 +333,23 @@ class AnalysisGetErrorsResult(object):
 
 
 
+
 # analysis.getHover params
 #
 # {
 #   "file": FilePath
 #   "offset": int
 # }
+
 class AnalysisGetHoverParams(object):
   def __init__(self, file, offset):
+
     # The file in which hover information is being requested.
+
     self.file = file
+
     # The offset for which hover information is being requested.
+
     self.offset = offset
 
   @classmethod
@@ -329,18 +377,22 @@ class AnalysisGetHoverParams(object):
 
 
 
+
 # analysis.getHover result
 #
 # {
 #   "hovers": List<HoverInformation>
 # }
+
 class AnalysisGetHoverResult(object):
   def __init__(self, hovers):
+
     # The hover information associated with the location. The list will be
     # empty if no information could be determined for the location. The list
     # can contain multiple items if the file is being analyzed in multiple
     # contexts in conflicting ways (such as a part that is included in multiple
     # libraries).
+
     self.hovers = hovers
 
   @classmethod
@@ -365,11 +417,14 @@ class AnalysisGetHoverResult(object):
     return json.dumps(self.to_json())
 
 
+
 # analysis.getLibraryDependencies params
+
 class AnalysisGetLibraryDependenciesParams(object):
   def to_request(self, id):
     assert id is not None, "must provide an id for the request"
     return Request(id, "analysis.getLibraryDependencies", None)
+
 
 
 
@@ -379,14 +434,19 @@ class AnalysisGetLibraryDependenciesParams(object):
 #   "libraries": List<FilePath>
 #   "packageMap": Map<String, Map<String, List<FilePath>>>
 # }
+
 class AnalysisGetLibraryDependenciesResult(object):
   def __init__(self, libraries, packageMap):
+
     # A list of the paths of library elements referenced by files in existing
     # analysis roots.
+
     self.libraries = libraries
+
     # A mapping from context source roots to package maps which map package
     # names to source directories for use in client-side package URI
     # resolution.
+
     self.packageMap = packageMap
 
   @classmethod
@@ -414,6 +474,7 @@ class AnalysisGetLibraryDependenciesResult(object):
 
 
 
+
 # analysis.getNavigation params
 #
 # {
@@ -421,15 +482,22 @@ class AnalysisGetLibraryDependenciesResult(object):
 #   "offset": int
 #   "length": int
 # }
+
 class AnalysisGetNavigationParams(object):
   def __init__(self, file, offset, length):
+
     # The file in which navigation information is being requested.
+
     self.file = file
+
     # The offset of the region for which navigation information is being
     # requested.
+
     self.offset = offset
+
     # The length of the region for which navigation information is being
     # requested.
+
     self.length = length
 
   @classmethod
@@ -459,6 +527,7 @@ class AnalysisGetNavigationParams(object):
 
 
 
+
 # analysis.getNavigation result
 #
 # {
@@ -466,15 +535,22 @@ class AnalysisGetNavigationParams(object):
 #   "targets": List<NavigationTarget>
 #   "regions": List<NavigationRegion>
 # }
+
 class AnalysisGetNavigationResult(object):
   def __init__(self, files, targets, regions):
+
     # A list of the paths of files that are referenced by the navigation
     # targets.
+
     self.files = files
+
     # A list of the navigation targets that are referenced by the navigation
     # regions.
+
     self.targets = targets
+
     # A list of the navigation regions within the requested region of the file.
+
     self.regions = regions
 
   @classmethod
@@ -504,14 +580,18 @@ class AnalysisGetNavigationResult(object):
 
 
 
+
 # analysis.reanalyze params
 #
 # {
 #   "roots": optional List<FilePath>
 # }
+
 class AnalysisReanalyzeParams(object):
   def __init__(self, roots=[]):
+
     # A list of the analysis roots that are to be re-analyzed.
+
     self.roots = roots
 
   @classmethod
@@ -539,11 +619,14 @@ class AnalysisReanalyzeParams(object):
     return json.dumps(self.to_json())
 
 
+
 # analysis.reanalyze result
+
 class AnalysisReanalyzeResult(object):
   def to_response(self, id):
     assert id is not None, "must provide an id for the response"
     return Response(id, result=None)
+
 
 
 
@@ -554,13 +637,19 @@ class AnalysisReanalyzeResult(object):
 #   "excluded": List<FilePath>
 #   "packageRoots": optional Map<FilePath, FilePath>
 # }
+
 class AnalysisSetAnalysisRootsParams(object):
   def __init__(self, included, excluded, packageRoots={}):
+
     # A list of the files and directories that should be analyzed.
+
     self.included = included
+
     # A list of the files and directories within the included directories that
     # should not be analyzed.
+
     self.excluded = excluded
+
     # A mapping from source directories to target directories that should
     # override the normal package: URI resolution mechanism. The analyzer will
     # behave as though each source directory in the map contains a special
@@ -573,6 +662,7 @@ class AnalysisSetAnalysisRootsParams(object):
     # their package: URI's resolved using the normal pubspec.yaml mechanism. If
     # this field is absent, or the empty map is specified, that indicates that
     # the normal pubspec.yaml mechanism should always be used.
+
     self.packageRoots = packageRoots
 
   @classmethod
@@ -604,11 +694,60 @@ class AnalysisSetAnalysisRootsParams(object):
     return json.dumps(self.to_json())
 
 
+
 # analysis.setAnalysisRoots result
+
 class AnalysisSetAnalysisRootsResult(object):
   def to_response(self, id):
     assert id is not None, "must provide an id for the response"
     return Response(id, result=None)
+
+
+
+
+# analysis.setGeneralSubscriptions params
+#
+# {
+#   "subscriptions": List<GeneralAnalysisService>
+# }
+
+class AnalysisSetGeneralSubscriptionsParams(object):
+  def __init__(self, subscriptions):
+
+    # A list of the services being subscribed to.
+
+    self.subscriptions = subscriptions
+
+  @classmethod
+  def from_json(cls, data):
+    if not data:
+      raise ValueError("analysis.setGeneralSubscriptions params" + " has no data")
+
+    subscriptions = data["subscriptions"]
+
+    return cls(subscriptions)
+
+  def to_json(self):
+    result = {}
+    result["subscriptions"] = self.subscriptions
+    return result
+
+  def to_request(self, id):
+    assert id is not None, "must provide an id for the request"
+    return Request(id, "analysis.setGeneralSubscriptions", self)
+
+  def __str__(self):
+    return json.dumps(self.to_json())
+
+
+
+# analysis.setGeneralSubscriptions result
+
+class AnalysisSetGeneralSubscriptionsResult(object):
+  def to_response(self, id):
+    assert id is not None, "must provide an id for the response"
+    return Response(id, result=None)
+
 
 
 
@@ -617,9 +756,12 @@ class AnalysisSetAnalysisRootsResult(object):
 # {
 #   "files": List<FilePath>
 # }
+
 class AnalysisSetPriorityFilesParams(object):
   def __init__(self, files):
+
     # The files that are to be a priority for analysis.
+
     self.files = files
 
   @classmethod
@@ -644,11 +786,14 @@ class AnalysisSetPriorityFilesParams(object):
     return json.dumps(self.to_json())
 
 
+
 # analysis.setPriorityFiles result
+
 class AnalysisSetPriorityFilesResult(object):
   def to_response(self, id):
     assert id is not None, "must provide an id for the response"
     return Response(id, result=None)
+
 
 
 
@@ -657,10 +802,13 @@ class AnalysisSetPriorityFilesResult(object):
 # {
 #   "subscriptions": Map<AnalysisService, List<FilePath>>
 # }
+
 class AnalysisSetSubscriptionsParams(object):
   def __init__(self, subscriptions):
+
     # A table mapping services to a list of the files being subscribed to the
     # service.
+
     self.subscriptions = subscriptions
 
   @classmethod
@@ -685,11 +833,14 @@ class AnalysisSetSubscriptionsParams(object):
     return json.dumps(self.to_json())
 
 
+
 # analysis.setSubscriptions result
+
 class AnalysisSetSubscriptionsResult(object):
   def to_response(self, id):
     assert id is not None, "must provide an id for the response"
     return Response(id, result=None)
+
 
 
 
@@ -698,10 +849,13 @@ class AnalysisSetSubscriptionsResult(object):
 # {
 #   "files": Map<FilePath, AddContentOverlay | ChangeContentOverlay | RemoveContentOverlay>
 # }
+
 class AnalysisUpdateContentParams(object):
   def __init__(self, files):
+
     # A table mapping the files whose content has changed to a description of
     # the content change.
+
     self.files = files
 
   @classmethod
@@ -727,10 +881,12 @@ class AnalysisUpdateContentParams(object):
 
 
 
+
 # analysis.updateContent result
 #
 # {
 # }
+
 class AnalysisUpdateContentResult(object):
 
   @classmethod
@@ -750,14 +906,18 @@ class AnalysisUpdateContentResult(object):
 
 
 
+
 # analysis.updateOptions params
 #
 # {
 #   "options": AnalysisOptions
 # }
+
 class AnalysisUpdateOptionsParams(object):
   def __init__(self, options):
+
     # The options that are to be used to control analysis.
+
     self.options = options
 
   @classmethod
@@ -782,11 +942,50 @@ class AnalysisUpdateOptionsParams(object):
     return json.dumps(self.to_json())
 
 
+
 # analysis.updateOptions result
+
 class AnalysisUpdateOptionsResult(object):
   def to_response(self, id):
     assert id is not None, "must provide an id for the response"
     return Response(id, result=None)
+
+
+
+
+# analysis.analyzedFiles params
+#
+# {
+#   "directories": List<FilePath>
+# }
+
+class AnalysisAnalyzedFilesParams(object):
+  def __init__(self, directories):
+
+    # A list of the paths of the files that are being analyzed.
+
+    self.directories = directories
+
+  @classmethod
+  def from_json(cls, data):
+    if not data:
+      raise ValueError("analysis.analyzedFiles params" + " has no data")
+
+    directories = data["directories"]
+
+    return cls(directories)
+
+  def to_json(self):
+    result = {}
+    result["directories"] = self.directories
+    return result
+
+  def to_notification(self):
+    return Notification("analysis.analyzedFiles", self);
+
+  def __str__(self):
+    return json.dumps(self.to_json())
+
 
 
 
@@ -796,11 +995,16 @@ class AnalysisUpdateOptionsResult(object):
 #   "file": FilePath
 #   "errors": List<AnalysisError>
 # }
+
 class AnalysisErrorsParams(object):
   def __init__(self, file, errors):
+
     # The file containing the errors.
+
     self.file = file
+
     # The errors contained in the file.
+
     self.errors = errors
 
   @classmethod
@@ -827,14 +1031,18 @@ class AnalysisErrorsParams(object):
 
 
 
+
 # analysis.flushResults params
 #
 # {
 #   "files": List<FilePath>
 # }
+
 class AnalysisFlushResultsParams(object):
   def __init__(self, files):
+
     # The files that are no longer being analyzed.
+
     self.files = files
 
   @classmethod
@@ -859,17 +1067,23 @@ class AnalysisFlushResultsParams(object):
 
 
 
+
 # analysis.folding params
 #
 # {
 #   "file": FilePath
 #   "regions": List<FoldingRegion>
 # }
+
 class AnalysisFoldingParams(object):
   def __init__(self, file, regions):
+
     # The file containing the folding regions.
+
     self.file = file
+
     # The folding regions contained in the file.
+
     self.regions = regions
 
   @classmethod
@@ -896,21 +1110,27 @@ class AnalysisFoldingParams(object):
 
 
 
+
 # analysis.highlights params
 #
 # {
 #   "file": FilePath
 #   "regions": List<HighlightRegion>
 # }
+
 class AnalysisHighlightsParams(object):
   def __init__(self, file, regions):
+
     # The file containing the highlight regions.
+
     self.file = file
+
     # The highlight regions contained in the file. Each highlight region
     # represents a particular syntactic or semantic meaning associated with
     # some range. Note that the highlight regions that are returned can overlap
     # other highlight regions if there is more than one meaning associated with
     # a particular region.
+
     self.regions = regions
 
   @classmethod
@@ -937,6 +1157,7 @@ class AnalysisHighlightsParams(object):
 
 
 
+
 # analysis.invalidate params
 #
 # {
@@ -945,17 +1166,26 @@ class AnalysisHighlightsParams(object):
 #   "length": int
 #   "delta": int
 # }
+
 class AnalysisInvalidateParams(object):
   def __init__(self, file, offset, length, delta):
+
     # The file whose information has been invalidated.
+
     self.file = file
+
     # The offset of the invalidated region.
+
     self.offset = offset
+
     # The length of the invalidated region.
+
     self.length = length
+
     # The delta to be applied to the offsets in information that follows the
     # invalidated region in order to update it so that it doesn't need to be
     # re-requested.
+
     self.delta = delta
 
   @classmethod
@@ -986,6 +1216,7 @@ class AnalysisInvalidateParams(object):
 
 
 
+
 # analysis.navigation params
 #
 # {
@@ -994,10 +1225,14 @@ class AnalysisInvalidateParams(object):
 #   "targets": List<NavigationTarget>
 #   "files": List<FilePath>
 # }
+
 class AnalysisNavigationParams(object):
   def __init__(self, file, regions, targets, files):
+
     # The file containing the navigation regions.
+
     self.file = file
+
     # The navigation regions contained in the file. The regions are sorted by
     # their offsets. Each navigation region represents a list of targets
     # associated with some range. The lists will usually contain a single
@@ -1005,12 +1240,17 @@ class AnalysisNavigationParams(object):
     # multiple libraries or in Dart code that is compiled against multiple
     # versions of a package. Note that the navigation regions that are returned
     # do not overlap other navigation regions.
+
     self.regions = regions
+
     # The navigation targets referenced in the file. They are referenced by
     # NavigationRegions by their index in this array.
+
     self.targets = targets
+
     # The files containing navigation targets referenced in the file. They are
     # referenced by NavigationTargets by their index in this array.
+
     self.files = files
 
   @classmethod
@@ -1041,17 +1281,23 @@ class AnalysisNavigationParams(object):
 
 
 
+
 # analysis.occurrences params
 #
 # {
 #   "file": FilePath
 #   "occurrences": List<Occurrences>
 # }
+
 class AnalysisOccurrencesParams(object):
   def __init__(self, file, occurrences):
+
     # The file in which the references occur.
+
     self.file = file
+
     # The occurrences of references to elements within the file.
+
     self.occurrences = occurrences
 
   @classmethod
@@ -1078,17 +1324,23 @@ class AnalysisOccurrencesParams(object):
 
 
 
+
 # analysis.outline params
 #
 # {
 #   "file": FilePath
 #   "outline": Outline
 # }
+
 class AnalysisOutlineParams(object):
   def __init__(self, file, outline):
+
     # The file with which the outline is associated.
+
     self.file = file
+
     # The outline associated with the file.
+
     self.outline = outline
 
   @classmethod
@@ -1115,17 +1367,23 @@ class AnalysisOutlineParams(object):
 
 
 
+
 # analysis.overrides params
 #
 # {
 #   "file": FilePath
 #   "overrides": List<Override>
 # }
+
 class AnalysisOverridesParams(object):
   def __init__(self, file, overrides):
+
     # The file with which the overrides are associated.
+
     self.file = file
+
     # The overrides associated with the file.
+
     self.overrides = overrides
 
   @classmethod
@@ -1152,17 +1410,23 @@ class AnalysisOverridesParams(object):
 
 
 
+
 # completion.getSuggestions params
 #
 # {
 #   "file": FilePath
 #   "offset": int
 # }
+
 class CompletionGetSuggestionsParams(object):
   def __init__(self, file, offset):
+
     # The file containing the point at which suggestions are to be made.
+
     self.file = file
+
     # The offset within the file at which suggestions are to be made.
+
     self.offset = offset
 
   @classmethod
@@ -1190,14 +1454,18 @@ class CompletionGetSuggestionsParams(object):
 
 
 
+
 # completion.getSuggestions result
 #
 # {
 #   "id": CompletionId
 # }
+
 class CompletionGetSuggestionsResult(object):
   def __init__(self, id):
+
     # The identifier used to associate results with this completion request.
+
     self.id = id
 
   @classmethod
@@ -1223,6 +1491,7 @@ class CompletionGetSuggestionsResult(object):
 
 
 
+
 # completion.results params
 #
 # {
@@ -1232,28 +1501,39 @@ class CompletionGetSuggestionsResult(object):
 #   "results": List<CompletionSuggestion>
 #   "isLast": bool
 # }
+
 class CompletionResultsParams(object):
   def __init__(self, id, replacementOffset, replacementLength, results, isLast):
+
     # The id associated with the completion.
+
     self.id = id
+
     # The offset of the start of the text to be replaced. This will be
     # different than the offset used to request the completion suggestions if
     # there was a portion of an identifier before the original offset. In
     # particular, the replacementOffset will be the offset of the beginning of
     # said identifier.
+
     self.replacementOffset = replacementOffset
+
     # The length of the text to be replaced if the remainder of the identifier
     # containing the cursor is to be replaced when the suggestion is applied
     # (that is, the number of characters in the existing identifier).
+
     self.replacementLength = replacementLength
+
     # The completion suggestions being reported. The notification contains all
     # possible completions at the requested cursor position, even those that do
     # not match the characters the user has already typed. This allows the
     # client to respond to further keystrokes from the user without having to
     # make additional requests.
+
     self.results = results
+
     # True if this is that last set of results that will be returned for the
     # indicated completion.
+
     self.isLast = isLast
 
   @classmethod
@@ -1286,6 +1566,7 @@ class CompletionResultsParams(object):
 
 
 
+
 # search.findElementReferences params
 #
 # {
@@ -1293,15 +1574,22 @@ class CompletionResultsParams(object):
 #   "offset": int
 #   "includePotential": bool
 # }
+
 class SearchFindElementReferencesParams(object):
   def __init__(self, file, offset, includePotential):
+
     # The file containing the declaration of or reference to the element used
     # to define the search.
+
     self.file = file
+
     # The offset within the file of the declaration of or reference to the
     # element.
+
     self.offset = offset
+
     # True if potential matches are to be included in the results.
+
     self.includePotential = includePotential
 
   @classmethod
@@ -1331,23 +1619,29 @@ class SearchFindElementReferencesParams(object):
 
 
 
+
 # search.findElementReferences result
 #
 # {
 #   "id": optional SearchId
 #   "element": optional Element
 # }
+
 class SearchFindElementReferencesResult(object):
   def __init__(self, id='', element=None):
+
     # The identifier used to associate results with this search request.
     #
     # If no element was found at the given location, this field will be absent,
     # and no results will be reported via the search.results notification.
+
     self.id = id
+
     # The element referenced or defined at the given offset and whose
     # references will be returned in the search results.
     #
     # If no element was found at the given location, this field will be absent.
+
     self.element = element
 
   @classmethod
@@ -1381,14 +1675,18 @@ class SearchFindElementReferencesResult(object):
 
 
 
+
 # search.findMemberDeclarations params
 #
 # {
 #   "name": String
 # }
+
 class SearchFindMemberDeclarationsParams(object):
   def __init__(self, name):
+
     # The name of the declarations to be found.
+
     self.name = name
 
   @classmethod
@@ -1414,14 +1712,18 @@ class SearchFindMemberDeclarationsParams(object):
 
 
 
+
 # search.findMemberDeclarations result
 #
 # {
 #   "id": SearchId
 # }
+
 class SearchFindMemberDeclarationsResult(object):
   def __init__(self, id):
+
     # The identifier used to associate results with this search request.
+
     self.id = id
 
   @classmethod
@@ -1447,14 +1749,18 @@ class SearchFindMemberDeclarationsResult(object):
 
 
 
+
 # search.findMemberReferences params
 #
 # {
 #   "name": String
 # }
+
 class SearchFindMemberReferencesParams(object):
   def __init__(self, name):
+
     # The name of the references to be found.
+
     self.name = name
 
   @classmethod
@@ -1480,14 +1786,18 @@ class SearchFindMemberReferencesParams(object):
 
 
 
+
 # search.findMemberReferences result
 #
 # {
 #   "id": SearchId
 # }
+
 class SearchFindMemberReferencesResult(object):
   def __init__(self, id):
+
     # The identifier used to associate results with this search request.
+
     self.id = id
 
   @classmethod
@@ -1513,15 +1823,19 @@ class SearchFindMemberReferencesResult(object):
 
 
 
+
 # search.findTopLevelDeclarations params
 #
 # {
 #   "pattern": String
 # }
+
 class SearchFindTopLevelDeclarationsParams(object):
   def __init__(self, pattern):
+
     # The regular expression used to match the names of the declarations to be
     # found.
+
     self.pattern = pattern
 
   @classmethod
@@ -1547,14 +1861,18 @@ class SearchFindTopLevelDeclarationsParams(object):
 
 
 
+
 # search.findTopLevelDeclarations result
 #
 # {
 #   "id": SearchId
 # }
+
 class SearchFindTopLevelDeclarationsResult(object):
   def __init__(self, id):
+
     # The identifier used to associate results with this search request.
+
     self.id = id
 
   @classmethod
@@ -1580,18 +1898,24 @@ class SearchFindTopLevelDeclarationsResult(object):
 
 
 
+
 # search.getTypeHierarchy params
 #
 # {
 #   "file": FilePath
 #   "offset": int
 # }
+
 class SearchGetTypeHierarchyParams(object):
   def __init__(self, file, offset):
+
     # The file containing the declaration or reference to the type for which a
     # hierarchy is being requested.
+
     self.file = file
+
     # The offset of the name of the type within the file.
+
     self.offset = offset
 
   @classmethod
@@ -1619,13 +1943,16 @@ class SearchGetTypeHierarchyParams(object):
 
 
 
+
 # search.getTypeHierarchy result
 #
 # {
 #   "hierarchyItems": optional List<TypeHierarchyItem>
 # }
+
 class SearchGetTypeHierarchyResult(object):
   def __init__(self, hierarchyItems=[]):
+
     # A list of the types in the requested hierarchy. The first element of the
     # list is the item representing the type for which the hierarchy was
     # requested. The index of other elements of the list is unspecified, but
@@ -1635,6 +1962,7 @@ class SearchGetTypeHierarchyResult(object):
     # This field will be absent if the code at the given file and offset does
     # not represent a type, or if the file has not been sufficiently analyzed
     # to allow a type hierarchy to be produced.
+
     self.hierarchyItems = hierarchyItems
 
   @classmethod
@@ -1663,6 +1991,7 @@ class SearchGetTypeHierarchyResult(object):
 
 
 
+
 # search.results params
 #
 # {
@@ -1670,14 +1999,21 @@ class SearchGetTypeHierarchyResult(object):
 #   "results": List<SearchResult>
 #   "isLast": bool
 # }
+
 class SearchResultsParams(object):
   def __init__(self, id, results, isLast):
+
     # The id associated with the search.
+
     self.id = id
+
     # The search results being reported.
+
     self.results = results
+
     # True if this is that last set of results that will be returned for the
     # indicated search.
+
     self.isLast = isLast
 
   @classmethod
@@ -1706,21 +2042,34 @@ class SearchResultsParams(object):
 
 
 
+
 # edit.format params
 #
 # {
 #   "file": FilePath
 #   "selectionOffset": int
 #   "selectionLength": int
+#   "lineLength": optional int
 # }
+
 class EditFormatParams(object):
-  def __init__(self, file, selectionOffset, selectionLength):
+  def __init__(self, file, selectionOffset, selectionLength, lineLength=0):
+
     # The file containing the code to be formatted.
+
     self.file = file
+
     # The offset of the current selection in the file.
+
     self.selectionOffset = selectionOffset
+
     # The length of the current selection in the file.
+
     self.selectionLength = selectionLength
+
+    # The line length to be used by the formatter.
+
+    self.lineLength = lineLength
 
   @classmethod
   def from_json(cls, data):
@@ -1730,14 +2079,19 @@ class EditFormatParams(object):
     file = data["file"]
     selectionOffset = data["selectionOffset"]
     selectionLength = data["selectionLength"]
+    lineLength = data.get("lineLength", 0)
+    if lineLength:
+      lineLength = lineLength
 
-    return cls(file, selectionOffset, selectionLength)
+    return cls(file, selectionOffset, selectionLength, lineLength=lineLength)
 
   def to_json(self):
     result = {}
     result["file"] = self.file
     result["selectionOffset"] = self.selectionOffset
     result["selectionLength"] = self.selectionLength
+    if self.lineLength:
+      result["lineLength"] = self.lineLength
     return result
 
   def to_request(self, id):
@@ -1749,6 +2103,7 @@ class EditFormatParams(object):
 
 
 
+
 # edit.format result
 #
 # {
@@ -1756,14 +2111,21 @@ class EditFormatParams(object):
 #   "selectionOffset": int
 #   "selectionLength": int
 # }
+
 class EditFormatResult(object):
   def __init__(self, edits, selectionOffset, selectionLength):
+
     # The edit(s) to be applied in order to format the code. The list will be
     # empty if the code was already formatted (there are no changes).
+
     self.edits = edits
+
     # The offset of the selection after formatting the code.
+
     self.selectionOffset = selectionOffset
+
     # The length of the selection after formatting the code.
+
     self.selectionLength = selectionLength
 
   @classmethod
@@ -1793,6 +2155,7 @@ class EditFormatResult(object):
 
 
 
+
 # edit.getAssists params
 #
 # {
@@ -1800,13 +2163,20 @@ class EditFormatResult(object):
 #   "offset": int
 #   "length": int
 # }
+
 class EditGetAssistsParams(object):
   def __init__(self, file, offset, length):
+
     # The file containing the code for which assists are being requested.
+
     self.file = file
+
     # The offset of the code for which assists are being requested.
+
     self.offset = offset
+
     # The length of the code for which assists are being requested.
+
     self.length = length
 
   @classmethod
@@ -1836,14 +2206,18 @@ class EditGetAssistsParams(object):
 
 
 
+
 # edit.getAssists result
 #
 # {
 #   "assists": List<SourceChange>
 # }
+
 class EditGetAssistsResult(object):
   def __init__(self, assists):
+
     # The assists that are available at the given location.
+
     self.assists = assists
 
   @classmethod
@@ -1869,6 +2243,7 @@ class EditGetAssistsResult(object):
 
 
 
+
 # edit.getAvailableRefactorings params
 #
 # {
@@ -1876,13 +2251,20 @@ class EditGetAssistsResult(object):
 #   "offset": int
 #   "length": int
 # }
+
 class EditGetAvailableRefactoringsParams(object):
   def __init__(self, file, offset, length):
+
     # The file containing the code on which the refactoring would be based.
+
     self.file = file
+
     # The offset of the code on which the refactoring would be based.
+
     self.offset = offset
+
     # The length of the code on which the refactoring would be based.
+
     self.length = length
 
   @classmethod
@@ -1912,14 +2294,18 @@ class EditGetAvailableRefactoringsParams(object):
 
 
 
+
 # edit.getAvailableRefactorings result
 #
 # {
 #   "kinds": List<RefactoringKind>
 # }
+
 class EditGetAvailableRefactoringsResult(object):
   def __init__(self, kinds):
+
     # The kinds of refactorings that are valid for the given selection.
+
     self.kinds = kinds
 
   @classmethod
@@ -1945,17 +2331,23 @@ class EditGetAvailableRefactoringsResult(object):
 
 
 
+
 # edit.getFixes params
 #
 # {
 #   "file": FilePath
 #   "offset": int
 # }
+
 class EditGetFixesParams(object):
   def __init__(self, file, offset):
+
     # The file containing the errors for which fixes are being requested.
+
     self.file = file
+
     # The offset used to select the errors for which fixes will be returned.
+
     self.offset = offset
 
   @classmethod
@@ -1983,14 +2375,18 @@ class EditGetFixesParams(object):
 
 
 
+
 # edit.getFixes result
 #
 # {
 #   "fixes": List<AnalysisErrorFixes>
 # }
+
 class EditGetFixesResult(object):
   def __init__(self, fixes):
+
     # The fixes that are available for the errors at the given offset.
+
     self.fixes = fixes
 
   @classmethod
@@ -2016,6 +2412,7 @@ class EditGetFixesResult(object):
 
 
 
+
 # edit.getRefactoring params
 #
 # {
@@ -2026,24 +2423,37 @@ class EditGetFixesResult(object):
 #   "validateOnly": bool
 #   "options": optional RefactoringOptions
 # }
+
 class EditGetRefactoringParams(object):
   def __init__(self, kind, file, offset, length, validateOnly, options=None):
+
     # The kind of refactoring to be performed.
+
     self.kind = kind
+
     # The file containing the code involved in the refactoring.
+
     self.file = file
+
     # The offset of the region involved in the refactoring.
+
     self.offset = offset
+
     # The length of the region involved in the refactoring.
+
     self.length = length
+
     # True if the client is only requesting that the values of the options be
     # validated and no change be generated.
+
     self.validateOnly = validateOnly
+
     # Data used to provide values provided by the user. The structure of the
     # data is dependent on the kind of refactoring being performed. The data
     # that is expected is documented in the section titled Refactorings,
     # labeled as “Options”. This field can be omitted if the refactoring does
     # not require any options or if the values of those options are not known.
+
     self.options = options
 
   @classmethod
@@ -2082,6 +2492,7 @@ class EditGetRefactoringParams(object):
 
 
 
+
 # edit.getRefactoring result
 #
 # {
@@ -2092,30 +2503,42 @@ class EditGetRefactoringParams(object):
 #   "change": optional SourceChange
 #   "potentialEdits": optional List<String>
 # }
+
 class EditGetRefactoringResult(object):
   def __init__(self, initialProblems, optionsProblems, finalProblems, feedback=None, change=None, potentialEdits=[]):
+
     # The initial status of the refactoring, i.e. problems related to the
     # context in which the refactoring is requested. The array will be empty if
     # there are no known problems.
+
     self.initialProblems = initialProblems
+
     # The options validation status, i.e. problems in the given options, such
     # as light-weight validation of a new name, flags compatibility, etc. The
     # array will be empty if there are no known problems.
+
     self.optionsProblems = optionsProblems
+
     # The final status of the refactoring, i.e. problems identified in the
     # result of a full, potentially expensive validation and / or change
     # creation. The array will be empty if there are no known problems.
+
     self.finalProblems = finalProblems
+
     # Data used to provide feedback to the user. The structure of the data is
     # dependent on the kind of refactoring being created. The data that is
     # returned is documented in the section titled Refactorings, labeled as
     # “Feedback”.
+
     self.feedback = feedback
+
     # The changes that are to be applied to affect the refactoring. This field
     # will be omitted if there are problems that prevent a set of changes from
     # being computed, such as having no options specified for a refactoring
     # that requires them, or if only validation was requested.
+
     self.change = change
+
     # The ids of source edits that are not known to be valid. An edit is not
     # known to be valid if there was insufficient type information for the
     # server to be able to determine whether or not the code needs to be
@@ -2123,6 +2546,7 @@ class EditGetRefactoringResult(object):
     # to a member from an unknown type. This field will be omitted if the
     # change field is omitted or if there are no potential edits for the
     # refactoring.
+
     self.potentialEdits = potentialEdits
 
   @classmethod
@@ -2167,14 +2591,18 @@ class EditGetRefactoringResult(object):
 
 
 
+
 # edit.sortMembers params
 #
 # {
 #   "file": FilePath
 # }
+
 class EditSortMembersParams(object):
   def __init__(self, file):
+
     # The Dart file to sort.
+
     self.file = file
 
   @classmethod
@@ -2200,15 +2628,19 @@ class EditSortMembersParams(object):
 
 
 
+
 # edit.sortMembers result
 #
 # {
 #   "edit": SourceFileEdit
 # }
+
 class EditSortMembersResult(object):
   def __init__(self, edit):
+
     # The file edit that is to be applied to the given file to effect the
     # sorting.
+
     self.edit = edit
 
   @classmethod
@@ -2234,15 +2666,94 @@ class EditSortMembersResult(object):
 
 
 
+
+# edit.organizeDirectives params
+#
+# {
+#   "file": FilePath
+# }
+
+class EditOrganizeDirectivesParams(object):
+  def __init__(self, file):
+
+    # The Dart file to organize directives in.
+
+    self.file = file
+
+  @classmethod
+  def from_json(cls, data):
+    if not data:
+      raise ValueError("edit.organizeDirectives params" + " has no data")
+
+    file = data["file"]
+
+    return cls(file)
+
+  def to_json(self):
+    result = {}
+    result["file"] = self.file
+    return result
+
+  def to_request(self, id):
+    assert id is not None, "must provide an id for the request"
+    return Request(id, "edit.organizeDirectives", self)
+
+  def __str__(self):
+    return json.dumps(self.to_json())
+
+
+
+
+# edit.organizeDirectives result
+#
+# {
+#   "edit": SourceFileEdit
+# }
+
+class EditOrganizeDirectivesResult(object):
+  def __init__(self, edit):
+
+    # The file edit that is to be applied to the given file to effect the
+    # organizing.
+
+    self.edit = edit
+
+  @classmethod
+  def from_json(cls, data):
+    if not data:
+      raise ValueError("edit.organizeDirectives result" + " has no data")
+
+    edit = SourceFileEdit.from_json(data["edit"])
+
+    return cls(edit)
+
+  def to_json(self):
+    result = {}
+    result["edit"] = self.edit.to_json()
+    return result
+
+  def to_response(self, id):
+    assert id is not None, "must provide an id for the response"
+    return Response(id, result=self)
+
+  def __str__(self):
+    return json.dumps(self.to_json())
+
+
+
+
 # execution.createContext params
 #
 # {
 #   "contextRoot": FilePath
 # }
+
 class ExecutionCreateContextParams(object):
   def __init__(self, contextRoot):
+
     # The path of the Dart or HTML file that will be launched, or the path of
     # the directory containing the file.
+
     self.contextRoot = contextRoot
 
   @classmethod
@@ -2268,14 +2779,18 @@ class ExecutionCreateContextParams(object):
 
 
 
+
 # execution.createContext result
 #
 # {
 #   "id": ExecutionContextId
 # }
+
 class ExecutionCreateContextResult(object):
   def __init__(self, id):
+
     # The identifier used to refer to the execution context that was created.
+
     self.id = id
 
   @classmethod
@@ -2301,14 +2816,18 @@ class ExecutionCreateContextResult(object):
 
 
 
+
 # execution.deleteContext params
 #
 # {
 #   "id": ExecutionContextId
 # }
+
 class ExecutionDeleteContextParams(object):
   def __init__(self, id):
+
     # The identifier of the execution context that is to be deleted.
+
     self.id = id
 
   @classmethod
@@ -2333,11 +2852,14 @@ class ExecutionDeleteContextParams(object):
     return json.dumps(self.to_json())
 
 
+
 # execution.deleteContext result
+
 class ExecutionDeleteContextResult(object):
   def to_response(self, id):
     assert id is not None, "must provide an id for the response"
     return Response(id, result=None)
+
 
 
 
@@ -2348,13 +2870,20 @@ class ExecutionDeleteContextResult(object):
 #   "file": optional FilePath
 #   "uri": optional String
 # }
+
 class ExecutionMapUriParams(object):
   def __init__(self, id, file='', uri=''):
+
     # The identifier of the execution context in which the URI is to be mapped.
+
     self.id = id
+
     # The path of the file to be mapped into a URI.
+
     self.file = file
+
     # The URI to be mapped into a file path.
+
     self.uri = uri
 
   @classmethod
@@ -2390,19 +2919,25 @@ class ExecutionMapUriParams(object):
 
 
 
+
 # execution.mapUri result
 #
 # {
 #   "file": optional FilePath
 #   "uri": optional String
 # }
+
 class ExecutionMapUriResult(object):
   def __init__(self, file='', uri=''):
+
     # The file to which the URI was mapped. This field is omitted if the uri
     # field was not given in the request.
+
     self.file = file
+
     # The URI to which the file path was mapped. This field is omitted if the
     # file field was not given in the request.
+
     self.uri = uri
 
   @classmethod
@@ -2436,14 +2971,18 @@ class ExecutionMapUriResult(object):
 
 
 
+
 # execution.setSubscriptions params
 #
 # {
 #   "subscriptions": List<ExecutionService>
 # }
+
 class ExecutionSetSubscriptionsParams(object):
   def __init__(self, subscriptions):
+
     # A list of the services being subscribed to.
+
     self.subscriptions = subscriptions
 
   @classmethod
@@ -2468,11 +3007,14 @@ class ExecutionSetSubscriptionsParams(object):
     return json.dumps(self.to_json())
 
 
+
 # execution.setSubscriptions result
+
 class ExecutionSetSubscriptionsResult(object):
   def to_response(self, id):
     assert id is not None, "must provide an id for the response"
     return Response(id, result=None)
+
 
 
 
@@ -2483,16 +3025,23 @@ class ExecutionSetSubscriptionsResult(object):
 #   "kind": optional ExecutableKind
 #   "referencedFiles": optional List<FilePath>
 # }
+
 class ExecutionLaunchDataParams(object):
   def __init__(self, file, kind='', referencedFiles=[]):
+
     # The file for which launch data is being provided. This will either be a
     # Dart library or an HTML file.
+
     self.file = file
+
     # The kind of the executable file. This field is omitted if the file is not
     # a Dart file.
+
     self.kind = kind
+
     # A list of the Dart files that are referenced by the file. This field is
     # omitted if the file is not an HTML file.
+
     self.referencedFiles = referencedFiles
 
   @classmethod
@@ -2527,15 +3076,19 @@ class ExecutionLaunchDataParams(object):
 
 
 
+
 # AddContentOverlay
 #
 # {
 #   "type": "add"
 #   "content": String
 # }
+
 class AddContentOverlay(object):
   def __init__(self, content):
+
     # The new content of the file.
+
     self.content = content
 
   @classmethod
@@ -2560,6 +3113,7 @@ class AddContentOverlay(object):
 
 
 
+
 # AnalysisError
 #
 # {
@@ -2569,20 +3123,31 @@ class AddContentOverlay(object):
 #   "message": String
 #   "correction": optional String
 # }
+
 class AnalysisError(object):
   def __init__(self, severity, type, location, message, correction=''):
+
     # The severity of the error.
+
     self.severity = severity
+
     # The type of the error.
+
     self.type = type
+
     # The location associated with the error.
+
     self.location = location
+
     # The message to be displayed for this error. The message should indicate
     # what is wrong with the code and why it is wrong.
+
     self.message = message
+
     # The correction message to be displayed for this error. The correction
     # message should indicate how the user can fix the error. The field is
     # omitted if there is no correction message associated with the error code.
+
     self.correction = correction
 
   @classmethod
@@ -2615,17 +3180,23 @@ class AnalysisError(object):
 
 
 
+
 # AnalysisErrorFixes
 #
 # {
 #   "error": AnalysisError
 #   "fixes": List<SourceChange>
 # }
+
 class AnalysisErrorFixes(object):
   def __init__(self, error, fixes=[]):
+
     # The error with which the fixes are associated.
+
     self.error = error
+
     # The fixes associated with the error.
+
     self.fixes = fixes
     self.fixes = self.fixes if self.fixes else []
 
@@ -2652,6 +3223,7 @@ class AnalysisErrorFixes(object):
 
 
 
+
 # AnalysisErrorSeverity
 #
 # enum {
@@ -2659,6 +3231,7 @@ class AnalysisErrorFixes(object):
 #   WARNING
 #   ERROR
 # }
+
 class AnalysisErrorSeverity:
   INFO = "INFO"
   WARNING = "WARNING"
@@ -2666,6 +3239,7 @@ class AnalysisErrorSeverity:
 
   # A list containing all of the enum values that are defined.
   VALUES = ['INFO', 'WARNING', 'ERROR']
+
 
 
 # AnalysisErrorType
@@ -2680,6 +3254,7 @@ class AnalysisErrorSeverity:
 #   SYNTACTIC_ERROR
 #   TODO
 # }
+
 class AnalysisErrorType:
   CHECKED_MODE_COMPILE_TIME_ERROR = "CHECKED_MODE_COMPILE_TIME_ERROR"
   COMPILE_TIME_ERROR = "COMPILE_TIME_ERROR"
@@ -2694,6 +3269,7 @@ class AnalysisErrorType:
   VALUES = ['CHECKED_MODE_COMPILE_TIME_ERROR', 'COMPILE_TIME_ERROR', 'HINT', 'LINT', 'STATIC_TYPE_WARNING', 'STATIC_WARNING', 'SYNTACTIC_ERROR', 'TODO']
 
 
+
 # AnalysisOptions
 #
 # {
@@ -2705,33 +3281,50 @@ class AnalysisErrorType:
 #   "generateHints": optional bool
 #   "generateLints": optional bool
 # }
+
 class AnalysisOptions(object):
   def __init__(self, enableAsync=False, enableDeferredLoading=False, enableEnums=False, enableNullAwareOperators=False, generateDart2jsHints=False, generateHints=False, generateLints=False):
-    # Deprecated
+
+    # Deprecated: this feature is always enabled.
     #
     # True if the client wants to enable support for the proposed async
     # feature.
+
     self.enableAsync = enableAsync
-    # Deprecated
+
+    # Deprecated: this feature is always enabled.
     #
     # True if the client wants to enable support for the proposed deferred
     # loading feature.
+
     self.enableDeferredLoading = enableDeferredLoading
-    # Deprecated
+
+    # Deprecated: this feature is always enabled.
     #
     # True if the client wants to enable support for the proposed enum feature.
+
     self.enableEnums = enableEnums
+
+    # Deprecated: this feature is always enabled.
+    #
     # True if the client wants to enable support for the proposed "null aware
     # operators" feature.
+
     self.enableNullAwareOperators = enableNullAwareOperators
+
     # True if hints that are specific to dart2js should be generated. This
     # option is ignored if generateHints is false.
+
     self.generateDart2jsHints = generateDart2jsHints
+
     # True if hints should be generated as part of generating errors and
     # warnings.
+
     self.generateHints = generateHints
+
     # True if lints should be generated as part of generating errors and
     # warnings.
+
     self.generateLints = generateLints
 
   @classmethod
@@ -2786,6 +3379,7 @@ class AnalysisOptions(object):
 
 
 
+
 # AnalysisService
 #
 # enum {
@@ -2797,9 +3391,14 @@ class AnalysisOptions(object):
 #   OUTLINE
 #   OVERRIDES
 # }
+
 class AnalysisService:
   FOLDING = "FOLDING"
   HIGHLIGHTS = "HIGHLIGHTS"
+
+  # This service is not currently implemented and will become a
+  # GeneralAnalysisService in a future release.
+
   INVALIDATE = "INVALIDATE"
   NAVIGATION = "NAVIGATION"
   OCCURRENCES = "OCCURRENCES"
@@ -2810,18 +3409,24 @@ class AnalysisService:
   VALUES = ['FOLDING', 'HIGHLIGHTS', 'INVALIDATE', 'NAVIGATION', 'OCCURRENCES', 'OUTLINE', 'OVERRIDES']
 
 
+
 # AnalysisStatus
 #
 # {
 #   "isAnalyzing": bool
 #   "analysisTarget": optional String
 # }
+
 class AnalysisStatus(object):
   def __init__(self, isAnalyzing, analysisTarget=''):
+
     # True if analysis is currently being performed.
+
     self.isAnalyzing = isAnalyzing
+
     # The name of the current target of analysis. This field is omitted if
     # analyzing is false.
+
     self.analysisTarget = analysisTarget
 
   @classmethod
@@ -2848,15 +3453,19 @@ class AnalysisStatus(object):
 
 
 
+
 # ChangeContentOverlay
 #
 # {
 #   "type": "change"
 #   "edits": List<SourceEdit>
 # }
+
 class ChangeContentOverlay(object):
   def __init__(self, edits):
+
     # The edits to be applied to the file.
+
     self.edits = edits
 
   @classmethod
@@ -2878,6 +3487,7 @@ class ChangeContentOverlay(object):
 
   def __str__(self):
     return json.dumps(self.to_json())
+
 
 
 
@@ -2904,66 +3514,105 @@ class ChangeContentOverlay(object):
 #   "parameterType": optional String
 #   "importUri": optional String
 # }
+
 class CompletionSuggestion(object):
   def __init__(self, kind, relevance, completion, selectionOffset, selectionLength, isDeprecated, isPotential, docSummary='', docComplete='', declaringType='', element=None, returnType='', parameterNames=[], parameterTypes=[], requiredParameterCount=0, hasNamedParameters=False, parameterName='', parameterType='', importUri=''):
+
     # The kind of element being suggested.
+
     self.kind = kind
+
     # The relevance of this completion suggestion where a higher number
     # indicates a higher relevance.
+
     self.relevance = relevance
+
     # The identifier to be inserted if the suggestion is selected. If the
     # suggestion is for a method or function, the client might want to
     # additionally insert a template for the parameters. The information
     # required in order to do so is contained in other fields.
+
     self.completion = completion
+
     # The offset, relative to the beginning of the completion, of where the
     # selection should be placed after insertion.
+
     self.selectionOffset = selectionOffset
+
     # The number of characters that should be selected after insertion.
+
     self.selectionLength = selectionLength
+
     # True if the suggested element is deprecated.
+
     self.isDeprecated = isDeprecated
+
     # True if the element is not known to be valid for the target. This happens
     # if the type of the target is dynamic.
+
     self.isPotential = isPotential
+
     # An abbreviated version of the Dartdoc associated with the element being
     # suggested, This field is omitted if there is no Dartdoc associated with
     # the element.
+
     self.docSummary = docSummary
+
     # The Dartdoc associated with the element being suggested, This field is
     # omitted if there is no Dartdoc associated with the element.
+
     self.docComplete = docComplete
+
     # The class that declares the element being suggested. This field is
     # omitted if the suggested element is not a member of a class.
+
     self.declaringType = declaringType
+
     # Information about the element reference being suggested.
+
     self.element = element
+
     # The return type of the getter, function or method or the type of the
     # field being suggested. This field is omitted if the suggested element is
     # not a getter, function or method.
+
     self.returnType = returnType
+
     # The names of the parameters of the function or method being suggested.
     # This field is omitted if the suggested element is not a setter, function
     # or method.
+
     self.parameterNames = parameterNames
+
     # The types of the parameters of the function or method being suggested.
     # This field is omitted if the parameterNames field is omitted.
+
     self.parameterTypes = parameterTypes
+
     # The number of required parameters for the function or method being
     # suggested. This field is omitted if the parameterNames field is omitted.
+
     self.requiredParameterCount = requiredParameterCount
+
     # True if the function or method being suggested has at least one named
     # parameter. This field is omitted if the parameterNames field is omitted.
+
     self.hasNamedParameters = hasNamedParameters
+
     # The name of the optional parameter being suggested. This field is omitted
     # if the suggestion is not the addition of an optional argument within an
     # argument list.
+
     self.parameterName = parameterName
+
     # The type of the options parameter being suggested. This field is omitted
     # if the parameterName field is omitted.
+
     self.parameterType = parameterType
+
     # The import to be added if the suggestion is out of scope and needs an
     # import to be added to be in scope.
+
     self.importUri = importUri
 
   @classmethod
@@ -3057,6 +3706,7 @@ class CompletionSuggestion(object):
 
 
 
+
 # CompletionSuggestionKind
 #
 # enum {
@@ -3069,34 +3719,46 @@ class CompletionSuggestion(object):
 #   OPTIONAL_ARGUMENT
 #   PARAMETER
 # }
+
 class CompletionSuggestionKind:
+
   # A list of arguments for the method or function that is being invoked. For
   # this suggestion kind, the completion field is a textual representation of
   # the invocation and the parameterNames, parameterTypes, and
   # requiredParameterCount attributes are defined.
+
   ARGUMENT_LIST = "ARGUMENT_LIST"
   IMPORT = "IMPORT"
+
   # The element identifier should be inserted at the completion location. For
   # example "someMethod" in import 'myLib.dart' show someMethod; . For
   # suggestions of this kind, the element attribute is defined and the
   # completion field is the element's identifier.
+
   IDENTIFIER = "IDENTIFIER"
+
   # The element is being invoked at the completion location. For example,
   # "someMethod" in x.someMethod(); . For suggestions of this kind, the element
   # attribute is defined and the completion field is the element's identifier.
+
   INVOCATION = "INVOCATION"
+
   # A keyword is being suggested. For suggestions of this kind, the completion
   # is the keyword.
+
   KEYWORD = "KEYWORD"
+
   # A named argument for the current callsite is being suggested. For
   # suggestions of this kind, the completion is the named argument identifier
   # including a trailing ':' and space.
+
   NAMED_ARGUMENT = "NAMED_ARGUMENT"
   OPTIONAL_ARGUMENT = "OPTIONAL_ARGUMENT"
   PARAMETER = "PARAMETER"
 
   # A list containing all of the enum values that are defined.
   VALUES = ['ARGUMENT_LIST', 'IMPORT', 'IDENTIFIER', 'INVOCATION', 'KEYWORD', 'NAMED_ARGUMENT', 'OPTIONAL_ARGUMENT', 'PARAMETER']
+
 
 
 # Element
@@ -3110,6 +3772,7 @@ class CompletionSuggestionKind:
 #   "returnType": optional String
 #   "typeParameters": optional String
 # }
+
 class Element(object):
   FLAG_ABSTRACT = 0x01
   FLAG_CONST = 0x02
@@ -3119,13 +3782,20 @@ class Element(object):
   FLAG_DEPRECATED = 0x20
 
   def __init__(self, kind, name, flags, location=None, parameters='', returnType='', typeParameters=''):
+
     # The kind of the element.
+
     self.kind = kind
+
     # The name of the element. This is typically used as the label in the
     # outline.
+
     self.name = name
+
     # The location of the name in the declaration of the element.
+
     self.location = location
+
     # A bit-map containing the following flags:
     #
     # - 0x01 - set if the element is explicitly or implicitly abstract
@@ -3135,18 +3805,25 @@ class Element(object):
     #   top-level function or field
     # - 0x10 - set if the element is private
     # - 0x20 - set if the element is deprecated
+
     self.flags = flags
+
     # The parameter list for the element. If the element is not a method or
     # function this field will not be defined. If the element doesn't have
     # parameters (e.g. getter), this field will not be defined. If the element
     # has zero parameters, this field will have a value of "()".
+
     self.parameters = parameters
+
     # The return type of the element. If the element is not a method or
     # function this field will not be defined. If the element does not have a
     # declared return type, this field will contain an empty string.
+
     self.returnType = returnType
+
     # The type parameter list for the element. If the element doesn't have type
     # parameters, this field will not be defined.
+
     self.typeParameters = typeParameters
 
   @classmethod
@@ -3192,6 +3869,7 @@ class Element(object):
 
 
 
+
 # ElementKind
 #
 # enum {
@@ -3218,6 +3896,7 @@ class Element(object):
 #   UNIT_TEST_TEST
 #   UNKNOWN
 # }
+
 class ElementKind:
   CLASS = "CLASS"
   CLASS_TYPE_ALIAS = "CLASS_TYPE_ALIAS"
@@ -3246,17 +3925,23 @@ class ElementKind:
   VALUES = ['CLASS', 'CLASS_TYPE_ALIAS', 'COMPILATION_UNIT', 'CONSTRUCTOR', 'ENUM', 'ENUM_CONSTANT', 'FIELD', 'FUNCTION', 'FUNCTION_TYPE_ALIAS', 'GETTER', 'LABEL', 'LIBRARY', 'LOCAL_VARIABLE', 'METHOD', 'PARAMETER', 'PREFIX', 'SETTER', 'TOP_LEVEL_VARIABLE', 'TYPE_PARAMETER', 'UNIT_TEST_GROUP', 'UNIT_TEST_TEST', 'UNKNOWN']
 
 
+
 # ExecutableFile
 #
 # {
 #   "file": FilePath
 #   "kind": ExecutableKind
 # }
+
 class ExecutableFile(object):
   def __init__(self, file, kind):
+
     # The path of the executable file.
+
     self.file = file
+
     # The kind of the executable file.
+
     self.kind = kind
 
   @classmethod
@@ -3280,6 +3965,7 @@ class ExecutableFile(object):
 
 
 
+
 # ExecutableKind
 #
 # enum {
@@ -3288,6 +3974,7 @@ class ExecutableFile(object):
 #   NOT_EXECUTABLE
 #   SERVER
 # }
+
 class ExecutableKind:
   CLIENT = "CLIENT"
   EITHER = "EITHER"
@@ -3298,16 +3985,19 @@ class ExecutableKind:
   VALUES = ['CLIENT', 'EITHER', 'NOT_EXECUTABLE', 'SERVER']
 
 
+
 # ExecutionService
 #
 # enum {
 #   LAUNCH_DATA
 # }
+
 class ExecutionService:
   LAUNCH_DATA = "LAUNCH_DATA"
 
   # A list containing all of the enum values that are defined.
   VALUES = ['LAUNCH_DATA']
+
 
 
 # FoldingKind
@@ -3319,6 +4009,7 @@ class ExecutionService:
 #   DOCUMENTATION_COMMENT
 #   TOP_LEVEL_DECLARATION
 # }
+
 class FoldingKind:
   COMMENT = "COMMENT"
   CLASS_MEMBER = "CLASS_MEMBER"
@@ -3330,6 +4021,7 @@ class FoldingKind:
   VALUES = ['COMMENT', 'CLASS_MEMBER', 'DIRECTIVES', 'DOCUMENTATION_COMMENT', 'TOP_LEVEL_DECLARATION']
 
 
+
 # FoldingRegion
 #
 # {
@@ -3337,13 +4029,20 @@ class FoldingKind:
 #   "offset": int
 #   "length": int
 # }
+
 class FoldingRegion(object):
   def __init__(self, kind, offset, length):
+
     # The kind of the region.
+
     self.kind = kind
+
     # The offset of the region to be folded.
+
     self.offset = offset
+
     # The length of the region to be folded.
+
     self.length = length
 
   @classmethod
@@ -3369,6 +4068,21 @@ class FoldingRegion(object):
 
 
 
+
+# GeneralAnalysisService
+#
+# enum {
+#   ANALYZED_FILES
+# }
+
+class GeneralAnalysisService:
+  ANALYZED_FILES = "ANALYZED_FILES"
+
+  # A list containing all of the enum values that are defined.
+  VALUES = ['ANALYZED_FILES']
+
+
+
 # HighlightRegion
 #
 # {
@@ -3376,13 +4090,20 @@ class FoldingRegion(object):
 #   "offset": int
 #   "length": int
 # }
+
 class HighlightRegion(object):
   def __init__(self, type, offset, length):
+
     # The type of highlight associated with the region.
+
     self.type = type
+
     # The offset of the region to be highlighted.
+
     self.offset = offset
+
     # The length of the region to be highlighted.
+
     self.length = length
 
   @classmethod
@@ -3408,6 +4129,7 @@ class HighlightRegion(object):
 
 
 
+
 # HighlightRegionType
 #
 # enum {
@@ -3420,6 +4142,10 @@ class HighlightRegion(object):
 #   CONSTRUCTOR
 #   DIRECTIVE
 #   DYNAMIC_TYPE
+#   DYNAMIC_LOCAL_VARIABLE_DECLARATION
+#   DYNAMIC_LOCAL_VARIABLE_REFERENCE
+#   DYNAMIC_PARAMETER_DECLARATION
+#   DYNAMIC_PARAMETER_REFERENCE
 #   ENUM
 #   ENUM_CONSTANT
 #   FIELD
@@ -3430,16 +4156,29 @@ class HighlightRegion(object):
 #   GETTER_DECLARATION
 #   IDENTIFIER_DEFAULT
 #   IMPORT_PREFIX
+#   INSTANCE_FIELD_DECLARATION
+#   INSTANCE_FIELD_REFERENCE
+#   INSTANCE_GETTER_DECLARATION
+#   INSTANCE_GETTER_REFERENCE
+#   INSTANCE_METHOD_DECLARATION
+#   INSTANCE_METHOD_REFERENCE
+#   INSTANCE_SETTER_DECLARATION
+#   INSTANCE_SETTER_REFERENCE
+#   INVALID_STRING_ESCAPE
 #   KEYWORD
 #   LABEL
+#   LIBRARY_NAME
 #   LITERAL_BOOLEAN
 #   LITERAL_DOUBLE
 #   LITERAL_INTEGER
 #   LITERAL_LIST
 #   LITERAL_MAP
 #   LITERAL_STRING
+#   LOCAL_FUNCTION_DECLARATION
+#   LOCAL_FUNCTION_REFERENCE
 #   LOCAL_VARIABLE
 #   LOCAL_VARIABLE_DECLARATION
+#   LOCAL_VARIABLE_REFERENCE
 #   METHOD
 #   METHOD_DECLARATION
 #   METHOD_DECLARATION_STATIC
@@ -3447,9 +4186,28 @@ class HighlightRegion(object):
 #   PARAMETER
 #   SETTER_DECLARATION
 #   TOP_LEVEL_VARIABLE
+#   PARAMETER_DECLARATION
+#   PARAMETER_REFERENCE
+#   STATIC_FIELD_DECLARATION
+#   STATIC_GETTER_DECLARATION
+#   STATIC_GETTER_REFERENCE
+#   STATIC_METHOD_DECLARATION
+#   STATIC_METHOD_REFERENCE
+#   STATIC_SETTER_DECLARATION
+#   STATIC_SETTER_REFERENCE
+#   TOP_LEVEL_FUNCTION_DECLARATION
+#   TOP_LEVEL_FUNCTION_REFERENCE
+#   TOP_LEVEL_GETTER_DECLARATION
+#   TOP_LEVEL_GETTER_REFERENCE
+#   TOP_LEVEL_SETTER_DECLARATION
+#   TOP_LEVEL_SETTER_REFERENCE
+#   TOP_LEVEL_VARIABLE_DECLARATION
 #   TYPE_NAME_DYNAMIC
 #   TYPE_PARAMETER
+#   UNRESOLVED_INSTANCE_MEMBER_REFERENCE
+#   VALID_STRING_ESCAPE
 # }
+
 class HighlightRegionType:
   ANNOTATION = "ANNOTATION"
   BUILT_IN = "BUILT_IN"
@@ -3459,39 +4217,222 @@ class HighlightRegionType:
   COMMENT_END_OF_LINE = "COMMENT_END_OF_LINE"
   CONSTRUCTOR = "CONSTRUCTOR"
   DIRECTIVE = "DIRECTIVE"
+
+  # Only for version 1 of highlight.
+
   DYNAMIC_TYPE = "DYNAMIC_TYPE"
+
+  # Only for version 2 of highlight.
+
+  DYNAMIC_LOCAL_VARIABLE_DECLARATION = "DYNAMIC_LOCAL_VARIABLE_DECLARATION"
+
+  # Only for version 2 of highlight.
+
+  DYNAMIC_LOCAL_VARIABLE_REFERENCE = "DYNAMIC_LOCAL_VARIABLE_REFERENCE"
+
+  # Only for version 2 of highlight.
+
+  DYNAMIC_PARAMETER_DECLARATION = "DYNAMIC_PARAMETER_DECLARATION"
+
+  # Only for version 2 of highlight.
+
+  DYNAMIC_PARAMETER_REFERENCE = "DYNAMIC_PARAMETER_REFERENCE"
   ENUM = "ENUM"
   ENUM_CONSTANT = "ENUM_CONSTANT"
+
+  # Only for version 1 of highlight.
+
   FIELD = "FIELD"
+
+  # Only for version 1 of highlight.
+
   FIELD_STATIC = "FIELD_STATIC"
+
+  # Only for version 1 of highlight.
+
   FUNCTION = "FUNCTION"
+
+  # Only for version 1 of highlight.
+
   FUNCTION_DECLARATION = "FUNCTION_DECLARATION"
   FUNCTION_TYPE_ALIAS = "FUNCTION_TYPE_ALIAS"
+
+  # Only for version 1 of highlight.
+
   GETTER_DECLARATION = "GETTER_DECLARATION"
   IDENTIFIER_DEFAULT = "IDENTIFIER_DEFAULT"
   IMPORT_PREFIX = "IMPORT_PREFIX"
+
+  # Only for version 2 of highlight.
+
+  INSTANCE_FIELD_DECLARATION = "INSTANCE_FIELD_DECLARATION"
+
+  # Only for version 2 of highlight.
+
+  INSTANCE_FIELD_REFERENCE = "INSTANCE_FIELD_REFERENCE"
+
+  # Only for version 2 of highlight.
+
+  INSTANCE_GETTER_DECLARATION = "INSTANCE_GETTER_DECLARATION"
+
+  # Only for version 2 of highlight.
+
+  INSTANCE_GETTER_REFERENCE = "INSTANCE_GETTER_REFERENCE"
+
+  # Only for version 2 of highlight.
+
+  INSTANCE_METHOD_DECLARATION = "INSTANCE_METHOD_DECLARATION"
+
+  # Only for version 2 of highlight.
+
+  INSTANCE_METHOD_REFERENCE = "INSTANCE_METHOD_REFERENCE"
+
+  # Only for version 2 of highlight.
+
+  INSTANCE_SETTER_DECLARATION = "INSTANCE_SETTER_DECLARATION"
+
+  # Only for version 2 of highlight.
+
+  INSTANCE_SETTER_REFERENCE = "INSTANCE_SETTER_REFERENCE"
+
+  # Only for version 2 of highlight.
+
+  INVALID_STRING_ESCAPE = "INVALID_STRING_ESCAPE"
   KEYWORD = "KEYWORD"
   LABEL = "LABEL"
+
+  # Only for version 2 of highlight.
+
+  LIBRARY_NAME = "LIBRARY_NAME"
   LITERAL_BOOLEAN = "LITERAL_BOOLEAN"
   LITERAL_DOUBLE = "LITERAL_DOUBLE"
   LITERAL_INTEGER = "LITERAL_INTEGER"
   LITERAL_LIST = "LITERAL_LIST"
   LITERAL_MAP = "LITERAL_MAP"
   LITERAL_STRING = "LITERAL_STRING"
+
+  # Only for version 2 of highlight.
+
+  LOCAL_FUNCTION_DECLARATION = "LOCAL_FUNCTION_DECLARATION"
+
+  # Only for version 2 of highlight.
+
+  LOCAL_FUNCTION_REFERENCE = "LOCAL_FUNCTION_REFERENCE"
+
+  # Only for version 1 of highlight.
+
   LOCAL_VARIABLE = "LOCAL_VARIABLE"
   LOCAL_VARIABLE_DECLARATION = "LOCAL_VARIABLE_DECLARATION"
+
+  # Only for version 2 of highlight.
+
+  LOCAL_VARIABLE_REFERENCE = "LOCAL_VARIABLE_REFERENCE"
+
+  # Only for version 1 of highlight.
+
   METHOD = "METHOD"
+
+  # Only for version 1 of highlight.
+
   METHOD_DECLARATION = "METHOD_DECLARATION"
+
+  # Only for version 1 of highlight.
+
   METHOD_DECLARATION_STATIC = "METHOD_DECLARATION_STATIC"
+
+  # Only for version 1 of highlight.
+
   METHOD_STATIC = "METHOD_STATIC"
+
+  # Only for version 1 of highlight.
+
   PARAMETER = "PARAMETER"
+
+  # Only for version 1 of highlight.
+
   SETTER_DECLARATION = "SETTER_DECLARATION"
+
+  # Only for version 1 of highlight.
+
   TOP_LEVEL_VARIABLE = "TOP_LEVEL_VARIABLE"
+
+  # Only for version 2 of highlight.
+
+  PARAMETER_DECLARATION = "PARAMETER_DECLARATION"
+
+  # Only for version 2 of highlight.
+
+  PARAMETER_REFERENCE = "PARAMETER_REFERENCE"
+
+  # Only for version 2 of highlight.
+
+  STATIC_FIELD_DECLARATION = "STATIC_FIELD_DECLARATION"
+
+  # Only for version 2 of highlight.
+
+  STATIC_GETTER_DECLARATION = "STATIC_GETTER_DECLARATION"
+
+  # Only for version 2 of highlight.
+
+  STATIC_GETTER_REFERENCE = "STATIC_GETTER_REFERENCE"
+
+  # Only for version 2 of highlight.
+
+  STATIC_METHOD_DECLARATION = "STATIC_METHOD_DECLARATION"
+
+  # Only for version 2 of highlight.
+
+  STATIC_METHOD_REFERENCE = "STATIC_METHOD_REFERENCE"
+
+  # Only for version 2 of highlight.
+
+  STATIC_SETTER_DECLARATION = "STATIC_SETTER_DECLARATION"
+
+  # Only for version 2 of highlight.
+
+  STATIC_SETTER_REFERENCE = "STATIC_SETTER_REFERENCE"
+
+  # Only for version 2 of highlight.
+
+  TOP_LEVEL_FUNCTION_DECLARATION = "TOP_LEVEL_FUNCTION_DECLARATION"
+
+  # Only for version 2 of highlight.
+
+  TOP_LEVEL_FUNCTION_REFERENCE = "TOP_LEVEL_FUNCTION_REFERENCE"
+
+  # Only for version 2 of highlight.
+
+  TOP_LEVEL_GETTER_DECLARATION = "TOP_LEVEL_GETTER_DECLARATION"
+
+  # Only for version 2 of highlight.
+
+  TOP_LEVEL_GETTER_REFERENCE = "TOP_LEVEL_GETTER_REFERENCE"
+
+  # Only for version 2 of highlight.
+
+  TOP_LEVEL_SETTER_DECLARATION = "TOP_LEVEL_SETTER_DECLARATION"
+
+  # Only for version 2 of highlight.
+
+  TOP_LEVEL_SETTER_REFERENCE = "TOP_LEVEL_SETTER_REFERENCE"
+
+  # Only for version 2 of highlight.
+
+  TOP_LEVEL_VARIABLE_DECLARATION = "TOP_LEVEL_VARIABLE_DECLARATION"
   TYPE_NAME_DYNAMIC = "TYPE_NAME_DYNAMIC"
   TYPE_PARAMETER = "TYPE_PARAMETER"
 
+  # Only for version 2 of highlight.
+
+  UNRESOLVED_INSTANCE_MEMBER_REFERENCE = "UNRESOLVED_INSTANCE_MEMBER_REFERENCE"
+
+  # Only for version 2 of highlight.
+
+  VALID_STRING_ESCAPE = "VALID_STRING_ESCAPE"
+
   # A list containing all of the enum values that are defined.
-  VALUES = ['ANNOTATION', 'BUILT_IN', 'CLASS', 'COMMENT_BLOCK', 'COMMENT_DOCUMENTATION', 'COMMENT_END_OF_LINE', 'CONSTRUCTOR', 'DIRECTIVE', 'DYNAMIC_TYPE', 'ENUM', 'ENUM_CONSTANT', 'FIELD', 'FIELD_STATIC', 'FUNCTION', 'FUNCTION_DECLARATION', 'FUNCTION_TYPE_ALIAS', 'GETTER_DECLARATION', 'IDENTIFIER_DEFAULT', 'IMPORT_PREFIX', 'KEYWORD', 'LABEL', 'LITERAL_BOOLEAN', 'LITERAL_DOUBLE', 'LITERAL_INTEGER', 'LITERAL_LIST', 'LITERAL_MAP', 'LITERAL_STRING', 'LOCAL_VARIABLE', 'LOCAL_VARIABLE_DECLARATION', 'METHOD', 'METHOD_DECLARATION', 'METHOD_DECLARATION_STATIC', 'METHOD_STATIC', 'PARAMETER', 'SETTER_DECLARATION', 'TOP_LEVEL_VARIABLE', 'TYPE_NAME_DYNAMIC', 'TYPE_PARAMETER']
+  VALUES = ['ANNOTATION', 'BUILT_IN', 'CLASS', 'COMMENT_BLOCK', 'COMMENT_DOCUMENTATION', 'COMMENT_END_OF_LINE', 'CONSTRUCTOR', 'DIRECTIVE', 'DYNAMIC_TYPE', 'DYNAMIC_LOCAL_VARIABLE_DECLARATION', 'DYNAMIC_LOCAL_VARIABLE_REFERENCE', 'DYNAMIC_PARAMETER_DECLARATION', 'DYNAMIC_PARAMETER_REFERENCE', 'ENUM', 'ENUM_CONSTANT', 'FIELD', 'FIELD_STATIC', 'FUNCTION', 'FUNCTION_DECLARATION', 'FUNCTION_TYPE_ALIAS', 'GETTER_DECLARATION', 'IDENTIFIER_DEFAULT', 'IMPORT_PREFIX', 'INSTANCE_FIELD_DECLARATION', 'INSTANCE_FIELD_REFERENCE', 'INSTANCE_GETTER_DECLARATION', 'INSTANCE_GETTER_REFERENCE', 'INSTANCE_METHOD_DECLARATION', 'INSTANCE_METHOD_REFERENCE', 'INSTANCE_SETTER_DECLARATION', 'INSTANCE_SETTER_REFERENCE', 'INVALID_STRING_ESCAPE', 'KEYWORD', 'LABEL', 'LIBRARY_NAME', 'LITERAL_BOOLEAN', 'LITERAL_DOUBLE', 'LITERAL_INTEGER', 'LITERAL_LIST', 'LITERAL_MAP', 'LITERAL_STRING', 'LOCAL_FUNCTION_DECLARATION', 'LOCAL_FUNCTION_REFERENCE', 'LOCAL_VARIABLE', 'LOCAL_VARIABLE_DECLARATION', 'LOCAL_VARIABLE_REFERENCE', 'METHOD', 'METHOD_DECLARATION', 'METHOD_DECLARATION_STATIC', 'METHOD_STATIC', 'PARAMETER', 'SETTER_DECLARATION', 'TOP_LEVEL_VARIABLE', 'PARAMETER_DECLARATION', 'PARAMETER_REFERENCE', 'STATIC_FIELD_DECLARATION', 'STATIC_GETTER_DECLARATION', 'STATIC_GETTER_REFERENCE', 'STATIC_METHOD_DECLARATION', 'STATIC_METHOD_REFERENCE', 'STATIC_SETTER_DECLARATION', 'STATIC_SETTER_REFERENCE', 'TOP_LEVEL_FUNCTION_DECLARATION', 'TOP_LEVEL_FUNCTION_REFERENCE', 'TOP_LEVEL_GETTER_DECLARATION', 'TOP_LEVEL_GETTER_REFERENCE', 'TOP_LEVEL_SETTER_DECLARATION', 'TOP_LEVEL_SETTER_REFERENCE', 'TOP_LEVEL_VARIABLE_DECLARATION', 'TYPE_NAME_DYNAMIC', 'TYPE_PARAMETER', 'UNRESOLVED_INSTANCE_MEMBER_REFERENCE', 'VALID_STRING_ESCAPE']
+
 
 
 # HoverInformation
@@ -3509,49 +4450,72 @@ class HighlightRegionType:
 #   "propagatedType": optional String
 #   "staticType": optional String
 # }
+
 class HoverInformation(object):
   def __init__(self, offset, length, containingLibraryPath='', containingLibraryName='', containingClassDescription='', dartdoc='', elementDescription='', elementKind='', parameter='', propagatedType='', staticType=''):
+
     # The offset of the range of characters that encompases the cursor position
     # and has the same hover information as the cursor position.
+
     self.offset = offset
+
     # The length of the range of characters that encompases the cursor position
     # and has the same hover information as the cursor position.
+
     self.length = length
+
     # The path to the defining compilation unit of the library in which the
     # referenced element is declared. This data is omitted if there is no
     # referenced element, or if the element is declared inside an HTML file.
+
     self.containingLibraryPath = containingLibraryPath
+
     # The name of the library in which the referenced element is declared. This
     # data is omitted if there is no referenced element, or if the element is
     # declared inside an HTML file.
+
     self.containingLibraryName = containingLibraryName
+
     # A human-readable description of the class declaring the element being
     # referenced. This data is omitted if there is no referenced element, or if
     # the element is not a class member.
+
     self.containingClassDescription = containingClassDescription
+
     # The dartdoc associated with the referenced element. Other than the
     # removal of the comment delimiters, including leading asterisks in the
     # case of a block comment, the dartdoc is unprocessed markdown. This data
     # is omitted if there is no referenced element, or if the element has no
     # dartdoc.
+
     self.dartdoc = dartdoc
+
     # A human-readable description of the element being referenced. This data
     # is omitted if there is no referenced element.
+
     self.elementDescription = elementDescription
+
     # A human-readable description of the kind of element being referenced
     # (such as “class” or “function type alias”). This data is omitted if there
     # is no referenced element.
+
     self.elementKind = elementKind
+
     # A human-readable description of the parameter corresponding to the
     # expression being hovered over. This data is omitted if the location is
     # not in an argument to a function.
+
     self.parameter = parameter
+
     # The name of the propagated type of the expression. This data is omitted
     # if the location does not correspond to an expression or if there is no
     # propagated type information.
+
     self.propagatedType = propagatedType
+
     # The name of the static type of the expression. This data is omitted if
     # the location does not correspond to an expression.
+
     self.staticType = staticType
 
   @classmethod
@@ -3620,6 +4584,7 @@ class HoverInformation(object):
 
 
 
+
 # LinkedEditGroup
 #
 # {
@@ -3627,14 +4592,21 @@ class HoverInformation(object):
 #   "length": int
 #   "suggestions": List<LinkedEditSuggestion>
 # }
+
 class LinkedEditGroup(object):
   def __init__(self, positions, length, suggestions):
+
     # The positions of the regions that should be edited simultaneously.
+
     self.positions = positions
+
     # The length of the regions that should be edited simultaneously.
+
     self.length = length
+
     # Pre-computed suggestions for what every region might want to be changed
     # to.
+
     self.suggestions = suggestions
 
   @classmethod
@@ -3660,17 +4632,23 @@ class LinkedEditGroup(object):
 
 
 
+
 # LinkedEditSuggestion
 #
 # {
 #   "value": String
 #   "kind": LinkedEditSuggestionKind
 # }
+
 class LinkedEditSuggestion(object):
   def __init__(self, value, kind):
+
     # The value that could be used to replace all of the linked edit regions.
+
     self.value = value
+
     # The kind of value being proposed.
+
     self.kind = kind
 
   @classmethod
@@ -3694,6 +4672,7 @@ class LinkedEditSuggestion(object):
 
 
 
+
 # LinkedEditSuggestionKind
 #
 # enum {
@@ -3702,6 +4681,7 @@ class LinkedEditSuggestion(object):
 #   TYPE
 #   VARIABLE
 # }
+
 class LinkedEditSuggestionKind:
   METHOD = "METHOD"
   PARAMETER = "PARAMETER"
@@ -3710,6 +4690,7 @@ class LinkedEditSuggestionKind:
 
   # A list containing all of the enum values that are defined.
   VALUES = ['METHOD', 'PARAMETER', 'TYPE', 'VARIABLE']
+
 
 
 # Location
@@ -3721,19 +4702,30 @@ class LinkedEditSuggestionKind:
 #   "startLine": int
 #   "startColumn": int
 # }
+
 class Location(object):
   def __init__(self, file, offset, length, startLine, startColumn):
+
     # The file containing the range.
+
     self.file = file
+
     # The offset of the range.
+
     self.offset = offset
+
     # The length of the range.
+
     self.length = length
+
     # The one-based index of the line containing the first character of the
     # range.
+
     self.startLine = startLine
+
     # The one-based index of the column containing the first character of the
     # range.
+
     self.startColumn = startColumn
 
   @classmethod
@@ -3763,6 +4755,7 @@ class Location(object):
 
 
 
+
 # NavigationRegion
 #
 # {
@@ -3770,15 +4763,22 @@ class Location(object):
 #   "length": int
 #   "targets": List<int>
 # }
+
 class NavigationRegion(object):
   def __init__(self, offset, length, targets):
+
     # The offset of the region from which the user can navigate.
+
     self.offset = offset
+
     # The length of the region from which the user can navigate.
+
     self.length = length
+
     # The indexes of the targets (in the enclosing navigation response) to
     # which the given region is bound. By opening the target, clients can
     # implement one form of navigation.
+
     self.targets = targets
 
   @classmethod
@@ -3804,6 +4804,7 @@ class NavigationRegion(object):
 
 
 
+
 # NavigationTarget
 #
 # {
@@ -3814,22 +4815,35 @@ class NavigationRegion(object):
 #   "startLine": int
 #   "startColumn": int
 # }
+
 class NavigationTarget(object):
   def __init__(self, kind, fileIndex, offset, length, startLine, startColumn):
+
     # The kind of the element.
+
     self.kind = kind
+
     # The index of the file (in the enclosing navigation response) to navigate
     # to.
+
     self.fileIndex = fileIndex
+
     # The offset of the region from which the user can navigate.
+
     self.offset = offset
+
     # The length of the region from which the user can navigate.
+
     self.length = length
+
     # The one-based index of the line containing the first character of the
     # region.
+
     self.startLine = startLine
+
     # The one-based index of the column containing the first character of the
     # region.
+
     self.startColumn = startColumn
 
   @classmethod
@@ -3861,6 +4875,7 @@ class NavigationTarget(object):
 
 
 
+
 # Occurrences
 #
 # {
@@ -3868,13 +4883,20 @@ class NavigationTarget(object):
 #   "offsets": List<int>
 #   "length": int
 # }
+
 class Occurrences(object):
   def __init__(self, element, offsets, length):
+
     # The element that was referenced.
+
     self.element = element
+
     # The offsets of the name of the referenced element within the file.
+
     self.offsets = offsets
+
     # The length of the name of the referenced element.
+
     self.length = length
 
   @classmethod
@@ -3900,6 +4922,7 @@ class Occurrences(object):
 
 
 
+
 # Outline
 #
 # {
@@ -3908,19 +4931,28 @@ class Occurrences(object):
 #   "length": int
 #   "children": optional List<Outline>
 # }
+
 class Outline(object):
   def __init__(self, element, offset, length, children=[]):
+
     # A description of the element represented by this node.
+
     self.element = element
+
     # The offset of the first character of the element. This is different than
     # the offset in the Element, which if the offset of the name of the
     # element. It can be used, for example, to map locations in the file back
     # to an outline.
+
     self.offset = offset
+
     # The length of the element.
+
     self.length = length
+
     # The children of the node. The field will be omitted if the node has no
     # children.
+
     self.children = children
 
   @classmethod
@@ -3951,6 +4983,7 @@ class Outline(object):
 
 
 
+
 # Override
 #
 # {
@@ -3959,19 +4992,28 @@ class Outline(object):
 #   "superclassMember": optional OverriddenMember
 #   "interfaceMembers": optional List<OverriddenMember>
 # }
+
 class Override(object):
   def __init__(self, offset, length, superclassMember=None, interfaceMembers=[]):
+
     # The offset of the name of the overriding member.
+
     self.offset = offset
+
     # The length of the name of the overriding member.
+
     self.length = length
+
     # The member inherited from a superclass that is overridden by the
     # overriding member. The field is omitted if there is no superclass member,
     # in which case there must be at least one interface member.
+
     self.superclassMember = superclassMember
+
     # The members inherited from interfaces that are overridden by the
     # overriding member. The field is omitted if there are no interface
     # members, in which case there must be a superclass member.
+
     self.interfaceMembers = interfaceMembers
 
   @classmethod
@@ -4005,17 +5047,23 @@ class Override(object):
 
 
 
+
 # OverriddenMember
 #
 # {
 #   "element": Element
 #   "className": String
 # }
+
 class OverriddenMember(object):
   def __init__(self, element, className):
+
     # The element that is being overridden.
+
     self.element = element
+
     # The name of the class in which the member is defined.
+
     self.className = className
 
   @classmethod
@@ -4039,17 +5087,23 @@ class OverriddenMember(object):
 
 
 
+
 # Position
 #
 # {
 #   "file": FilePath
 #   "offset": int
 # }
+
 class Position(object):
   def __init__(self, file, offset):
+
     # The file containing the position.
+
     self.file = file
+
     # The offset of the position.
+
     self.offset = offset
 
   @classmethod
@@ -4073,15 +5127,19 @@ class Position(object):
 
 
 
+
 # PubStatus
 #
 # {
 #   "isListingPackageDirs": bool
 # }
+
 class PubStatus(object):
   def __init__(self, isListingPackageDirs):
+
     # True if the server is currently running pub to produce a list of package
     # directories.
+
     self.isListingPackageDirs = isListingPackageDirs
 
   @classmethod
@@ -4103,6 +5161,7 @@ class PubStatus(object):
 
 
 
+
 # RefactoringKind
 #
 # enum {
@@ -4116,6 +5175,7 @@ class PubStatus(object):
 #   RENAME
 #   SORT_MEMBERS
 # }
+
 class RefactoringKind:
   CONVERT_GETTER_TO_METHOD = "CONVERT_GETTER_TO_METHOD"
   CONVERT_METHOD_TO_GETTER = "CONVERT_METHOD_TO_GETTER"
@@ -4131,6 +5191,7 @@ class RefactoringKind:
   VALUES = ['CONVERT_GETTER_TO_METHOD', 'CONVERT_METHOD_TO_GETTER', 'EXTRACT_LOCAL_VARIABLE', 'EXTRACT_METHOD', 'INLINE_LOCAL_VARIABLE', 'INLINE_METHOD', 'MOVE_FILE', 'RENAME', 'SORT_MEMBERS']
 
 
+
 # RefactoringMethodParameter
 #
 # {
@@ -4140,21 +5201,32 @@ class RefactoringKind:
 #   "name": String
 #   "parameters": optional String
 # }
+
 class RefactoringMethodParameter(object):
   def __init__(self, kind, type, name, id='', parameters=''):
+
     # The unique identifier of the parameter. Clients may omit this field for
     # the parameters they want to add.
+
     self.id = id
+
     # The kind of the parameter.
+
     self.kind = kind
+
     # The type that should be given to the parameter, or the return type of the
     # parameter's function type.
+
     self.type = type
+
     # The name that should be given to the parameter.
+
     self.name = name
+
     # The parameter list of the parameter's function type. If the parameter is
     # not of a function type, this field will not be defined. If the function
     # type has zero parameters, this field will have a value of "()".
+
     self.parameters = parameters
 
   @classmethod
@@ -4190,6 +5262,7 @@ class RefactoringMethodParameter(object):
 
 
 
+
 # RefactoringMethodParameterKind
 #
 # enum {
@@ -4197,6 +5270,7 @@ class RefactoringMethodParameter(object):
 #   POSITIONAL
 #   NAMED
 # }
+
 class RefactoringMethodParameterKind:
   REQUIRED = "REQUIRED"
   POSITIONAL = "POSITIONAL"
@@ -4206,6 +5280,7 @@ class RefactoringMethodParameterKind:
   VALUES = ['REQUIRED', 'POSITIONAL', 'NAMED']
 
 
+
 # RefactoringProblem
 #
 # {
@@ -4213,15 +5288,22 @@ class RefactoringMethodParameterKind:
 #   "message": String
 #   "location": optional Location
 # }
+
 class RefactoringProblem(object):
   def __init__(self, severity, message, location=None):
+
     # The severity of the problem being represented.
+
     self.severity = severity
+
     # A human-readable description of the problem being represented.
+
     self.message = message
+
     # The location of the problem being represented. This field is omitted
     # unless there is a specific location associated with the problem (such as
     # a location where an element being renamed will be shadowed).
+
     self.location = location
 
   @classmethod
@@ -4250,6 +5332,7 @@ class RefactoringProblem(object):
 
 
 
+
 # RefactoringProblemSeverity
 #
 # enum {
@@ -4258,6 +5341,7 @@ class RefactoringProblem(object):
 #   ERROR
 #   FATAL
 # }
+
 class RefactoringProblemSeverity:
   INFO = "INFO"
   WARNING = "WARNING"
@@ -4267,7 +5351,9 @@ class RefactoringProblemSeverity:
   # A list containing all of the enum values that are defined.
   VALUES = ['INFO', 'WARNING', 'ERROR', 'FATAL']
 
+
   # Returns the [RefactoringProblemSeverity] with the maximal severity.
+
   @staticmethod
   def max(a, b):
     values = {"INFO": 0, "WARNING": 1, "ERROR": 2, "FATAL": 3}
@@ -4277,11 +5363,13 @@ class RefactoringProblemSeverity:
     return a if found == a1 else b
 
 
+
 # RemoveContentOverlay
 #
 # {
 #   "type": "remove"
 # }
+
 class RemoveContentOverlay(object):
 
   @classmethod
@@ -4304,6 +5392,7 @@ class RemoveContentOverlay(object):
 
 
 
+
 # RequestError
 #
 # {
@@ -4311,14 +5400,21 @@ class RemoveContentOverlay(object):
 #   "message": String
 #   "stackTrace": optional String
 # }
+
 class RequestError(object):
   def __init__(self, code, message, stackTrace=''):
+
     # A code that uniquely identifies the error that occurred.
+
     self.code = code
+
     # A short description of the error.
+
     self.message = message
+
     # The stack trace associated with processing the request, used for
     # debugging the server.
+
     self.stackTrace = stackTrace
 
   @classmethod
@@ -4347,19 +5443,23 @@ class RequestError(object):
 
 
 
+
 # RequestErrorCode
 #
 # enum {
 #   CONTENT_MODIFIED
+#   FILE_NOT_ANALYZED
 #   FORMAT_INVALID_FILE
 #   FORMAT_WITH_ERRORS
 #   GET_ERRORS_INVALID_FILE
+#   GET_NAVIGATION_INVALID_FILE
 #   INVALID_ANALYSIS_ROOT
 #   INVALID_EXECUTION_CONTEXT
 #   INVALID_OVERLAY_CHANGE
 #   INVALID_PARAMETER
 #   INVALID_REQUEST
 #   NO_INDEX_GENERATED
+#   ORGANIZE_DIRECTIVES_ERROR
 #   REFACTORING_REQUEST_CANCELLED
 #   SERVER_ALREADY_STARTED
 #   SERVER_ERROR
@@ -4370,73 +5470,128 @@ class RequestError(object):
 #   UNKNOWN_SOURCE
 #   UNSUPPORTED_FEATURE
 # }
+
 class RequestErrorCode:
+
   # An "analysis.getErrors" or "analysis.getNavigation" request could not be
   # satisfied because the content of the file changed before the requested
   # results could be computed.
+
   CONTENT_MODIFIED = "CONTENT_MODIFIED"
+
+  # A request specified a FilePath which does not match a file in an analysis
+  # root, or the requested operation is not available for the file.
+
+  FILE_NOT_ANALYZED = "FILE_NOT_ANALYZED"
+
   # An "edit.format" request specified a FilePath which does not match a Dart
   # file in an analysis root.
+
   FORMAT_INVALID_FILE = "FORMAT_INVALID_FILE"
+
   # An "edit.format" request specified a file that contains syntax errors.
+
   FORMAT_WITH_ERRORS = "FORMAT_WITH_ERRORS"
+
   # An "analysis.getErrors" request specified a FilePath which does not match a
   # file currently subject to analysis.
+
   GET_ERRORS_INVALID_FILE = "GET_ERRORS_INVALID_FILE"
+
+  # An "analysis.getNavigation" request specified a FilePath which does not
+  # match a file currently subject to analysis.
+
+  GET_NAVIGATION_INVALID_FILE = "GET_NAVIGATION_INVALID_FILE"
+
   # A path passed as an argument to a request (such as analysis.reanalyze) is
   # required to be an analysis root, but isn't.
+
   INVALID_ANALYSIS_ROOT = "INVALID_ANALYSIS_ROOT"
+
   # The context root used to create an execution context does not exist.
+
   INVALID_EXECUTION_CONTEXT = "INVALID_EXECUTION_CONTEXT"
+
   # An "analysis.updateContent" request contained a ChangeContentOverlay object
   # which can't be applied, due to an edit having an offset or length that is
   # out of range.
+
   INVALID_OVERLAY_CHANGE = "INVALID_OVERLAY_CHANGE"
+
   # One of the method parameters was invalid.
+
   INVALID_PARAMETER = "INVALID_PARAMETER"
+
   # A malformed request was received.
+
   INVALID_REQUEST = "INVALID_REQUEST"
+
   # The "--no-index" flag was passed when the analysis server created, but this
   # API call requires an index to have been generated.
+
   NO_INDEX_GENERATED = "NO_INDEX_GENERATED"
+
+  # An "edit.organizeDirectives" request specified a Dart file that cannot be
+  # analyzed. The reason is described in the message.
+
+  ORGANIZE_DIRECTIVES_ERROR = "ORGANIZE_DIRECTIVES_ERROR"
+
   # Another refactoring request was received during processing of this one.
+
   REFACTORING_REQUEST_CANCELLED = "REFACTORING_REQUEST_CANCELLED"
+
   # The analysis server has already been started (and hence won't accept new
   # connections).
   #
   # This error is included for future expansion; at present the analysis server
   # can only speak to one client at a time so this error will never occur.
+
   SERVER_ALREADY_STARTED = "SERVER_ALREADY_STARTED"
+
   # An internal error occurred in the analysis server. Also see the
   # server.error notification.
+
   SERVER_ERROR = "SERVER_ERROR"
+
   # An "edit.sortMembers" request specified a FilePath which does not match a
   # Dart file in an analysis root.
+
   SORT_MEMBERS_INVALID_FILE = "SORT_MEMBERS_INVALID_FILE"
+
   # An "edit.sortMembers" request specified a Dart file that has scan or parse
   # errors.
+
   SORT_MEMBERS_PARSE_ERRORS = "SORT_MEMBERS_PARSE_ERRORS"
+
   # An "analysis.setPriorityFiles" request includes one or more files that are
   # not being analyzed.
   #
   # This is a legacy error; it will be removed before the API reaches version
   # 1.0.
+
   UNANALYZED_PRIORITY_FILES = "UNANALYZED_PRIORITY_FILES"
+
   # A request was received which the analysis server does not recognize, or
   # cannot handle in its current configuation.
+
   UNKNOWN_REQUEST = "UNKNOWN_REQUEST"
+
   # The analysis server was requested to perform an action on a source that
   # does not exist.
+
   UNKNOWN_SOURCE = "UNKNOWN_SOURCE"
+
   # The analysis server was requested to perform an action which is not
   # supported.
   #
   # This is a legacy error; it will be removed before the API reaches version
   # 1.0.
+
   UNSUPPORTED_FEATURE = "UNSUPPORTED_FEATURE"
 
   # A list containing all of the enum values that are defined.
-  VALUES = ['CONTENT_MODIFIED', 'FORMAT_INVALID_FILE', 'FORMAT_WITH_ERRORS', 'GET_ERRORS_INVALID_FILE', 'INVALID_ANALYSIS_ROOT', 'INVALID_EXECUTION_CONTEXT', 'INVALID_OVERLAY_CHANGE', 'INVALID_PARAMETER', 'INVALID_REQUEST', 'NO_INDEX_GENERATED', 'REFACTORING_REQUEST_CANCELLED', 'SERVER_ALREADY_STARTED', 'SERVER_ERROR', 'SORT_MEMBERS_INVALID_FILE', 'SORT_MEMBERS_PARSE_ERRORS', 'UNANALYZED_PRIORITY_FILES', 'UNKNOWN_REQUEST', 'UNKNOWN_SOURCE', 'UNSUPPORTED_FEATURE']
+  VALUES = ['CONTENT_MODIFIED', 'FILE_NOT_ANALYZED', 'FORMAT_INVALID_FILE', 'FORMAT_WITH_ERRORS', 'GET_ERRORS_INVALID_FILE', 'GET_NAVIGATION_INVALID_FILE', 'INVALID_ANALYSIS_ROOT', 'INVALID_EXECUTION_CONTEXT', 'INVALID_OVERLAY_CHANGE', 'INVALID_PARAMETER', 'INVALID_REQUEST', 'NO_INDEX_GENERATED', 'ORGANIZE_DIRECTIVES_ERROR', 'REFACTORING_REQUEST_CANCELLED', 'SERVER_ALREADY_STARTED', 'SERVER_ERROR', 'SORT_MEMBERS_INVALID_FILE', 'SORT_MEMBERS_PARSE_ERRORS', 'UNANALYZED_PRIORITY_FILES', 'UNKNOWN_REQUEST', 'UNKNOWN_SOURCE', 'UNSUPPORTED_FEATURE']
+
 
 
 # SearchResult
@@ -4447,20 +5602,29 @@ class RequestErrorCode:
 #   "isPotential": bool
 #   "path": List<Element>
 # }
+
 class SearchResult(object):
   def __init__(self, location, kind, isPotential, path):
+
     # The location of the code that matched the search criteria.
+
     self.location = location
+
     # The kind of element that was found or the kind of reference that was
     # found.
+
     self.kind = kind
+
     # True if the result is a potential match but cannot be confirmed to be a
     # match. For example, if all references to a method m defined in some class
     # were requested, and a reference to a method m from an unknown class were
     # found, it would be marked as being a potential match.
+
     self.isPotential = isPotential
+
     # The elements that contain the result, starting with the most immediately
     # enclosing ancestor and ending with the library.
+
     self.path = path
 
   @classmethod
@@ -4488,6 +5652,7 @@ class SearchResult(object):
 
 
 
+
 # SearchResultKind
 #
 # enum {
@@ -4499,25 +5664,41 @@ class SearchResult(object):
 #   UNKNOWN
 #   WRITE
 # }
+
 class SearchResultKind:
+
   # The declaration of an element.
+
   DECLARATION = "DECLARATION"
+
   # The invocation of a function or method.
+
   INVOCATION = "INVOCATION"
+
   # A reference to a field, parameter or variable where it is being read.
+
   READ = "READ"
+
   # A reference to a field, parameter or variable where it is being read and
   # written.
+
   READ_WRITE = "READ_WRITE"
+
   # A reference to an element.
+
   REFERENCE = "REFERENCE"
+
   # Some other kind of search result.
+
   UNKNOWN = "UNKNOWN"
+
   # A reference to a field, parameter or variable where it is being written.
+
   WRITE = "WRITE"
 
   # A list containing all of the enum values that are defined.
   VALUES = ['DECLARATION', 'INVOCATION', 'READ', 'READ_WRITE', 'REFERENCE', 'UNKNOWN', 'WRITE']
+
 
 
 # ServerService
@@ -4525,11 +5706,13 @@ class SearchResultKind:
 # enum {
 #   STATUS
 # }
+
 class ServerService:
   STATUS = "STATUS"
 
   # A list containing all of the enum values that are defined.
   VALUES = ['STATUS']
+
 
 
 # SourceChange
@@ -4540,16 +5723,25 @@ class ServerService:
 #   "linkedEditGroups": List<LinkedEditGroup>
 #   "selection": optional Position
 # }
+
 class SourceChange(object):
   def __init__(self, message, edits=[], linkedEditGroups=[], selection=None):
+
     # A human-readable description of the change to be applied.
+
     self.message = message
+
     # A list of the edits used to effect the change, grouped by file.
+
     self.edits = edits
+
     # A list of the linked editing groups used to customize the changes that
     # were made.
+
     self.linkedEditGroups = linkedEditGroups
+
     # The position that should be selected after the edits have been applied.
+
     self.selection = selection
     self.edits = self.edits if self.edits else []
 
@@ -4585,6 +5777,7 @@ class SourceChange(object):
 
 
 
+
 # SourceEdit
 #
 # {
@@ -4593,15 +5786,22 @@ class SourceChange(object):
 #   "replacement": String
 #   "id": optional String
 # }
-class SourceEdit(object):
 
+class SourceEdit(object):
   def __init__(self, offset, length, replacement, id=''):
+
     # The offset of the region to be modified.
+
     self.offset = offset
+
     # The length of the region to be modified.
+
     self.length = length
+
     # The code that is to replace the specified region in the original code.
+
     self.replacement = replacement
+
     # An identifier that uniquely identifies this source edit from other edits
     # in the same response. This field is omitted unless a containing structure
     # needs to be able to identify the edit for some reason.
@@ -4610,6 +5810,7 @@ class SourceEdit(object):
     # be appropriate (referred to as potential edits). Such edits will have an
     # id so that they can be referenced. Edits in the same response that do not
     # need to be referenced will not have an id.
+
     self.id = id
 
   @classmethod
@@ -4640,6 +5841,7 @@ class SourceEdit(object):
 
 
 
+
 # SourceFileEdit
 #
 # {
@@ -4647,17 +5849,24 @@ class SourceEdit(object):
 #   "fileStamp": long
 #   "edits": List<SourceEdit>
 # }
+
 class SourceFileEdit(object):
   def __init__(self, file, fileStamp, edits=[]):
+
     # The file containing the code to be modified.
+
     self.file = file
+
     # The modification stamp of the file at the moment when the change was
     # created, in milliseconds since the "Unix epoch". Will be -1 if the file
     # did not exist and should be created. The client may use this field to
     # make sure that the file was not changed since then, so it is safe to
     # apply the change.
+
     self.fileStamp = fileStamp
+
     # A list of the edits used to effect the change.
+
     self.edits = edits
     self.edits = self.edits if self.edits else []
 
@@ -4686,6 +5895,7 @@ class SourceFileEdit(object):
 
 
 
+
 # TypeHierarchyItem
 #
 # {
@@ -4697,33 +5907,48 @@ class SourceFileEdit(object):
 #   "mixins": List<int>
 #   "subclasses": List<int>
 # }
+
 class TypeHierarchyItem(object):
   def __init__(self, classElement, displayName='', memberElement=None, superclass=0, interfaces=[], mixins=[], subclasses=[]):
+
     # The class element represented by this item.
+
     self.classElement = classElement
+
     # The name to be displayed for the class. This field will be omitted if the
     # display name is the same as the name of the element. The display name is
     # different if there is additional type information to be displayed, such
     # as type arguments.
+
     self.displayName = displayName
+
     # The member in the class corresponding to the member on which the
     # hierarchy was requested. This field will be omitted if the hierarchy was
     # not requested for a member or if the class does not have a corresponding
     # member.
+
     self.memberElement = memberElement
+
     # The index of the item representing the superclass of this class. This
     # field will be omitted if this item represents the class Object.
+
     self.superclass = superclass
+
     # The indexes of the items representing the interfaces implemented by this
     # class. The list will be empty if there are no implemented interfaces.
+
     self.interfaces = interfaces
+
     # The indexes of the items representing the mixins referenced by this
     # class. The list will be empty if there are no classes mixed in to this
     # class.
+
     self.mixins = mixins
+
     # The indexes of the items representing the subtypes of this class. The
     # list will be empty if there are no subtypes or if this item represents a
     # supertype of the pivot type.
+
     self.subclasses = subclasses
     self.interfaces = self.interfaces if self.interfaces else []
 
@@ -4772,21 +5997,30 @@ class TypeHierarchyItem(object):
     return json.dumps(self.to_json())
 
 
+
 # convertGetterToMethod feedback
+
 class ConvertGetterToMethodFeedback(object):
   pass
 
+
 # convertGetterToMethod options
+
 class ConvertGetterToMethodOptions(object):
   pass
 
+
 # convertMethodToGetter feedback
+
 class ConvertMethodToGetterFeedback(object):
   pass
 
+
 # convertMethodToGetter options
+
 class ConvertMethodToGetterOptions(object):
   pass
+
 
 
 # extractLocalVariable feedback
@@ -4796,17 +6030,24 @@ class ConvertMethodToGetterOptions(object):
 #   "offsets": List<int>
 #   "lengths": List<int>
 # }
+
 class ExtractLocalVariableFeedback(RefactoringFeedback):
   def __init__(self, names, offsets, lengths):
+
     # The proposed names for the local variable.
+
     self.names = names
+
     # The offsets of the expressions that would be replaced by a reference to
     # the variable.
+
     self.offsets = offsets
+
     # The lengths of the expressions that would be replaced by a reference to
     # the variable. The lengths correspond to the offsets. In other words, for
     # a given expression, if the offset of that expression is offsets[i], then
     # the length of that expression is lengths[i].
+
     self.lengths = lengths
 
   @classmethod
@@ -4832,20 +6073,26 @@ class ExtractLocalVariableFeedback(RefactoringFeedback):
 
 
 
+
 # extractLocalVariable options
 #
 # {
 #   "name": String
 #   "extractAll": bool
 # }
+
 class ExtractLocalVariableOptions(RefactoringOptions):
   def __init__(self, name, extractAll):
+
     # The name that the local variable should be given.
+
     self.name = name
+
     # True if all occurrences of the expression within the scope in which the
     # variable will be defined should be replaced by a reference to the local
     # variable. The expression used to initiate the refactoring will always be
     # replaced.
+
     self.extractAll = extractAll
 
   @classmethod
@@ -4869,6 +6116,7 @@ class ExtractLocalVariableOptions(RefactoringOptions):
 
 
 
+
 # extractMethod feedback
 #
 # {
@@ -4881,30 +6129,47 @@ class ExtractLocalVariableOptions(RefactoringOptions):
 #   "offsets": List<int>
 #   "lengths": List<int>
 # }
+
 class ExtractMethodFeedback(RefactoringFeedback):
   def __init__(self, offset, length, returnType, names, canCreateGetter, parameters, offsets, lengths):
+
     # The offset to the beginning of the expression or statements that will be
     # extracted.
+
     self.offset = offset
+
     # The length of the expression or statements that will be extracted.
+
     self.length = length
+
     # The proposed return type for the method. If the returned element does not
     # have a declared return type, this field will contain an empty string.
+
     self.returnType = returnType
+
     # The proposed names for the method.
+
     self.names = names
+
     # True if a getter could be created rather than a method.
+
     self.canCreateGetter = canCreateGetter
+
     # The proposed parameters for the method.
+
     self.parameters = parameters
+
     # The offsets of the expressions or statements that would be replaced by an
     # invocation of the method.
+
     self.offsets = offsets
+
     # The lengths of the expressions or statements that would be replaced by an
     # invocation of the method. The lengths correspond to the offsets. In other
     # words, for a given expression (or block of statements), if the offset of
     # that expression is offsets[i], then the length of that expression is
     # lengths[i].
+
     self.lengths = lengths
 
   @classmethod
@@ -4940,6 +6205,7 @@ class ExtractMethodFeedback(RefactoringFeedback):
 
 
 
+
 # extractMethod options
 #
 # {
@@ -4949,15 +6215,23 @@ class ExtractMethodFeedback(RefactoringFeedback):
 #   "parameters": List<RefactoringMethodParameter>
 #   "extractAll": bool
 # }
+
 class ExtractMethodOptions(RefactoringOptions):
   def __init__(self, returnType, createGetter, name, parameters, extractAll):
+
     # The return type that should be defined for the method.
+
     self.returnType = returnType
+
     # True if a getter should be created rather than a method. It is an error
     # if this field is true and the list of parameters is non-empty.
+
     self.createGetter = createGetter
+
     # The name that the method should be given.
+
     self.name = name
+
     # The parameters that should be defined for the method.
     #
     # It is an error if a REQUIRED or NAMED parameter follows a POSITIONAL
@@ -4968,10 +6242,13 @@ class ExtractMethodOptions(RefactoringOptions):
     #   with the same identifiers as proposed.
     # - To add new parameters, omit their identifier.
     # - To remove some parameters, omit them in this list.
+
     self.parameters = parameters
+
     # True if all occurrences of the expression or statements should be
     # replaced by an invocation of the method. The expression or statements
     # used to initiate the refactoring will always be replaced.
+
     self.extractAll = extractAll
 
   @classmethod
@@ -5001,17 +6278,23 @@ class ExtractMethodOptions(RefactoringOptions):
 
 
 
+
 # inlineLocalVariable feedback
 #
 # {
 #   "name": String
 #   "occurrences": int
 # }
+
 class InlineLocalVariableFeedback(RefactoringFeedback):
   def __init__(self, name, occurrences):
+
     # The name of the variable being inlined.
+
     self.name = name
+
     # The number of times the variable occurs.
+
     self.occurrences = occurrences
 
   @classmethod
@@ -5034,9 +6317,12 @@ class InlineLocalVariableFeedback(RefactoringFeedback):
     return json.dumps(self.to_json())
 
 
+
 # inlineLocalVariable options
+
 class InlineLocalVariableOptions(object):
   pass
+
 
 
 # inlineMethod feedback
@@ -5046,15 +6332,22 @@ class InlineLocalVariableOptions(object):
 #   "methodName": String
 #   "isDeclaration": bool
 # }
+
 class InlineMethodFeedback(RefactoringFeedback):
   def __init__(self, methodName, isDeclaration, className=''):
+
     # The name of the class enclosing the method being inlined. If not a class
     # member is being inlined, this field will be absent.
+
     self.className = className
+
     # The name of the method (or function) being inlined.
+
     self.methodName = methodName
+
     # True if the declaration of the method is selected. So all references
     # should be inlined.
+
     self.isDeclaration = isDeclaration
 
   @classmethod
@@ -5083,19 +6376,25 @@ class InlineMethodFeedback(RefactoringFeedback):
 
 
 
+
 # inlineMethod options
 #
 # {
 #   "deleteSource": bool
 #   "inlineAll": bool
 # }
+
 class InlineMethodOptions(RefactoringOptions):
   def __init__(self, deleteSource, inlineAll):
+
     # True if the method being inlined should be removed. It is an error if
     # this field is true and inlineAll is false.
+
     self.deleteSource = deleteSource
+
     # True if all invocations of the method should be inlined, or false if only
     # the invocation site used to create this refactoring should be inlined.
+
     self.inlineAll = inlineAll
 
   @classmethod
@@ -5118,9 +6417,12 @@ class InlineMethodOptions(RefactoringOptions):
     return json.dumps(self.to_json())
 
 
+
 # moveFile feedback
+
 class MoveFileFeedback(object):
   pass
+
 
 
 # moveFile options
@@ -5128,9 +6430,12 @@ class MoveFileFeedback(object):
 # {
 #   "newFile": FilePath
 # }
+
 class MoveFileOptions(RefactoringOptions):
   def __init__(self, newFile):
+
     # The new file path to which the given file is being moved.
+
     self.newFile = newFile
 
   @classmethod
@@ -5152,6 +6457,7 @@ class MoveFileOptions(RefactoringOptions):
 
 
 
+
 # rename feedback
 #
 # {
@@ -5160,16 +6466,25 @@ class MoveFileOptions(RefactoringOptions):
 #   "elementKindName": String
 #   "oldName": String
 # }
+
 class RenameFeedback(RefactoringFeedback):
   def __init__(self, offset, length, elementKindName, oldName):
+
     # The offset to the beginning of the name selected to be renamed.
+
     self.offset = offset
+
     # The length of the name selected to be renamed.
+
     self.length = length
+
     # The human-readable description of the kind of element being renamed (such
     # as “class” or “function type alias”).
+
     self.elementKindName = elementKindName
+
     # The old name of the element before the refactoring.
+
     self.oldName = oldName
 
   @classmethod
@@ -5197,14 +6512,18 @@ class RenameFeedback(RefactoringFeedback):
 
 
 
+
 # rename options
 #
 # {
 #   "newName": String
 # }
+
 class RenameOptions(RefactoringOptions):
   def __init__(self, newName):
+
     # The name that the element should have after the refactoring.
+
     self.newName = newName
 
   @classmethod
