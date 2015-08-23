@@ -26,7 +26,7 @@ String get loggerLevelFile {
 
 bool checkLoggingLevelIsError() {
   var file = new File(loggerLevelFile);
-  var regex = new RegExp(r'setLevel\(logging\.ERROR\)');
+  var regex = new RegExp(r'setLevel\(logging\.WARNING\)');
   return regex.hasMatch(file.readAsStringSync());
 }
 

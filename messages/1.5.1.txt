@@ -1,0 +1,47 @@
+Version 1.5.1
+
+The Sublime Text Dart Package has been updated!
+
+This version includes fixes and improvements.
+
+Please restart Sublime Text.
+
+Full Documentation:
+
+	- https://github.com/guillermooo/dart-sublime-bundle/wiki
+
+
+MAIN CHANGES
+------------
+
+	- change default logging level
+
+	  New level is WARNING.
+
+	- improve display of functions in autocomplete list
+
+	  Autocomplete list now shows the return type.
+
+	- add DAS command-line option
+
+	  DAS always normalizes line terminators when reading files.
+
+	- process request ids
+
+	  Properly track request/response cycle with the DAS server.
+
+	- format code via edit.format request
+
+	  Code formatting is now a service provided by DAS.
+
+	- add warning if logging level is low
+
+	  Print warning to console if debug level is DEBUG, as it may severely impact performance.
+
+
+Reporting Bugs and Requesting New Features
+------------------------------------------
+
+Please report any bugs and request features here:
+
+* https://github.com/guillermooo/dart-sublime-bundle/issues
