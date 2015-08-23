@@ -51,6 +51,7 @@ from Dart.lib.analyzer.pipe_server import PipeServer
 from Dart.lib.analyzer.queue import AnalyzerQueue
 from Dart.lib.analyzer.queue import RequestsQueue
 from Dart.lib.analyzer.queue import TaskPriority
+from Dart.lib.analyzer.request_manager import RequestIdManager
 from Dart.lib.analyzer.response import ResponseMaker
 from Dart.lib.dart_project import DartProject
 from Dart.lib.editor_context import EditorContext
@@ -85,8 +86,7 @@ class AnalysisServer(object):
         self.priority_files = []
         self.requests = RequestsQueue('requests')
         self.responses = AnalyzerQueue('responses')
-        # Maps view.id's to request id's, and these to response types.
-        self.request_ids = defaultdict(dict)
+        self.request_ids = RequestIdManager()
 
     @property
     def stdout(self):
@@ -97,13 +97,7 @@ class AnalysisServer(object):
         return AnalysisServer.server.proc.stdin
 
     def get_request_id(self, view, response_type):
-        with AnalysisServer._request_id_lock:
-            if AnalysisServer._request_id >= AnalysisServer.MAX_ID:
-                AnalysisServer._request_id = -1
-            AnalysisServer._request_id += 1
-            new_id = AnalysisServer._request_id
-            self.request_ids[view.id()][str(new_id)] = response_type
-            return str(new_id)
+        return self.request_ids.new_id(view, response_type)
 
     @staticmethod
     def ping():

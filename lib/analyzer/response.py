@@ -48,26 +48,27 @@ class ResponseMaker(object):
                     yield data
                     break
 
-                if self.validate(data):
-                    yield self.make_request(data)
+                view = get_active_view()
+                if self.server.request_ids.validate(view, data):
+                    yield self.make_request(view, data)
                     continue
 
                 yield event_classifier(data)
 
-    def make_request(self, data):
-        view_id = get_active_view().id()
+    # TODO(guillermooo): change this name
+    def make_request(self, view, data):
+        view_id = view.id()
         request_id = data['id']
-        response_type = self.server.request_ids[view_id][request_id]
-        del self.server.request_ids[view_id][request_id]
+        response_type = self.server.request_ids.get_response_type(view, request_id)
 
+        # TODO(guillermooo): encapsulate this in RequestIdManager too?
         if hasattr(response_type, 'from_json'):
             r = response_type.from_json(data.get('result'))
             return r.to_response(request_id)
         else:
             return response_type().to_response(request_id)
 
-    def validate(self, data):
-        view = get_active_view()
+    def validate(self, view, data):
         return view and (data.get('id') in self.server.request_ids[view.id()])
 
 

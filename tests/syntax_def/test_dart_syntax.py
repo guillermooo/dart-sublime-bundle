@@ -4,7 +4,7 @@
 
 import unittest
 
-from Dart.tests import DartSyntaxTestCase
+from . import DartSyntaxTestCase
 
 
 class Test_DartSyntax_Comments(DartSyntaxTestCase):
