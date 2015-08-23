@@ -8,14 +8,18 @@
 ## Features
 
 * Syntax highlighting
-* Syntax error checking using `dartanalyzer`
-* Package management with `pub`
-* Snippets
-* Comment/uncomment lines and text blocks
-* Build systems: translation to JavaScript through `dart2js`, etc.
-* Basic symbol navigation
+* Live **code analysis** powered by the Dart Analysis Server
+* Integrated **package management** via `pub`
+* Multiple editing features: snippets, comment/uncomment, etc.
+* Integrated source code **formatter**
+* Run server apps in the console
+* Run web apps in Dartium
+* Run web apps in any browser
+* Run apps through Observatory
+* **Generate new projects** from templates using Stagehand
+* Much more!
 
-Most features are only active in files with a `.dart` extension.
+Most features are only enabled in files with a `.dart` extension.
 
 
 ## Documentation
