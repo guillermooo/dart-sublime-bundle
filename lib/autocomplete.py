@@ -73,4 +73,4 @@ class AutocompleteContext(object):
         assert self._is_open, 'must open context first -- use as a context manager'
         self._results = []
         self._formatted_results = []
-    
+

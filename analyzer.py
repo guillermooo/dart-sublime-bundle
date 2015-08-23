@@ -51,7 +51,7 @@ def plugin_loaded():
 
 def _init():
     global g_server
-    _logger.debug('starting dart analyzer')
+    _logger.info('starting dart analyzer')
 
     try:
         g_server = AnalysisServer()
@@ -63,7 +63,7 @@ def _init():
         print('==============================================')
         return
 
-    print('Dart: Analyzer started.')
+    # print('Dart: Starting analysis server...')
 
 
 def plugin_unloaded():

@@ -51,7 +51,7 @@ void deploy(GrinderContext context) {
     if (directory.existsSync()) directory.deleteSync(recursive: true);
     directory.createSync();
   } catch (Exception) {
-    var message = 
+    var message =
         'cannot delete/create destination directory: ${environment.destination}';
     context.fail(message);
   }

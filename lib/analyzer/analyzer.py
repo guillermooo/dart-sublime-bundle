@@ -51,6 +51,7 @@ from Dart.lib.analyzer.pipe_server import PipeServer
 from Dart.lib.analyzer.queue import AnalyzerQueue
 from Dart.lib.analyzer.queue import RequestsQueue
 from Dart.lib.analyzer.queue import TaskPriority
+from Dart.lib.analyzer.request_manager import RequestIdManager
 from Dart.lib.analyzer.response import ResponseMaker
 from Dart.lib.dart_project import DartProject
 from Dart.lib.editor_context import EditorContext
@@ -80,6 +81,13 @@ class AnalysisServer(object):
 
     server = None
 
+    def __init__(self):
+        self.roots = []
+        self.priority_files = []
+        self.requests = RequestsQueue('requests')
+        self.responses = AnalyzerQueue('responses')
+        self.request_ids = RequestIdManager()
+
     @property
     def stdout(self):
         return AnalysisServer.server.proc.stdout
@@ -89,13 +97,7 @@ class AnalysisServer(object):
         return AnalysisServer.server.proc.stdin
 
     def get_request_id(self, view, response_type):
-        with AnalysisServer._request_id_lock:
-            if AnalysisServer._request_id >= AnalysisServer.MAX_ID:
-                AnalysisServer._request_id = -1
-            AnalysisServer._request_id += 1
-            # editor_context.request_ids[view.id()][str(AnalysisServer._request_id)] = response_type
-            self.request_ids[view.id()][str(AnalysisServer._request_id)] = response_type
-            return str(AnalysisServer._request_id)
+        return self.request_ids.new_id(view, response_type)
 
     @staticmethod
     def ping():
@@ -103,14 +105,6 @@ class AnalysisServer(object):
             return AnalysisServer.server.is_running
         except AttributeError:
             return
-
-    def __init__(self):
-        self.roots = []
-        self.priority_files = []
-        self.requests = RequestsQueue('requests')
-        self.responses = AnalyzerQueue('responses')
-        # Maps view.id's to request id's, and these to response types.
-        self.request_ids = defaultdict(dict)
 
     def start_handlers(self):
         reqh = RequestHandler(self)
@@ -159,19 +153,20 @@ class AnalysisServer(object):
 
     def start(self):
         if AnalysisServer.ping():
+            _logger.info('AnalysisServer is already running')
             return
 
-        self.send_get_version(get_active_view())
+        self.send_get_version()
 
         sdk = SDK()
 
         _logger.info('starting AnalysisServer')
 
         AnalysisServer.server = PipeServer([sdk.path_to_dart,
-                            sdk.path_to_analysis_snapshot,
-                           '--sdk={0}'.format(sdk.path),
-                           '--file-read-mode normalize-eol-always',
-                           ])
+                sdk.path_to_analysis_snapshot,
+               '--sdk={0}'.format(sdk.path),
+               '--file-read-mode normalize-eol-always',
+               ])
 
         def do_start():
             try:
@@ -217,7 +212,8 @@ class AnalysisServer(object):
         self.requests.put(req.to_request(self.get_request_id(view,
                 AnalysisSetAnalysisRootsResult)), block=False)
 
-    def send_get_version(self, view):
+    def send_get_version(self, view=None):
+        view = get_active_view()
         req = ServerGetVersionParams().to_request(
                 self.get_request_id(view, ServerGetVersionResult))
         _logger.info('sending get version request')
@@ -360,7 +356,7 @@ class ResponseHandler(threading.Thread):
 
                 if isinstance(resp, Response):
                     if isinstance(resp.result, ServerGetVersionResult):
-                        print('Dart: Analysis Server version:', resp.result.version)
+                        print('Dart: Running analysis server version', resp.result.version)
                         continue
 
                     if isinstance(resp.result, CompletionGetSuggestionsResult):
