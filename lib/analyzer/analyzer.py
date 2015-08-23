@@ -362,7 +362,7 @@ class ResponseHandler(threading.Thread):
 
                 if isinstance(resp, Response):
                     if isinstance(resp.result, ServerGetVersionResult):
-                        print('Dart: Analysis Server version:', resp.result.version)
+                        print('Dart: Running analysis server version', resp.result.version)
                         continue
 
                     if isinstance(resp.result, CompletionGetSuggestionsResult):

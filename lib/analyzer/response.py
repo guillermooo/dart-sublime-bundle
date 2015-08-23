@@ -48,14 +48,14 @@ class ResponseMaker(object):
                     yield data
                     break
 
-                view = get_active_view()
-                if view and data.get('id') in self.server.request_ids[view.id()]:
-                    yield self.make_request(data, view.id())
+                if self.validate(data):
+                    yield self.make_request(data)
                     continue
 
                 yield event_classifier(data)
 
-    def make_request(self, data, view_id):
+    def make_request(self, data):
+        view_id = get_active_view().id()
         request_id = data['id']
         response_type = self.server.request_ids[view_id][request_id]
         del self.server.request_ids[view_id][request_id]
@@ -65,6 +65,10 @@ class ResponseMaker(object):
             return r.to_response(request_id)
         else:
             return response_type().to_response(request_id)
+
+    def validate(self, data):
+        view = get_active_view()
+        return view and (data.get('id') in self.server.request_ids[view.id()])
 
 
 def is_result_response(data):
