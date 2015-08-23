@@ -164,8 +164,8 @@ def handle_completions(results):
     show = False
     with editor_context.autocomplete_context as actx:
 
-        _PROPERTY = '\u25CB {}'
-        _FUNCTION = '\u25BA {}'
+        _PROPERTY = '\u25CB {} \u2192 {}'
+        _FUNCTION = '\u25BA {}{} \u2192 {}'
         _CONSTRUCTOR = '\u00A9 {}'
         _OTHER = '· {}'
 
@@ -175,9 +175,11 @@ def handle_completions(results):
             if not c.element:
                 continue
             if c.element.kind == ElementKind.FUNCTION or c.element.kind == ElementKind.METHOD or c.element.kind == ElementKind.SETTER:
-                formatted.append([_FUNCTION.format(c.completion) + c.element.parameters, c.completion + '(${1:%s})$0' % c.element.parameters[1:-1]])
+                # TODO(guillermooo): insert only req params.
+                # formatted.append([_FUNCTION.format(c.completion, c.element.parameters, c.returnType), c.completion + '(${1:%s})$0' % c.element.parameters[1:c.requiredParameterCount]])
+                formatted.append([_FUNCTION.format(c.completion, c.element.parameters, c.returnType), c.completion + '(${1:%s})$0' % c.element.parameters[1:-1]])
             elif c.element.kind == ElementKind.GETTER or c.element.kind == ElementKind.FIELD:
-                formatted.append([_PROPERTY.format(c.completion), c.completion])
+                formatted.append([_PROPERTY.format(c.completion, c.returnType), c.completion])
             elif c.element.kind == ElementKind.CONSTRUCTOR:
                 formatted.append([_CONSTRUCTOR.format(c.completion) + c.element.parameters, c.completion + '(${1:%s})$0' % c.element.parameters[1:-1]])
             else:
