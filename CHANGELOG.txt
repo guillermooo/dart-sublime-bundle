@@ -1,3 +1,31 @@
+1.5.1 - 20150823
+
+	- change default logging level
+	- edit readme
+	- improve display of functions in autocomplete list
+	- refactor server code
+	- update generated files for DAS protocol
+	- add DAS command-line option
+	- minor edits
+	- comments
+	- rename file, reorder code
+	- assorted minor changes
+	- move code around
+	- move response handling code closer to the server
+	- remove unused code that was causing an error
+	- refactor
+	- process request ids
+	- remove dead code
+	- format code via edit.format request
+	- update imports
+	- move log initialization to _init_
+	- add warning if logging level is low
+	- minor refactors
+	- add class to panels
+	- add helpers
+	- change awful class name to less awful class name
+	- implement cross-platform setting descriptor
+
 1.5.0 - 20150616
 
 	- tweak error reporting details
