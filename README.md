@@ -9,6 +9,9 @@ Windows | Sublime Text 3 | [![Build status](https://ci.appveyor.com/api/projects
 **Support this project:** [![Gratipay](http://img.shields.io/gratipay/guillermooo.svg)](https://gratipay.com/guillermooo/)
 
 
+![](repository/images/main-readme.png)
+
+
 ## Features
 
 * Syntax highlighting
