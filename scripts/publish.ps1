@@ -29,6 +29,7 @@ push-location "$script:scriptDir\.."
         push-location "dart-sublime-bundle-releases-tmp"
             & git checkout master
             remove-item -recurse -force ".git" -erroraction silentlycontinue
+            remove-item -recurse -force "repository" -erroraction silentlycontinue
             remove-item -recurse -force "scripts" -erroraction silentlycontinue
             remove-item -recurse -force "bin" -erroraction silentlycontinue
             remove-item -recurse -force "tests" -erroraction silentlycontinue
