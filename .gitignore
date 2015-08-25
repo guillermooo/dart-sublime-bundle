@@ -15,3 +15,4 @@ dist/
 
 # Dart
 **/.pub
+bin/deployment_tool/.packages
