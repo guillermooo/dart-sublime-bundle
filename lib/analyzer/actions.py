@@ -43,6 +43,7 @@ def handle_navigation_data(navigation_params):
 
 
 class ShowErrorsImpl(object):
+
     def compare_paths(self, path1, path2):
         return os.path.realpath(path1) == os.path.realpath(path2)
 
@@ -96,7 +97,7 @@ class ShowErrorsImpl(object):
             _logger.debug('different view active - aborting')
             return
 
-        panel = OutputPanel('dart.analyzer')
+        panel = OutputPanel('dart.errors')
 
         analysis_errors = list(errors.errors)
         infos, warns, erros = self.group(analysis_errors)
@@ -118,7 +119,7 @@ class ShowErrorsImpl(object):
         all_errs = (self.to_compact_text(item) for item in all_sorted)
 
         # TODO(guillermooo): abstract out the panel stuff into a DartErrorPanel class.
-        panel = OutputPanel('dart.analyzer')
+        panel = OutputPanel('dart.errors')
 
         # Tried to use .sublime-settings for this, but it won't work well.
         errors_pattern = r'^\w+\|\w+\|(.+)\|(\d+)\|(\d+)\|(.+)$'
@@ -137,7 +138,8 @@ class ShowErrorsImpl(object):
             panel.view.set_syntax_file('Packages/Dart/Support/Analyzer Output.tmLanguage')
 
         editor_context.errors = all_errs
-        panel.show()
+        # To show the panel, use the Command Palette or the key binding.
+        # panel.show()
 
         try:
             view.show(view.sel()[0])
