@@ -15,6 +15,7 @@ class AutocompleteContext(object):
         self._request_id = None
         self._results = []
         self._formatted_results = []
+        self.coords = None
 
     def __enter__(self):
         self.lock.acquire()
@@ -55,6 +56,10 @@ class AutocompleteContext(object):
         assert self._is_open, 'must open context first -- use as a context manager'
         self._results = value
 
+    def set_results(self, view, value):
+        self.results = value
+        self.coords = view.sel()[0]
+
     @property
     def formatted_results(self):
         return self._formatted_results
@@ -73,4 +78,9 @@ class AutocompleteContext(object):
         assert self._is_open, 'must open context first -- use as a context manager'
         self._results = []
         self._formatted_results = []
+
+    def should_hide_auto_complete_list(self, view):
+        s0 = view.sel()[0]
+        return s0 < self.coords
+
 
