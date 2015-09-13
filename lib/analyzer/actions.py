@@ -43,6 +43,7 @@ def handle_navigation_data(navigation_params):
 
 
 class ShowErrorsImpl(object):
+
     def compare_paths(self, path1, path2):
         return os.path.realpath(path1) == os.path.realpath(path2)
 
@@ -96,7 +97,7 @@ class ShowErrorsImpl(object):
             _logger.debug('different view active - aborting')
             return
 
-        panel = OutputPanel('dart.analyzer')
+        panel = OutputPanel('dart.errors')
 
         analysis_errors = list(errors.errors)
         infos, warns, erros = self.group(analysis_errors)
@@ -118,7 +119,7 @@ class ShowErrorsImpl(object):
         all_errs = (self.to_compact_text(item) for item in all_sorted)
 
         # TODO(guillermooo): abstract out the panel stuff into a DartErrorPanel class.
-        panel = OutputPanel('dart.analyzer')
+        panel = OutputPanel('dart.errors')
 
         # Tried to use .sublime-settings for this, but it won't work well.
         errors_pattern = r'^\w+\|\w+\|(.+)\|(\d+)\|(\d+)\|(.+)$'
@@ -137,7 +138,8 @@ class ShowErrorsImpl(object):
             panel.view.set_syntax_file('Packages/Dart/Support/Analyzer Output.tmLanguage')
 
         editor_context.errors = all_errs
-        panel.show()
+        # To show the panel, use the Command Palette or the key binding.
+        # panel.show()
 
         try:
             view.show(view.sel()[0])
@@ -160,43 +162,84 @@ def clear_ui():
     v.erase_regions(DAS_UI_REGIONS_INFOS)
 
 
-def handle_completions(results):
-    show = False
-    with editor_context.autocomplete_context as actx:
+class HandleCompletionsImpl(object):
 
-        _PROPERTY = '\u25CB {} \u2192 {}'
-        _FUNCTION = '\u25BA {}{} \u2192 {}'
-        _CONSTRUCTOR = '\u00A9 {}'
-        _OTHER = '· {}'
+    def __init__(self):
+        self._PROPERTY = '\u25CB {} \u2192 {}'
+        self._FUNCTION = '\u25BA {}{} \u2192 {}'
+        self._CONSTRUCTOR = '\u00A9 {}'
+        self._OTHER = '· {}'
 
-        formatted = []
-        item = ''
-        for c in results.results:
-            if not c.element:
-                continue
-            if c.element.kind == ElementKind.FUNCTION or c.element.kind == ElementKind.METHOD or c.element.kind == ElementKind.SETTER:
-                # TODO(guillermooo): insert only req params.
-                # formatted.append([_FUNCTION.format(c.completion, c.element.parameters, c.returnType), c.completion + '(${1:%s})$0' % c.element.parameters[1:c.requiredParameterCount]])
-                formatted.append([_FUNCTION.format(c.completion, c.element.parameters, c.returnType), c.completion + '(${1:%s})$0' % c.element.parameters[1:-1]])
-            elif c.element.kind == ElementKind.GETTER or c.element.kind == ElementKind.FIELD:
-                formatted.append([_PROPERTY.format(c.completion, c.returnType), c.completion])
-            elif c.element.kind == ElementKind.CONSTRUCTOR:
-                formatted.append([_CONSTRUCTOR.format(c.completion) + c.element.parameters, c.completion + '(${1:%s})$0' % c.element.parameters[1:-1]])
-            else:
-                formatted.append([_OTHER.format(c.completion), c.completion])
+    def __call__(self, results):
+        with editor_context.autocomplete_context as actx:
 
-        actx.results = results.results
-        actx.formatted_results = formatted
+            formatted = []
+            item = ''
+            for c in results.results:
+                if not c.element:
+                    continue
+                if c.element.kind == ElementKind.FUNCTION or c.element.kind == ElementKind.METHOD or c.element.kind == ElementKind.SETTER:
+                    # TODO(guillermooo): insert only req params.
+                    # formatted.append([_FUNCTION.format(c.completion, c.element.parameters, c.returnType), c.completion + '(${1:%s})$0' % c.element.parameters[1:c.requiredParameterCount]])
+                    formatted.append([self._FUNCTION.format(c.completion, c.element.parameters, c.returnType), c.completion + '(${1:%s})$0' % c.element.parameters[1:-1]])
+                elif c.element.kind == ElementKind.GETTER or c.element.kind == ElementKind.FIELD:
+                    formatted.append([self._PROPERTY.format(c.completion, c.returnType), c.completion])
+                elif c.element.kind == ElementKind.CONSTRUCTOR:
+                    formatted.append([self._CONSTRUCTOR.format(c.completion) + c.element.parameters, c.completion + '(${1:%s})$0' % c.element.parameters[1:-1]])
+                else:
+                    formatted.append([self._OTHER.format(c.completion), c.completion])
 
-        if actx.results:
-            show = True
+            actx.set_results(get_active_view(), results.results)
+            actx.formatted_results = formatted
 
-    if not show:
-        return
+            if not actx.results:
+                return
 
-    v = get_active_view()
-    if v:
-        v.run_command('auto_complete')
+        v = get_active_view()
+        if v:
+            v.run_command('auto_complete')
+
+
+handle_completions = HandleCompletionsImpl()
+
+
+# def handle_completions(results):
+#     show = False
+#     with editor_context.autocomplete_context as actx:
+
+#         _PROPERTY = '\u25CB {} \u2192 {}'
+#         _FUNCTION = '\u25BA {}{} \u2192 {}'
+#         _CONSTRUCTOR = '\u00A9 {}'
+#         _OTHER = '· {}'
+
+#         formatted = []
+#         item = ''
+#         for c in results.results:
+#             if not c.element:
+#                 continue
+#             if c.element.kind == ElementKind.FUNCTION or c.element.kind == ElementKind.METHOD or c.element.kind == ElementKind.SETTER:
+#                 # TODO(guillermooo): insert only req params.
+#                 # formatted.append([_FUNCTION.format(c.completion, c.element.parameters, c.returnType), c.completion + '(${1:%s})$0' % c.element.parameters[1:c.requiredParameterCount]])
+#                 formatted.append([_FUNCTION.format(c.completion, c.element.parameters, c.returnType), c.completion + '(${1:%s})$0' % c.element.parameters[1:-1]])
+#             elif c.element.kind == ElementKind.GETTER or c.element.kind == ElementKind.FIELD:
+#                 formatted.append([_PROPERTY.format(c.completion, c.returnType), c.completion])
+#             elif c.element.kind == ElementKind.CONSTRUCTOR:
+#                 formatted.append([_CONSTRUCTOR.format(c.completion) + c.element.parameters, c.completion + '(${1:%s})$0' % c.element.parameters[1:-1]])
+#             else:
+#                 formatted.append([_OTHER.format(c.completion), c.completion])
+
+#         actx.results = results.results
+#         actx.formatted_results = formatted
+
+#         if actx.results:
+#             show = True
+
+#     if not show:
+#         return
+
+#     v = get_active_view()
+#     if v:
+#         v.run_command('auto_complete')
 
 
 def handle_formatting(result):
