@@ -1,0 +1,3 @@
+[submodule "sublime_plugin_lib"]
+	path = sublime_plugin_lib
+	url = https://github.com/guillermooo/plugin_lib
