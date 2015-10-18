@@ -17,6 +17,7 @@
     { "caption": "Dart: Run In Observatory (This File)", "command": "dart_run_in_observatory" },
 
     { "caption": "Dart: Show Output Panel", "command": "show_panel", "args": {"panel": "output.dart.out"} },
+    { "caption": "Dart: Show Errors Panel", "command": "show_panel", "args": {"panel": "output.dart.errors"} },
 
     { "caption": "Dart: Format", "command": "dart_format" },
 

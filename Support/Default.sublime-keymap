@@ -45,8 +45,15 @@
 	},
 
 	{
-		"keys": ["ctrl+.", "ctrl+o"], "command": "show_panel",
-			"args": { "panel": "output.dart.out" },
+		"keys": ["ctrl+.", "ctrl+o"], "command": "show_panel", "args": { "panel": "output.dart.out", "toggle": true },
+		"context":
+		[
+			{ "key": "setting.command_mode", "operand": false }
+		]
+	},
+
+	{
+		"keys": ["ctrl+.", "ctrl+e"], "command": "show_panel", "args": { "panel": "output.dart.errors", "toggle": true },
 		"context":
 		[
 			{ "key": "setting.command_mode", "operand": false }
