@@ -51,6 +51,9 @@
 	// If 'true', the analysis server will run in the background.
 	"dart_enable_analysis_server": true,
 
+	// If 'true', automatically dartfmt Dart files on save.
+	"dartfmt_on_save": false,
+
 	// Log level (for debugging).
 	//Can be one of: debug < info < warning < error < critical
 	"dart_log_level": "error"
