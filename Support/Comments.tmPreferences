@@ -24,15 +24,9 @@
 			</dict>
 			<dict>
 				<key>name</key>
-				<string>TM_COMMENT_BLOCK_START</string>
+				<string>TM_COMMENT_START_2</string>
 				<key>value</key>
 				<string>/// </string>
-			</dict>
-			<dict>
-				<key>name</key>
-				<string>TM_LINE_TERMINATOR</string>
-				<key>value</key>
-				<string>;</string>
 			</dict>
 		</array>
 	</dict>
