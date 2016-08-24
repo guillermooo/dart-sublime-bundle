@@ -82,5 +82,3 @@ class AutocompleteContext(object):
     def should_hide_auto_complete_list(self, view):
         s0 = view.sel()[0]
         return s0 < self.coords
-
-
