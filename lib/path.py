@@ -63,6 +63,8 @@ def find_pubspec_path(path, original=None):
 
 
 def is_path_under(top_level, path):
+    if top_level is None:
+        return False
     prefix = os.path.realpath(top_level)
     target = os.path.realpath(path)
     return target.startswith(prefix)
