@@ -331,7 +331,7 @@
 					<key>comment</key>
 					<string>A getter with a primitive return type.</string>
 					<key>match</key>
-					<string>^\s*(?:\b(void|bool|num|int|double|dynamic|var|String|List|Map)\b)\s+(get)\s+(\w+)\s+(?==&gt;)</string>
+					<string>^\s*(?:\b(void|bool|num|int|double|dynamic|var|String|List|Map|DateTime)\b)\s+(get)\s+(\w+)\s+(?==&gt;)</string>
 					<key>name</key>
 					<string>meta.declaration.function.dart</string>
 				</dict>
@@ -405,7 +405,7 @@
 				</dict>
 				<dict>
 					<key>begin</key>
-					<string>^\s*(?:\b(void|bool|num|int|double|dynamic|var|String|List|Map)\b)\s+(\w+)(?=\()</string>
+					<string>^\s*(?:\b(void|bool|num|int|double|dynamic|var|String|List|Map|DateTime)\b)\s+(\w+)(?=\()</string>
 					<key>beginCaptures</key>
 					<dict>
 						<key>1</key>
@@ -541,7 +541,7 @@
 				</dict>
 				<dict>
 					<key>begin</key>
-					<string>(?:\b(void|bool|num|int|double|dynamic|var|String|List|Map)\b)\s+(\w+)(?=\()</string>
+					<string>(?:\b(void|bool|num|int|double|dynamic|var|String|List|Map|DateTime)\b)\s+(\w+)(?=\()</string>
 					<key>beginCaptures</key>
 					<dict>
 						<key>1</key>
@@ -737,7 +737,7 @@
 								</dict>
 							</dict>
 							<key>match</key>
-							<string>(?:\b(void|bool|num|int|double|dynamic|var|String|List|Map)\b|([a-zA-Z_][a-zA-Z0-9_]*))\s+([a-zA-Z_][a-zA-Z0-9_]+)</string>
+							<string>(?:\b(void|bool|num|int|double|dynamic|var|String|List|Map|DateTime)\b|([a-zA-Z_][a-zA-Z0-9_]*))\s+([a-zA-Z_][a-zA-Z0-9_]+)</string>
 						</dict>
 						<dict>
 							<key>begin</key>
@@ -878,7 +878,7 @@
 				</dict>
 				<dict>
 					<key>match</key>
-					<string>\b(?:void|bool|num|int|double|dynamic|var|String|List|Map)\b</string>
+					<string>\b(?:void|bool|num|int|double|dynamic|var|String|List|Map|DateTime)\b</string>
 					<key>name</key>
 					<string>storage.type.primitive.dart</string>
 				</dict>
