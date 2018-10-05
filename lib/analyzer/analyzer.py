@@ -296,7 +296,7 @@ class AnalysisServer(object):
 
     def should_ignore_file(self, path):
         project = DartProject.from_path(path)
-        is_a_third_party_file = (project and is_path_under(project.path_to_packages, path))
+        is_a_third_party_file = (project and project.path_to_packages and is_path_under(project.path_to_packages, path))
 
         if is_a_third_party_file:
             return True
