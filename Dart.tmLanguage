@@ -909,10 +909,6 @@
 							<key>name</key>
 							<string>ignore.capture.regex.dart</string>
 						</dict>
-						<dict>
-							<key>include</key>
-							<string>#regex.dart</string>
-						</dict>
 					</array>
 				</dict>
 				<dict>
