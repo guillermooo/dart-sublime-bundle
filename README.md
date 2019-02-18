@@ -1,4 +1,4 @@
-Fork of https://github.com/guillermooo/dart-sublime-bundle, modified so that it works well enough for me. PRs welcome.
+https://github.com/guillermooo/dart-sublime-bundle is apparently unmaintained and no longer works out of the box. This fork includes modifications so that it works again. PRs welcome.
 
 # Dart plugin for Sublime Text 3
 
