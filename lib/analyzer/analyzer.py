@@ -296,14 +296,16 @@ class AnalysisServer(object):
 
     def should_ignore_file(self, path):
         project = DartProject.from_path(path)
-        is_a_third_party_file = (project and is_path_under(project.path_to_packages, path))
+        if project and project.path_to_packages is not None:
+            is_a_third_party_file = is_path_under(project.path_to_packages, path)
+        else:
+            is_a_third_party_file = False
 
         if is_a_third_party_file:
             return True
 
         sdk = SDK()
         return is_path_under(sdk.path, path)
-
 
 class ResponseHandler(threading.Thread):
     """ Handles responses from the response queue.
