@@ -1,0 +1,21 @@
+{
+	"scope": "source.dart - variable.other.dart",
+	"completions":
+	[
+		"dart",
+		{ "trigger": "main\tInsert a main method, used as an entry point.", "contents": "main(List<String> args) {\n	$1\n}"},
+		{ "trigger": "try\tInsert a try/catch block.", "contents": "try {\n	$2\n} catch (${1:e}) {\n}"},
+		{ "trigger": "if\tInsert an if statement.", "contents": "if ($1) {\n	$2\n}"},
+		{ "trigger": "ife\tInsert an if statement with an else block.", "contents": "if ($1) {\n	$2\n} else {\n	$3\n}"},
+		{ "trigger": "switch\tInsert a switch statement.", "contents": "switch ($1) {\n	case $2:\n		$3\n		break;\n	default:$4\n}"},
+		{ "trigger": "for\tInsert a for loop.", "contents": "for (var i = 0; i < ${1:count}; i++) {\n	$2\n}"},
+		{ "trigger": "fori\tInsert a for-in loop.", "contents": "for (var ${1:item} in ${2:items}) {\n	$3\n}"},
+		{ "trigger": "while\tInsert a while loop.", "contents": "while ($1) {\n	$2\n}"},
+		{ "trigger": "do\tInsert a do-while loop.", "contents": "do {\n	$2\n} while ($1);"},
+		{ "trigger": "fun\tInsert a function definition.", "contents": "${3:void} ${1:name}(${2:args}) {\n	$4\n}"},
+		{ "trigger": "class\tInsert a class definition.", "contents": "class ${1:Name} {\n	$2\n}"},
+		{ "trigger": "typedef\tInsert a typedef.", "contents": "typedef ${1:Type} ${2:Name}(${3:params});"},
+		{ "trigger": "test\tInsert a test block.", "contents": "test('$1', () {\n	$2\n});"},
+		{ "trigger": "group\tInsert a test group block.", "contents": "group('$1', () {\n	$2\n});"},
+	]
+}
