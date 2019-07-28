@@ -14,9 +14,7 @@ class DartProject(object):
         self.pubspec = pubspec
 
     def _get_top_level_dir(self, name):
-        p = os.path.join(self.pubspec.parent, name)
-        if os.path.exists(p):
-            return p
+        return os.path.join(self.pubspec.parent, name)
 
     def make_top_level_dir(self, name):
         os.mkdir(os.path.join(self.pubspec.parent, name))

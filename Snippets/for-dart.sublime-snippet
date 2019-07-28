@@ -1,0 +1,9 @@
+<snippet>
+  <tabTrigger>for</tabTrigger>
+  <scope>source.dart</scope>
+  <content><![CDATA[
+for (var i = 0; i<${1:counter}; i++) {
+  $2
+}
+]]></content>
+</snippet>

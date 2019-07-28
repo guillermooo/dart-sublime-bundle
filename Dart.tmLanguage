@@ -6,6 +6,10 @@
 	<array>
 		<string>dart</string>
 	</array>
+	<key>foldingStartMarker</key>
+	<string>\{\s*$</string>
+	<key>foldingStopMarker</key>
+	<string>^\s*\}</string>
 	<key>name</key>
 	<string>Dart</string>
 	<key>patterns</key>
@@ -18,7 +22,7 @@
 		</dict>
 		<dict>
 			<key>begin</key>
-			<string>^\s*\b(library|import|export|part of|part)\b</string>
+			<string>^\w*\b(library|import|part of|part|export)\b</string>
 			<key>beginCaptures</key>
 			<dict>
 				<key>0</key>
@@ -46,8 +50,12 @@
 					<string>#strings</string>
 				</dict>
 				<dict>
+					<key>include</key>
+					<string>#comments</string>
+				</dict>
+				<dict>
 					<key>match</key>
-					<string>\b(as|show|hide|deferred)\b</string>
+					<string>\b(as|show|hide)\b</string>
 					<key>name</key>
 					<string>keyword.other.import.dart</string>
 				</dict>
@@ -59,7 +67,7 @@
 		</dict>
 		<dict>
 			<key>include</key>
-			<string>#constants-and-special-vars</string>
+			<string>#punctuation</string>
 		</dict>
 		<dict>
 			<key>include</key>
@@ -67,23 +75,11 @@
 		</dict>
 		<dict>
 			<key>include</key>
-			<string>#decl-typedef</string>
-		</dict>
-		<dict>
-			<key>include</key>
-			<string>#decl-class</string>
-		</dict>
-		<dict>
-			<key>include</key>
-			<string>#decl-enum</string>
-		</dict>
-		<dict>
-			<key>include</key>
-			<string>#decl-function</string>
-		</dict>
-		<dict>
-			<key>include</key>
 			<string>#keywords</string>
+		</dict>
+		<dict>
+			<key>include</key>
+			<string>#constants-and-special-vars</string>
 		</dict>
 		<dict>
 			<key>include</key>
@@ -97,26 +93,10 @@
 			<key>patterns</key>
 			<array>
 				<dict>
-					<key>captures</key>
-					<dict>
-						<key>1</key>
-						<dict>
-							<key>name</key>
-							<string>annotation.dart</string>
-						</dict>
-						<key>2</key>
-						<dict>
-							<key>name</key>
-							<string>entity.name.function.annotation.dart</string>
-						</dict>
-						<key>3</key>
-						<dict>
-							<key>name</key>
-							<string>support.type.dart</string>
-						</dict>
-					</dict>
 					<key>match</key>
-					<string>^(?:\s*)((@)([a-zA-Z0-9_]+))</string>
+					<string>@[a-zA-Z]+</string>
+					<key>name</key>
+					<string>storage.type.annotation.dart</string>
 				</dict>
 			</array>
 		</dict>
@@ -140,11 +120,19 @@
 				</dict>
 				<dict>
 					<key>include</key>
+					<string>#comments-doc-oldschool</string>
+				</dict>
+				<dict>
+					<key>include</key>
+					<string>#comments-doc</string>
+				</dict>
+				<dict>
+					<key>include</key>
 					<string>#comments-inline</string>
 				</dict>
 			</array>
 		</dict>
-		<key>comments-inline</key>
+		<key>comments-block</key>
 		<dict>
 			<key>patterns</key>
 			<array>
@@ -159,55 +147,81 @@
 					<array>
 						<dict>
 							<key>include</key>
-							<string>text.dart-doccomments</string>
+							<string>#comments-block</string>
 						</dict>
 					</array>
 				</dict>
+			</array>
+		</dict>
+		<key>comments-doc</key>
+		<dict>
+			<key>patterns</key>
+			<array>
 				<dict>
 					<key>begin</key>
-					<string>(///)</string>
-					<key>beginCaptures</key>
-					<dict>
-						<key>1</key>
-						<dict>
-							<key>name</key>
-							<string>marker.dart</string>
-						</dict>
-					</dict>
-					<key>end</key>
-					<string>$</string>
+					<string>///</string>
 					<key>name</key>
-					<string>comment.line.triple-slash.dart</string>
+					<string>comment.block.documentation.dart</string>
 					<key>patterns</key>
 					<array>
 						<dict>
 							<key>include</key>
-							<string>text.dart-doccomments</string>
+							<string>#dartdoc</string>
 						</dict>
 					</array>
+					<key>end</key>
+					<string>.*</string>
 				</dict>
+			</array>
+		</dict>
+		<key>comments-doc-oldschool</key>
+		<dict>
+			<key>patterns</key>
+			<array>
 				<dict>
 					<key>begin</key>
-					<string>(//)</string>
-					<key>beginCaptures</key>
-					<dict>
-						<key>1</key>
-						<dict>
-							<key>name</key>
-							<string>marker.dart</string>
-						</dict>
-					</dict>
+					<string>/\*\*</string>
 					<key>end</key>
-					<string>$</string>
+					<string>\*/</string>
 					<key>name</key>
-					<string>comment.line.double-slash.dart</string>
+					<string>comment.block.documentation.dart</string>
 					<key>patterns</key>
 					<array>
 						<dict>
 							<key>include</key>
-							<string>text.dart-doccomments</string>
+							<string>#comments-doc-oldschool</string>
+						</dict>
+						<dict>
+							<key>include</key>
+							<string>#comments-block</string>
+						</dict>
+						<dict>
+							<key>include</key>
+							<string>#dartdoc</string>
 						</dict>
 					</array>
+				</dict>
+			</array>
+		</dict>
+		<key>comments-inline</key>
+		<dict>
+			<key>patterns</key>
+			<array>
+				<dict>
+					<key>include</key>
+					<string>#comments-block</string>
+				</dict>
+				<dict>
+					<key>captures</key>
+					<dict>
+						<key>1</key>
+						<dict>
+							<key>name</key>
+							<string>comment.line.double-slash.dart</string>
+						</dict>
+					</dict>
+					<key>match</key>
+					<string>((//).*)$</string>
 				</dict>
 			</array>
 		</dict>
@@ -217,123 +231,27 @@
 			<array>
 				<dict>
 					<key>match</key>
-					<string>\b(true|false|null)\b</string>
+					<string>(?&lt;!\$)\b(true|false|null)\b(?!\$)</string>
 					<key>name</key>
 					<string>constant.language.dart</string>
 				</dict>
 				<dict>
 					<key>match</key>
-					<string>\b(this|super)\b</string>
+					<string>(?&lt;!\$)\b(this|super)\b(?!\$)</string>
 					<key>name</key>
 					<string>variable.language.dart</string>
 				</dict>
 				<dict>
 					<key>match</key>
-					<string>\b((0(x|X)[0-9a-fA-F]*)|(([0-9]+\.?[0-9]*)|(\.[0-9]+))((e|E)(\+|-)?[0-9]+)?)\b</string>
+					<string>(?&lt;!\$)\b((0(x|X)[0-9a-fA-F]*)|(([0-9]+\.?[0-9]*)|(\.[0-9]+))((e|E)(\+|-)?[0-9]+)?)\b(?!\$)</string>
 					<key>name</key>
 					<string>constant.numeric.dart</string>
 				</dict>
-			</array>
-		</dict>
-		<key>decl-class</key>
-		<dict>
-			<key>patterns</key>
-			<array>
 				<dict>
-					<key>begin</key>
-					<string>\bclass\b</string>
-					<key>beginCaptures</key>
-					<dict>
-						<key>0</key>
-						<dict>
-							<key>name</key>
-							<string>keyword.control.new.dart</string>
-						</dict>
-					</dict>
-					<key>end</key>
-					<string>(?={)</string>
-					<key>name</key>
-					<string>meta.declaration.class.dart</string>
-					<key>patterns</key>
-					<array>
-						<dict>
-							<key>include</key>
-							<string>#keywords</string>
-						</dict>
-						<dict>
-							<key>match</key>
-							<string>[A-Za-z_][A-Za-z0-9_]*</string>
-							<key>name</key>
-							<string>class.name.dart</string>
-						</dict>
-					</array>
-				</dict>
-			</array>
-		</dict>
-		<key>decl-enum</key>
-		<dict>
-			<key>patterns</key>
-			<array>
-				<dict>
-					<key>begin</key>
-					<string>\benum\b</string>
-					<key>beginCaptures</key>
-					<dict>
-						<key>0</key>
-						<dict>
-							<key>name</key>
-							<string>keyword.declaration.dart</string>
-						</dict>
-					</dict>
-					<key>end</key>
-					<string>(?={)</string>
-					<key>name</key>
-					<string>meta.declaration.enum.dart</string>
-					<key>patterns</key>
-					<array>
-						<dict>
-							<key>include</key>
-							<string>#keywords</string>
-						</dict>
-						<dict>
-							<key>match</key>
-							<string>[A-Za-z_][A-Za-z0-9_]*</string>
-							<key>name</key>
-							<string>enum.name.dart</string>
-						</dict>
-					</array>
-				</dict>
-			</array>
-		</dict>
-		<key>decl-function</key>
-		<dict>
-			<key>patterns</key>
-			<array>
-				<dict>
-					<key>captures</key>
-					<dict>
-						<key>1</key>
-						<dict>
-							<key>name</key>
-							<string>storage.type.primitive.dart</string>
-						</dict>
-						<key>2</key>
-						<dict>
-							<key>name</key>
-							<string>keyword.declaration.dart</string>
-						</dict>
-						<key>3</key>
-						<dict>
-							<key>name</key>
-							<string>function.name.dart</string>
-						</dict>
-					</dict>
-					<key>comment</key>
-					<string>A getter with a primitive return type.</string>
 					<key>match</key>
-					<string>^\s*(?:\b(void|bool|num|int|double|dynamic|var|String|List|Map)\b)\s+(get)\s+(\w+)\s+(?==&gt;)</string>
+					<string>(?&lt;![a-zA-Z0-9_$])[_$]*[A-Z][a-zA-Z0-9_$]*</string>
 					<key>name</key>
-					<string>meta.declaration.function.dart</string>
+					<string>support.class.dart</string>
 				</dict>
 				<dict>
 					<key>captures</key>
@@ -341,420 +259,89 @@
 						<key>1</key>
 						<dict>
 							<key>name</key>
-							<string>type.user-defined.dart</string>
-						</dict>
-						<key>2</key>
-						<dict>
-							<key>name</key>
-							<string>keyword.declaration.dart</string>
-						</dict>
-						<key>3</key>
-						<dict>
-							<key>name</key>
-							<string>function.name.dart</string>
+							<string>entity.name.function.dart</string>
 						</dict>
 					</dict>
-					<key>comment</key>
-					<string>A getter with a user-defined return type or no return type.</string>
 					<key>match</key>
-					<string>^\s*(?:\b(\w+)\b\s+)?(get)\s+(\w+)\s+(?==&gt;)</string>
-					<key>name</key>
-					<string>meta.declaration.function.dart</string>
-				</dict>
-				<dict>
-					<key>begin</key>
-					<string>^\s*(set)\s+(\w+)(?=\()</string>
-					<key>beginCaptures</key>
-					<dict>
-						<key>1</key>
-						<dict>
-							<key>name</key>
-							<string>keyword.declaration.dart</string>
-						</dict>
-						<key>2</key>
-						<dict>
-							<key>name</key>
-							<string>function.name.dart</string>
-						</dict>
-					</dict>
-					<key>comment</key>
-					<string>A setter.</string>
-					<key>end</key>
-					<string>\)</string>
-					<key>name</key>
-					<string>meta.declaration.function.dart</string>
-					<key>patterns</key>
-					<array>
-						<dict>
-							<key>include</key>
-							<string>#comments-inline</string>
-						</dict>
-						<dict>
-							<key>include</key>
-							<string>#decl-function-parameter</string>
-						</dict>
-						<dict>
-							<key>include</key>
-							<string>#strings</string>
-						</dict>
-						<dict>
-							<key>include</key>
-							<string>#keywords</string>
-						</dict>
-					</array>
-				</dict>
-				<dict>
-					<key>begin</key>
-					<string>^\s*(?:\b(void|bool|num|int|double|dynamic|var|String|List|Map)\b)\s+(\w+)(?=\()</string>
-					<key>beginCaptures</key>
-					<dict>
-						<key>1</key>
-						<dict>
-							<key>name</key>
-							<string>storage.type.primitive.dart</string>
-						</dict>
-						<key>2</key>
-						<dict>
-							<key>name</key>
-							<string>function.name.dart</string>
-						</dict>
-					</dict>
-					<key>comment</key>
-					<string>A function with a primitive return type.</string>
-					<key>end</key>
-					<string>\)</string>
-					<key>name</key>
-					<string>meta.declaration.function.dart</string>
-					<key>patterns</key>
-					<array>
-						<dict>
-							<key>include</key>
-							<string>#comments-inline</string>
-						</dict>
-						<dict>
-							<key>include</key>
-							<string>#decl-function-parameter</string>
-						</dict>
-						<dict>
-							<key>include</key>
-							<string>#strings</string>
-						</dict>
-						<dict>
-							<key>include</key>
-							<string>#keywords</string>
-						</dict>
-					</array>
-				</dict>
-				<dict>
-					<key>begin</key>
-					<string>^\s*(?:\b(return)\b)\s+(\w+)(?=\()</string>
-					<key>beginCaptures</key>
-					<dict>
-						<key>1</key>
-						<dict>
-							<key>name</key>
-							<string>keyword.control.dart</string>
-						</dict>
-						<key>2</key>
-						<dict>
-							<key>name</key>
-							<string>function.name.dart</string>
-						</dict>
-					</dict>
-					<key>comment</key>
-					<string>A function invocation after 'return'</string>
-					<key>end</key>
-					<string>\)</string>
-					<key>name</key>
-					<string>meta.invocation.function.dart</string>
-					<key>patterns</key>
-					<array>
-						<dict>
-							<key>include</key>
-							<string>#comments-inline</string>
-						</dict>
-						<dict>
-							<key>include</key>
-							<string>#decl-function-parameter</string>
-						</dict>
-						<dict>
-							<key>include</key>
-							<string>#strings</string>
-						</dict>
-						<dict>
-							<key>include</key>
-							<string>#keywords</string>
-						</dict>
-					</array>
-				</dict>
-				<dict>
-					<key>begin</key>
-					<string>^\s*\b(new)\b\s+(\w+)(?=\()</string>
-					<key>beginCaptures</key>
-					<dict>
-						<key>1</key>
-						<dict>
-							<key>name</key>
-							<string>keyword.declaration.dart</string>
-						</dict>
-						<key>2</key>
-						<dict>
-							<key>name</key>
-							<string>function.name.dart</string>
-						</dict>
-					</dict>
-					<key>comment</key>
-					<string>A class instantiation after 'new'</string>
-					<key>end</key>
-					<string>\)</string>
-					<key>name</key>
-					<string>meta.invocation.function.dart</string>
-					<key>patterns</key>
-					<array>
-						<dict>
-							<key>include</key>
-							<string>#comments-inline</string>
-						</dict>
-						<dict>
-							<key>include</key>
-							<string>#decl-function-parameter</string>
-						</dict>
-						<dict>
-							<key>include</key>
-							<string>#strings</string>
-						</dict>
-						<dict>
-							<key>include</key>
-							<string>#keywords</string>
-						</dict>
-					</array>
+					<string>([_$]*[a-z][a-zA-Z0-9_$]*)(&lt;|\(|\s+=&gt;)</string>
 				</dict>
 			</array>
 		</dict>
-		<key>decl-function-parameter</key>
+		<key>dartdoc</key>
 		<dict>
 			<key>patterns</key>
 			<array>
 				<dict>
-					<key>include</key>
-					<string>#constants-and-special-vars</string>
-				</dict>
-				<dict>
-					<key>begin</key>
-					<string>(?:\b(void|bool|num|int|double|dynamic|var|String|List|Map)\b)\s+(\w+)(?=\()</string>
-					<key>beginCaptures</key>
-					<dict>
-						<key>1</key>
-						<dict>
-							<key>name</key>
-							<string>storage.type.primitive.dart</string>
-						</dict>
-						<key>2</key>
-						<dict>
-							<key>name</key>
-							<string>function.name.dart</string>
-						</dict>
-					</dict>
-					<key>comment</key>
-					<string>A function with a primitive return type.</string>
-					<key>end</key>
-					<string>\)</string>
-					<key>name</key>
-					<string>meta.parameter.function.dart</string>
-					<key>patterns</key>
-					<array>
-						<dict>
-							<key>include</key>
-							<string>#decl-function-parameter</string>
-						</dict>
-						<dict>
-							<key>include</key>
-							<string>#strings</string>
-						</dict>
-						<dict>
-							<key>include</key>
-							<string>#keywords</string>
-						</dict>
-					</array>
-				</dict>
-				<dict>
-					<key>begin</key>
-					<string>\b(new)\b\s+(\w+)(?=\()</string>
-					<key>beginCaptures</key>
-					<dict>
-						<key>1</key>
-						<dict>
-							<key>name</key>
-							<string>keyword.declaration.dart</string>
-						</dict>
-						<key>2</key>
-						<dict>
-							<key>name</key>
-							<string>function.name.dart</string>
-						</dict>
-					</dict>
-					<key>comment</key>
-					<string>A class instantiation after 'new'</string>
-					<key>end</key>
-					<string>\)</string>
-					<key>name</key>
-					<string>meta.invocation.function.dart</string>
-					<key>patterns</key>
-					<array>
-						<dict>
-							<key>include</key>
-							<string>#decl-function-parameter</string>
-						</dict>
-						<dict>
-							<key>include</key>
-							<string>#strings</string>
-						</dict>
-						<dict>
-							<key>include</key>
-							<string>#keywords</string>
-						</dict>
-					</array>
-				</dict>
-				<dict>
-					<key>begin</key>
-					<string>(?:\b(\w+)\b)\s+(\w+)(?=\()</string>
-					<key>beginCaptures</key>
-					<dict>
-						<key>1</key>
-						<dict>
-							<key>name</key>
-							<string>type.user-defined.dart</string>
-						</dict>
-						<key>2</key>
-						<dict>
-							<key>name</key>
-							<string>function.name.dart</string>
-						</dict>
-					</dict>
-					<key>comment</key>
-					<string>A function with a user-defined return type.</string>
-					<key>end</key>
-					<string>\)</string>
-					<key>name</key>
-					<string>meta.parameter.function.dart</string>
-					<key>patterns</key>
-					<array>
-						<dict>
-							<key>include</key>
-							<string>#decl-function-parameter</string>
-						</dict>
-						<dict>
-							<key>include</key>
-							<string>#strings</string>
-						</dict>
-						<dict>
-							<key>include</key>
-							<string>#keywords</string>
-						</dict>
-					</array>
-				</dict>
-				<dict>
-					<key>begin</key>
-					<string>(\w+)(?=\()</string>
-					<key>beginCaptures</key>
-					<dict>
-						<key>1</key>
-						<dict>
-							<key>name</key>
-							<string>function.name.dart</string>
-						</dict>
-					</dict>
-					<key>comment</key>
-					<string>A function with no return type.</string>
-					<key>end</key>
-					<string>\)</string>
-					<key>name</key>
-					<string>meta.parameter.function.dart</string>
-					<key>patterns</key>
-					<array>
-						<dict>
-							<key>include</key>
-							<string>#decl-function-parameter</string>
-						</dict>
-						<dict>
-							<key>include</key>
-							<string>#strings</string>
-						</dict>
-						<dict>
-							<key>include</key>
-							<string>#keywords</string>
-						</dict>
-					</array>
-				</dict>
-			</array>
-		</dict>
-		<key>decl-typedef</key>
-		<dict>
-			<key>patterns</key>
-			<array>
-				<dict>
-					<key>begin</key>
-					<string>typedef</string>
-					<key>beginCaptures</key>
+					<key>captures</key>
 					<dict>
 						<key>0</key>
 						<dict>
 							<key>name</key>
-							<string>keyword.control.new.dart</string>
+							<string>variable.name.source.dart</string>
 						</dict>
 					</dict>
-					<key>end</key>
-					<string>;</string>
-					<key>endCaptures</key>
+					<key>match</key>
+					<string>(\[.*?\])</string>
+				</dict>
+				<dict>
+					<key>captures</key>
 					<dict>
 						<key>0</key>
 						<dict>
 							<key>name</key>
-							<string>punctuation.terminator.dart</string>
+							<string>variable.name.source.dart</string>
 						</dict>
 					</dict>
-					<key>name</key>
-					<string>meta.declaration.typedef.dart</string>
-					<key>patterns</key>
-					<array>
+					<key>match</key>
+					<string>    .*</string>
+				</dict>
+				<dict>
+					<key>begin</key>
+					<string>```.*?$</string>
+					<key>contentName</key>
+					<string>variable.other.source.dart</string>
+					<key>end</key>
+					<string>```</string>
+				</dict>
+				<dict>
+					<key>captures</key>
+					<dict>
+						<key>0</key>
 						<dict>
-							<key>captures</key>
-							<dict>
-								<key>1</key>
-								<dict>
-									<key>name</key>
-									<string>storage.type.primitive.dart</string>
-								</dict>
-								<key>2</key>
-								<dict>
-									<key>name</key>
-									<string>typedef.return.dart</string>
-								</dict>
-								<key>3</key>
-								<dict>
-									<key>name</key>
-									<string>typedef.name.dart</string>
-								</dict>
-							</dict>
-							<key>match</key>
-							<string>(?:\b(void|bool|num|int|double|dynamic|var|String|List|Map)\b|([a-zA-Z_][a-zA-Z0-9_]*))\s+([a-zA-Z_][a-zA-Z0-9_]+)</string>
-						</dict>
-						<dict>
-							<key>begin</key>
-							<string>\(</string>
-							<key>end</key>
-							<string>\)</string>
 							<key>name</key>
-							<string>typedef.params.dart</string>
-							<key>patterns</key>
-							<array>
-								<dict>
-									<key>include</key>
-									<string>#keywords</string>
-								</dict>
-							</array>
+							<string>variable.other.source.dart</string>
 						</dict>
-					</array>
+					</dict>
+					<key>match</key>
+					<string>(`.*?`)</string>
+				</dict>
+				<dict>
+					<key>captures</key>
+					<dict>
+						<key>0</key>
+						<dict>
+							<key>name</key>
+							<string>variable.other.source.dart</string>
+						</dict>
+					</dict>
+					<key>match</key>
+					<string>(`.*?`)</string>
+				</dict>
+				<dict>
+					<key>captures</key>
+					<dict>
+						<key>2</key>
+						<dict>
+							<key>name</key>
+							<string>variable.other.source.dart</string>
+						</dict>
+					</dict>
+					<key>match</key>
+					<string>(\* ((    ).*))$</string>
+				</dict>
+				<dict>
+					<key>match</key>
+					<string>(\*    .*)$</string>
 				</dict>
 			</array>
 		</dict>
@@ -764,57 +351,57 @@
 			<array>
 				<dict>
 					<key>match</key>
-					<string>\bassert\b</string>
-					<key>name</key>
-					<string>keyword.control.assert.dart</string>
-				</dict>
-				<dict>
-					<key>match</key>
-					<string>\bas\b</string>
+					<string>(?&lt;!\$)\bas\b(?!\$)</string>
 					<key>name</key>
 					<string>keyword.cast.dart</string>
 				</dict>
 				<dict>
 					<key>match</key>
-					<string>\b(try|catch|finally|throw|on|rethrow)\b</string>
+					<string>(?&lt;!\$)\b(try|on|catch|finally|throw|rethrow)\b(?!\$)</string>
 					<key>name</key>
 					<string>keyword.control.catch-exception.dart</string>
 				</dict>
 				<dict>
 					<key>match</key>
-					<string>\s+\?\s+|\s+:\s+</string>
-					<key>name</key>
-					<string>keyword.control.ternary.dart</string>
-				</dict>
-				<dict>
-					<key>match</key>
-					<string>\b(break|case|continue|default|do|else|for|if|in|return|switch|while)\b</string>
+					<string>(?&lt;!\$)\b(break|case|continue|default|do|else|for|if|in|return|switch|while)\b(?!\$)</string>
 					<key>name</key>
 					<string>keyword.control.dart</string>
 				</dict>
 				<dict>
 					<key>match</key>
-					<string>\b(async\*|async|await\*|await|yield)\b</string>
+					<string>(?&lt;!\$)\b(sync(\*)?|async(\*)?|await|yield(\*)?)\b(?!\$)</string>
 					<key>name</key>
-					<string>keyword.control.async.dart</string>
+					<string>keyword.control.dart</string>
 				</dict>
 				<dict>
 					<key>match</key>
-					<string>\b(new)\b</string>
+					<string>(?&lt;!\$)\bassert\b(?!\$)</string>
+					<key>name</key>
+					<string>keyword.control.dart</string>
+				</dict>
+				<dict>
+					<key>match</key>
+					<string>(?&lt;!\$)\b(new)\b(?!\$)</string>
 					<key>name</key>
 					<string>keyword.control.new.dart</string>
 				</dict>
 				<dict>
 					<key>match</key>
-					<string>\b(abstract|extends|external|factory|implements|with|interface|get|native|operator|set|typedef)\b</string>
+					<string>(?&lt;!\$)\b(abstract|class|enum|extends|external|factory|implements|get|mixin|native|operator|set|typedef|with|covariant)\b(?!\$)</string>
 					<key>name</key>
 					<string>keyword.declaration.dart</string>
 				</dict>
 				<dict>
 					<key>match</key>
-					<string>\b(is\!?)\b</string>
+					<string>(?&lt;!\$)\b(is\!?)\b(?!\$)</string>
 					<key>name</key>
 					<string>keyword.operator.dart</string>
+				</dict>
+				<dict>
+					<key>match</key>
+					<string>\?|:</string>
+					<key>name</key>
+					<string>keyword.operator.ternary.dart</string>
 				</dict>
 				<dict>
 					<key>match</key>
@@ -830,7 +417,13 @@
 				</dict>
 				<dict>
 					<key>match</key>
-					<string>(===?|!==?|&lt;=?|&gt;=?)</string>
+					<string>(=&gt;)</string>
+					<key>name</key>
+					<string>keyword.operator.closure.dart</string>
+				</dict>
+				<dict>
+					<key>match</key>
+					<string>(==|!=|&lt;=?|&gt;=?)</string>
 					<key>name</key>
 					<string>keyword.operator.comparison.dart</string>
 				</dict>
@@ -866,103 +459,39 @@
 				</dict>
 				<dict>
 					<key>match</key>
+					<string>(?&lt;!\$)\b(static|final|const)\b(?!\$)</string>
+					<key>name</key>
+					<string>storage.modifier.dart</string>
+				</dict>
+				<dict>
+					<key>match</key>
+					<string>(?&lt;!\$)\b(?:void|bool|num|int|double|dynamic|var)\b(?!\$)</string>
+					<key>name</key>
+					<string>storage.type.primitive.dart</string>
+				</dict>
+			</array>
+		</dict>
+		<key>punctuation</key>
+		<dict>
+			<key>patterns</key>
+			<array>
+				<dict>
+					<key>match</key>
+					<string>,</string>
+					<key>name</key>
+					<string>punctuation.comma.dart</string>
+				</dict>
+				<dict>
+					<key>match</key>
 					<string>;</string>
 					<key>name</key>
 					<string>punctuation.terminator.dart</string>
 				</dict>
 				<dict>
 					<key>match</key>
-					<string>\b(static|final|const)\b</string>
-					<key>name</key>
-					<string>storage.modifier.dart</string>
-				</dict>
-				<dict>
-					<key>match</key>
-					<string>\b(?:void|bool|num|int|double|dynamic|var|String|List|Map)\b</string>
-					<key>name</key>
-					<string>storage.type.primitive.dart</string>
-				</dict>
-			</array>
-		</dict>
-		<key>regexp</key>
-		<dict>
-			<key>patterns</key>
-			<array>
-				<dict>
-					<key>match</key>
-					<string>\\[^'"]</string>
-					<key>name</key>
-					<string>constant.character.escaped.regex.dart</string>
-				</dict>
-				<dict>
-					<key>begin</key>
-					<string>\(</string>
-					<key>contentName</key>
-					<string>meta.capture.regex.dart</string>
-					<key>end</key>
-					<string>\)</string>
-					<key>patterns</key>
-					<array>
-						<dict>
-							<key>match</key>
-							<string>\?(:|=|!)</string>
-							<key>name</key>
-							<string>ignore.capture.regex.dart</string>
-						</dict>
-						<dict>
-							<key>include</key>
-							<string>#regex.dart</string>
-						</dict>
-					</array>
-				</dict>
-				<dict>
-					<key>match</key>
-					<string>\*|\+|\?|\.|\|</string>
-					<key>name</key>
-					<string>keyword.other.regex.dart</string>
-				</dict>
-				<dict>
-					<key>match</key>
-					<string>\^|\$</string>
-					<key>name</key>
-					<string>keyword.other.regex.dart</string>
-				</dict>
-				<dict>
-					<key>match</key>
 					<string>\.</string>
 					<key>name</key>
-					<string>constant.other.regex.dart</string>
-				</dict>
-				<dict>
-					<key>begin</key>
-					<string>\[(\^)?</string>
-					<key>beginCaptures</key>
-					<dict>
-						<key>1</key>
-						<dict>
-							<key>name</key>
-							<string>keyword.other.negation.regex.dart</string>
-						</dict>
-					</dict>
-					<key>end</key>
-					<string>\]</string>
-					<key>name</key>
-					<string>constant.character.range.regex.dart</string>
-					<key>patterns</key>
-					<array>
-						<dict>
-							<key>match</key>
-							<string>\\[^"']</string>
-							<key>name</key>
-							<string>constant.character.escaped.regex.dart</string>
-						</dict>
-					</array>
-				</dict>
-				<dict>
-					<key>match</key>
-					<string>\{(?:\d+)?,(?:\d+)?\}</string>
-					<key>name</key>
-					<string>keyword.other.regex.dart</string>
+					<string>punctuation.dot.dart</string>
 				</dict>
 			</array>
 		</dict>
@@ -971,59 +500,21 @@
 			<key>patterns</key>
 			<array>
 				<dict>
-					<key>begin</key>
-					<string>(\$)(\{)</string>
-					<key>beginCaptures</key>
-					<dict>
-						<key>1</key>
-						<dict>
-							<key>name</key>
-							<string>keyword.other.dart</string>
-						</dict>
-						<key>2</key>
-						<dict>
-							<key>name</key>
-							<string>keyword.other.dart</string>
-						</dict>
-					</dict>
-					<key>contentName</key>
-					<string>source.dart</string>
-					<key>end</key>
-					<string>(\})</string>
-					<key>endCaptures</key>
-					<dict>
-						<key>1</key>
-						<dict>
-							<key>name</key>
-							<string>keyword.other.dart</string>
-						</dict>
-					</dict>
-					<key>name</key>
-					<string>interpolation.dart</string>
-					<key>patterns</key>
-					<array>
-						<dict>
-							<key>include</key>
-							<string>$self</string>
-						</dict>
-					</array>
-				</dict>
-				<dict>
 					<key>captures</key>
 					<dict>
-						<key>1</key>
+						<key>2</key>
 						<dict>
 							<key>name</key>
-							<string>keyword.other.dart</string>
+							<string>variable.parameter.dart</string>
 						</dict>
-						<key>2</key>
+						<key>3</key>
 						<dict>
 							<key>name</key>
 							<string>variable.parameter.dart</string>
 						</dict>
 					</dict>
 					<key>match</key>
-					<string>(\$)(\w+)</string>
+					<string>\$((\w+)|\{([^{}]+)\})</string>
 				</dict>
 				<dict>
 					<key>match</key>
@@ -1085,7 +576,7 @@
 				</dict>
 				<dict>
 					<key>begin</key>
-					<string>(?&lt;!\\|r)"</string>
+					<string>(?&lt;!\|r)"</string>
 					<key>end</key>
 					<string>"</string>
 					<key>name</key>
@@ -1114,8 +605,10 @@
 					<key>patterns</key>
 					<array>
 						<dict>
-							<key>include</key>
-							<string>#regexp</string>
+							<key>match</key>
+							<string>\n</string>
+							<key>name</key>
+							<string>invalid.string.newline</string>
 						</dict>
 					</array>
 				</dict>
@@ -1128,6 +621,12 @@
 					<string>string.interpolated.single.dart</string>
 					<key>patterns</key>
 					<array>
+						<dict>
+							<key>match</key>
+							<string>\n</string>
+							<key>name</key>
+							<string>invalid.string.newline</string>
+						</dict>
 						<dict>
 							<key>include</key>
 							<string>#string-interp</string>
@@ -1144,8 +643,10 @@
 					<key>patterns</key>
 					<array>
 						<dict>
-							<key>include</key>
-							<string>#regexp</string>
+							<key>match</key>
+							<string>\n</string>
+							<key>name</key>
+							<string>invalid.string.newline</string>
 						</dict>
 					</array>
 				</dict>
@@ -1154,7 +655,5 @@
 	</dict>
 	<key>scopeName</key>
 	<string>source.dart</string>
-	<key>uuid</key>
-	<string>958518BC-799F-477A-99F9-5B28EBF230F6</string>
 </dict>
 </plist>

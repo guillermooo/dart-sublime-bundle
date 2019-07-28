@@ -1,0 +1,9 @@
+<snippet>
+  <tabTrigger>main</tabTrigger>
+  <scope>source.dart</scope>
+  <content><![CDATA[
+void main(List<String> args) {
+  ${1}
+}
+]]></content>
+</snippet>

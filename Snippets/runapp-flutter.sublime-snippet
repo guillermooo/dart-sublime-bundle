@@ -1,0 +1,7 @@
+<snippet>
+  <tabTrigger>runapp</tabTrigger>
+  <scope>source.dart</scope>
+  <content><![CDATA[
+runApp($1);
+]]></content>
+</snippet>

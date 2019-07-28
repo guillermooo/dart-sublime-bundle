@@ -1,0 +1,9 @@
+<snippet>
+  <tabTrigger>func</tabTrigger>
+  <scope>source.dart</scope>
+  <content><![CDATA[
+$2 ${1:functionName}(${2:String} ${3:argument}) {
+  return $5;
+}
+]]></content>
+</snippet>

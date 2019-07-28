@@ -1,0 +1,11 @@
+<snippet>
+  <tabTrigger>initstate</tabTrigger>
+  <scope>source.dart</scope>
+  <content><![CDATA[
+@override
+initState() {
+  super.initState();
+  $1
+}
+]]></content>
+</snippet>

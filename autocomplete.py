@@ -6,7 +6,6 @@ import sublime_plugin
 from Dart.sublime_plugin_lib import PluginLogger
 from Dart.sublime_plugin_lib.events import IdleIntervalEventListener
 from Dart.sublime_plugin_lib.path import is_active
-from Dart.sublime_plugin_lib.sublime import get_active_view
 
 from Dart import analyzer
 from Dart._init_ import editor_context
@@ -106,20 +105,3 @@ class AutocompleteEventListener(sublime_plugin.EventListener):
             return (completions, self._INHIBIT_OTHER)
 
         return ([], self._INHIBIT_OTHER)
-
-
-class AutocompleteCloserEventListener(sublime_plugin.EventListener):
-
-    def on_selection_modified_async(self, view):
-        if not is_view_dart_script(view):
-            return
-
-        if len(view.sel()) > 1 or len(view.sel()) == 0:
-            return
-
-        if not view.is_auto_complete_visible():
-            return
-
-        with editor_context.autocomplete_context as actx:
-            if actx.should_hide_auto_complete_list(view):
-                view.run_command('hide_auto_complete')

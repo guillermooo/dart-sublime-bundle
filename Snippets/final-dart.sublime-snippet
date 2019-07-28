@@ -1,0 +1,7 @@
+<snippet>
+  <tabTrigger>final</tabTrigger>
+  <scope>source.dart</scope>
+  <content><![CDATA[
+final ${1:foo} = ${2:true};
+]]></content>
+</snippet>

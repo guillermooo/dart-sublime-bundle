@@ -1,0 +1,9 @@
+<snippet>
+  <tabTrigger>setstate</tabTrigger>
+  <scope>source.dart</scope>
+  <content><![CDATA[
+setState(() {
+  $1
+})
+]]></content>
+</snippet>
