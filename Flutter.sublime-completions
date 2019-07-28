@@ -1,4 +1,3 @@
-
 {
 	"scope": "source.dart - variable.other.dart",
 	"completions":
@@ -6,6 +5,11 @@
 		"dart",
 		{ "trigger": "stless\tFlutter stateless widget", "contents": "class ${1:Example} extends StatelessWidget {\n	@override\n	Widget build(BuildContext context) {\n		return Container(\n			${2://TODO}\n		);\n	}\n}\n"},
 		{ "trigger": "stful\tInsert a StatefulWidget", "contents": "class $1 extends StatefulWidget {\n	@override\n	_$1State createState() => _$1State();\n}\n\nclass _$1State extends State<$1> {\n	@override\n	Widget build(BuildContext context) {\n		return Container(\n		${2://TODO}\n		);\n	}\n}" },
-		{ "trigger": "stanim\tInsert a StatefulWidget with an AnimationController", "contents": "class $1 extends StatefulWidget {\n	@override\n	_$1State createState() => _$1State();\n}\n\nclass _$1State extends State<$1>\n	with SingleTickerProviderStateMixin {\n	AnimationController _controller;\n\n	@override\n	void initState() {\n		super.initState();\n		_controller = AnimationController(vsync: this);\n	}\n\n	@override\n	void dispose() {\n		super.dispose();\n		_controller.dispose();\n	}\n\n	@override\n	Widget build(BuildContext context) {\n		return Container(\n			${2://TODO}\n		);\n	}\n}\n" }
-	]
+		{ "trigger": "stanim\tInsert a StatefulWidget with an AnimationController", "contents": "class $1 extends StatefulWidget {\n	@override\n	_$1State createState() => _$1State();\n}\n\nclass _$1State extends State<$1>\n	with SingleTickerProviderStateMixin {\n	AnimationController _controller;\n\n	@override\n	void initState() {\n		super.initState();\n		_controller = AnimationController(vsync: this);\n	}\n\n	@override\n	void dispose() {\n		super.dispose();\n		_controller.dispose();\n	}\n\n	@override\n	Widget build(BuildContext context) {\n		return Container(\n			${2://TODO}\n		);\n	}\n}\n" },
+
+		{ "trigger": "setstate\tChange the widget state", "contents": "setState(() {\n\t// Changing the state...\n\t${1}\n})" },
+		{ "trigger": "initstate\tInit the widget state", "contents": "@override\ninitState(() {\n\tsuper.initState();\n\t${1}\n})"},
+		{ "trigger": "dispose\tDispose the widget state", "contents": "@override\ndispose(() {\n\tsuper.dispose();\n\t${1}\n})"}
+    ]
 }
+
