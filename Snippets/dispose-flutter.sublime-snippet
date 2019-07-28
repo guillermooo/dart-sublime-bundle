@@ -1,0 +1,11 @@
+<snippet>
+  <tabTrigger>dispose</tabTrigger>
+  <scope>source.dart</scope>
+  <content><![CDATA[
+@override
+dispose() {
+  super.dispose();
+  $1
+}
+]]></content>
+</snippet>

@@ -1,0 +1,11 @@
+<snippet>
+  <tabTrigger>try</tabTrigger>
+  <scope>source.dart</scope>
+  <content><![CDATA[
+try {
+  $2
+} catch (${1:e}) {
+  // Catch error
+}
+]]></content>
+</snippet>

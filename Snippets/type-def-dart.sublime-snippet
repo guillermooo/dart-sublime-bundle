@@ -1,0 +1,7 @@
+<snippet>
+  <tabTrigger>typedef</tabTrigger>
+  <scope>source.dart</scope>
+  <content><![CDATA[
+typedef ${1:Type} ${2:Name}(${3:params});
+]]></content>
+</snippet>

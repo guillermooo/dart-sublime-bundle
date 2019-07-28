@@ -1,0 +1,7 @@
+<snippet>
+  <tabTrigger>importm</tabTrigger>
+  <scope>source.dart</scope>
+  <content><![CDATA[
+import "package:flutter/material.dart";
+]]></content>
+</snippet>

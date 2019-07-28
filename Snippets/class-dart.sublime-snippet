@@ -1,0 +1,9 @@
+<snippet>
+  <tabTrigger>class</tabTrigger>
+  <scope>source.dart</scope>
+  <content><![CDATA[
+class ${1:className} {
+  $2
+}
+]]></content>
+</snippet>

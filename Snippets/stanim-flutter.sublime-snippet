@@ -1,0 +1,32 @@
+<snippet>
+  <tabTrigger>stanim</tabTrigger>
+  <scope>source.dart</scope>
+  <content><![CDATA[
+class ${1:Example} extends StatefulWidget {
+  @override
+  _$1State createState() => _$1State();
+}
+
+class _$1State extends State<$1> with SingleTickerProviderStateMixin {
+  AnimationController _controller;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(vsync: this);
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    _controller.dispose();
+  }
+
+  @override Widget build(BuildContext context) {
+    return Container(
+      $2
+    );
+  }
+}
+]]></content>
+</snippet>

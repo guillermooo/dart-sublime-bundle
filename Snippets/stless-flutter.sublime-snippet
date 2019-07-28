@@ -1,0 +1,14 @@
+<snippet>
+  <tabTrigger>stless</tabTrigger>
+  <scope>source.dart</scope>
+  <content><![CDATA[
+class ${1:Example} extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      $2
+    );
+  }
+}
+]]></content>
+</snippet>

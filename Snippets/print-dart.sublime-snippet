@@ -1,0 +1,7 @@
+<snippet>
+  <tabTrigger>print</tabTrigger>
+  <scope>source.dart</scope>
+  <content><![CDATA[
+print("${1}");
+]]></content>
+</snippet>

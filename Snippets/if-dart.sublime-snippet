@@ -1,0 +1,9 @@
+<snippet>
+  <tabTrigger>if</tabTrigger>
+  <scope>source.dart</scope>
+  <content><![CDATA[
+if ($1) {
+  $2
+}
+]]></content>
+</snippet>
