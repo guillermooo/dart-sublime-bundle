@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/guillermooo/dart-sublime-bundle.svg?branch=master)](https://travis-ci.org/guillermooo/dart-sublime-bundle) [![Build status](https://ci.appveyor.com/api/projects/status/a54udvh1c2c2xah1/branch/master?svg=true)](https://ci.appveyor.com/project/guillermooo/dart-sublime-bundle/branch/master) [![Gratipay](http://img.shields.io/gratipay/guillermooo.svg)](https://gratipay.com/guillermooo/)
+https://github.com/guillermooo/dart-sublime-bundle is apparently unmaintained and no longer works out of the box. This fork includes modifications so that it works again. PRs welcome.
 
 # Dart plugin for Sublime Text 3
 
