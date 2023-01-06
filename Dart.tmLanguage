@@ -909,10 +909,6 @@
 							<key>name</key>
 							<string>ignore.capture.regex.dart</string>
 						</dict>
-						<dict>
-							<key>include</key>
-							<string>#regex.dart</string>
-						</dict>
 					</array>
 				</dict>
 				<dict>
@@ -1043,7 +1039,7 @@
 					<key>end</key>
 					<string>"""(?!")</string>
 					<key>name</key>
-					<string>string.interpolated.triple.double.dart</string>
+					<string>string.format</string>
 					<key>patterns</key>
 					<array>
 						<dict>
@@ -1058,7 +1054,7 @@
 					<key>end</key>
 					<string>'''(?!')</string>
 					<key>name</key>
-					<string>string.interpolated.triple.single.dart</string>
+					<string>string.format</string>
 					<key>patterns</key>
 					<array>
 						<dict>
@@ -1073,7 +1069,7 @@
 					<key>end</key>
 					<string>"""(?!")</string>
 					<key>name</key>
-					<string>string.quoted.triple.double.dart</string>
+					<string>string.format</string>
 				</dict>
 				<dict>
 					<key>begin</key>
@@ -1081,7 +1077,7 @@
 					<key>end</key>
 					<string>'''(?!')</string>
 					<key>name</key>
-					<string>string.quoted.triple.single.dart</string>
+					<string>string.format</string>
 				</dict>
 				<dict>
 					<key>begin</key>
@@ -1089,7 +1085,7 @@
 					<key>end</key>
 					<string>"</string>
 					<key>name</key>
-					<string>string.interpolated.double.dart</string>
+					<string>string.format</string>
 					<key>patterns</key>
 					<array>
 						<dict>
@@ -1110,7 +1106,7 @@
 					<key>end</key>
 					<string>"</string>
 					<key>name</key>
-					<string>string.quoted.double.dart</string>
+					<string>string.format</string>
 					<key>patterns</key>
 					<array>
 						<dict>
@@ -1125,7 +1121,7 @@
 					<key>end</key>
 					<string>'</string>
 					<key>name</key>
-					<string>string.interpolated.single.dart</string>
+					<string>string.format</string>
 					<key>patterns</key>
 					<array>
 						<dict>
@@ -1140,7 +1136,7 @@
 					<key>end</key>
 					<string>'</string>
 					<key>name</key>
-					<string>string.quoted.single.dart</string>
+					<string>string.format</string>
 					<key>patterns</key>
 					<array>
 						<dict>
